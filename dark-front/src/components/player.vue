@@ -1,6 +1,6 @@
 <template>
     <div>
-        <audio v-bind:src="Source" type="audio/aac" controls></audio>
+        <audio v-bind:src="Source" controls></audio>
     </div>
 </template>
 
