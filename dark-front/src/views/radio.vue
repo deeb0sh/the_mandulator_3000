@@ -15,7 +15,6 @@
         
     <Player Source="http://amoris.sknt.ru:80/minimal"/><br>
     <Player Source="http://amoris.sknt.ru:80/dnb"/><br> 
-    <Player Source="http://cheetah.streemlion.com:2160/stream "/><br> 
     </div>
 </template>
 <script>
