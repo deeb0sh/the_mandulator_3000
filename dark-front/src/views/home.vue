@@ -32,7 +32,7 @@ export default {
 
 <style scoped>
 z* {
-    border: rgb(0, 255, 21) solid 1px;
+    border: #00ff15 solid 1px;
 }
 
 .main {

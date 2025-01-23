@@ -1,19 +1,38 @@
 <template>
-    <div>
-        <audio v-bind:src="Source" controls></audio>
+    <div class="DivPlayer">
+        <audio class="player" v-bind:src="Source" controls></audio>
     </div>
 </template>
 
 <script>
-    export default {
-      props: [
+export default {
+    props: [
         'Source'
-     ]
-    }
+    ]
+}
 </script>
 
 <style scoped>
 *z {
-    border: rgb(0, 164, 170) solid 1px;
+    border: #00a4aa solid 1px;
+}
+
+*::-webkit-media-controls-enclosure .light *::-webkit-media-controls, .light *::-webkit-media-text-track-container, .dark *::-webkit-media-controls, .dark *::-webkit-media-text-track-container {
+    background-color: transparent;
+  }
+
+*::-webkit-media-controls-enclosure {
+    background-color: transparent;
+}
+
+.DivPlayer {
+    width: 100%;
+}
+
+.player {
+    width: 100%;
+    border: 0px solid #313131;
+    border-radius: 0px;
+    background: transparent;
 }
 </style>

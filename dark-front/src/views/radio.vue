@@ -2,7 +2,7 @@
     <div class="main">
         <div class="container">
                 <div class="nav">
-                    <RouterLink to="/radio" @mouseover="OnMouseMSG('Радио Anima Amoris')"><img src="../img/logo_radio.png" width="120"></RouterLink>
+                    <RouterLink to="/radio" @mouseover="OnMouseMSG('Радио Anima Amoris')"><img src="../img/logo_radio.png" width="170"></RouterLink>
                     <span class="header-text"><i>Anima Amoris</i></span>
                 </div>
                 <div class="nav">
@@ -12,18 +12,31 @@
                 </div>
         </div>
         
-        
-    <Player Source="http://amoris.sknt.ru:80/minimal"/><br>
-    <Player Source="http://amoris.sknt.ru:80/dnb"/><br> 
+        <div>
+            <a href="#" @click="SetStream()">MNML</a>
+           {{ url }}
+        </div>
     </div>
+    <Player v-bind:Source="url"/>
 </template>
 <script>
-import Player from '../components/player.vue';
-
+export default {
+    data(){
+            return {
+                url: null
+            };
+    },
+    methods: {
+            SetStream() {
+                this.url = "http://amoris.sknt.ru:80/minimal"
+                return(url)
+            }
+    }
+}
 </script>
 <style scoped>
 *z {
-    border: rgb(255, 196, 0) solid 1px;
+    border: #ffc400 solid 1px;
 }
 
 .main {
@@ -37,7 +50,7 @@ import Player from '../components/player.vue';
 
 .container {
     margin-top: 10px;
-    width: 90%;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;

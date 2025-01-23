@@ -1,15 +1,19 @@
 <template>
     <div class="wrapper">
-        
-            <RouterView />   
-        
+        <RouterView />   
         <Footer txt="&copy 2025 ebosh-product"/>
     </div>
 </template>
 
 <script>
-import Footer from './components/footer.vue';
 //import { RouterLink, RouterView } from 'vue-router'
+export default {
+    data() {
+        return {
+            
+        };
+    }
+}
 </script>
 
 <style scoped>
