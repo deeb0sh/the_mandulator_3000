@@ -13,7 +13,7 @@
         </div>
         
         <div>
-            <a href="#" @click="SetStream()">MNML</a>
+            <button v-on:click="SetStream()">MNML</button>
            {{ url }}
         </div>
     </div>
@@ -29,7 +29,9 @@ export default {
     methods: {
             SetStream() {
                 this.url = "http://amoris.sknt.ru:80/minimal"
-                return(url)
+                setTimeout(() => {  
+                        document.getElementById('player').play(); 
+                }, 250);
             }
     }
 }
