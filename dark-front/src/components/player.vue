@@ -1,6 +1,6 @@
 <template>
     <div class="DivPlayer">
-        <audio id="player" class="player" v-bind:src="Source" controls></audio>
+        <audio id="player" class="player" v-bind:src="Source" type="audio/aacp" controls preload="none"></audio>
     </div>
 </template>
 
