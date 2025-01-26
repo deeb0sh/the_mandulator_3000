@@ -12,6 +12,8 @@
                 </div>
         </div>
         <div>
+            <RadioBlock />
+            <br><br><br>
             <button v-on:click="SetStream('minimal')">Minimal Deep Techno</button><br>
             <button v-on:click="SetStream('dnb')">Drum and Bass</button><br>
             <button v-on:click="SetStream('techno')">Techno</button><br>
@@ -27,12 +29,14 @@
             <button v-on:click="SetStream('electronic')">Electronic Styles</button><br>
             <button v-on:click="SetStream('breakbeat')">Breakbeat Hardcore</button><br>
             <button v-on:click="SetStream('breaks')">Breaks</button><br>
-            <button v-on:click="SetStream('breakcore')">IDM Break Core</button><br>
+            <button v-on:click="SetStream('breakcore')">IDM Breakcore</button><br>
             <button v-on:click="SetStream('dub')">Dub</button><br>
             <button v-on:click="SetStream('reggae')">Reggae</button><br>
             <button v-on:click="SetStream('djpepe')">DJ Pepe Collection</button><br>
             <button v-on:click="SetStream('trance')">Trance</button><br>
             <button v-on:click="SetStream('idm')">IDM</button><br>
+            <br>
+            <button v-on:click="SetStream('STOP')">STOP</button><br>
         </div>
     </div>
     <Player v-bind:Source="url"/>
@@ -47,92 +51,30 @@ export default {
     methods: {
             SetStream(tmp) {
                 const StreamUrls = { 
-                    "minimal": "http://amoris.sknt.ru:80/minimal",
-                    "dnb": "http://amoris.sknt.ru:80/dnb",
-                    "techno": "http://amoris.sknt.ru:80/techno",
-                    "dubtechno": "http://amoris.sknt.ru:80/dubtechno",
-                    "triphop": "http://amoris.sknt.ru:80/triphop",
-                    "deeptech": "http://amoris.sknt.ru:80/deeptech",
-                    "ambient": "http://amoris.sknt.ru:80/ambient",
-                    "dubstep": "http://amoris.sknt.ru:80/dubstep",
-                    "goa": "http://amoris.sknt.ru:80/goa",
-                    "newage": "http://amoris.sknt.ru:80/newage",
-                    "dubtechnomix": "http://amoris.sknt.ru:80/dubtechnomix",
-                    "electro": "http://amoris.sknt.ru:80/electro",
-                    "electronic": "http://amoris.sknt.ru:80/electronic",
-                    "breakbeat": "http://amoris.sknt.ru:80/breakbeat",
-                    "breaks": "http://amoris.sknt.ru:80/breaks",
-                    "breakcore": "http://amoris.sknt.ru:80/breakcore",
-                    "dub": "http://amoris.sknt.ru:80/dub",
-                    "reggae": "http://amoris.sknt.ru:80/reggae",
-                    "djpepe": "http://amoris.sknt.ru:80/djpepe",
-                    "trance": "http://amoris.sknt.ru:80/trance",
-                    "idm": "http://amoris.sknt.ru:80/idm",
+                    "minimal": "https://amoris.sknt.ru/minimal",
+                    "dnb": "https://amoris.sknt.ru/dnb",
+                    "techno": "https://amoris.sknt.ru/techno",
+                    "dubtechno": "https://amoris.sknt.ru/dubtechno",
+                    "triphop": "https://amoris.sknt.ru/triphop",
+                    "deeptech": "https://amoris.sknt.ru/deeptech",
+                    "ambient": "https://amoris.sknt.ru/ambient",
+                    "dubstep": "https://amoris.sknt.ru/dubstep",
+                    "goa": "https://amoris.sknt.ru/goa",
+                    "newage": "https://amoris.sknt.ru/newage",
+                    "dubtechnomix": "https://amoris.sknt.ru/dubtechnomix",
+                    "electro": "https://amoris.sknt.ru/electro",
+                    "electronic": "https://amoris.sknt.ru/electronic",
+                    "breakbeat": "https://amoris.sknt.ru/breakbeat",
+                    "breaks": "https://amoris.sknt.ru/breaks",
+                    "breakcore": "https://amoris.sknt.ru/breakcore",
+                    "dub": "https://amoris.sknt.ru/dub",
+                    "reggae": "https://amoris.sknt.ru/reggae",
+                    "djpepe": "https://amoris.sknt.ru/djpepe",
+                    "trance": "https://amoris.sknt.ru/trance",
+                    "idm": "https://amoris.sknt.ru/idm",
+                    "STOP": ""
                 }
                 this.url = StreamUrls[tmp]
-                // if (tmp === "minimal") {
-                //     this.url = "http://amoris.sknt.ru:80/minimal"
-                // } 
-                // else if (tmp === "dnb") {
-                //     this.url = "http://amoris.sknt.ru:80/dnb"
-                // }
-                // else if (tmp === "techno") {
-                //     this.url = "http://amoris.sknt.ru:80/techno"
-                // }
-                // else if (tmp === "dubtechno") {
-                //     this.url = "http://amoris.sknt.ru:80/dubtechno"
-                // }
-                // else if (tmp === "triphop") {
-                //     this.url = "http://amoris.sknt.ru:80/triphop"
-                // }
-                // else if (tmp === "deeptech") {
-                //     this.url = "http://amoris.sknt.ru:80/deeptech"
-                // }
-                // else if (tmp === "ambient") {
-                //     this.url = "http://amoris.sknt.ru:80/ambient"
-                // }
-                // else if (tmp === "dubstep") {
-                //     this.url = "http://amoris.sknt.ru:80/dubstep"
-                // }
-                // else if (tmp === "goa") {
-                //     this.url = "http://amoris.sknt.ru:80/goa"
-                // }
-                // else if (tmp === "newage") {
-                //     this.url = "http://amoris.sknt.ru:80/newage"
-                // }
-                // else if (tmp === "dubtechnomix") {
-                //     this.url = "http://amoris.sknt.ru:80/dubtechnomix"
-                // }
-                // else if (tmp === "electro") {
-                //     this.url = "http://amoris.sknt.ru:80/electro"
-                // }
-                // else if (tmp === "electronic") {
-                //     this.url = "http://amoris.sknt.ru:80/electronic"
-                // }
-                // else if (tmp === "breakbeat") {
-                //     this.url = "http://amoris.sknt.ru:80/breakbeat"
-                // }
-                // else if (tmp === "breaks") {
-                //     this.url = "http://amoris.sknt.ru:80/breaks"
-                // }
-                // else if (tmp === "breakcore") {
-                //     this.url = "http://amoris.sknt.ru:80/breakcore"
-                // }
-                // else if (tmp === "dub") {
-                //     this.url = "http://amoris.sknt.ru:80/dub"
-                // }
-                // else if (tmp === "reggae") {
-                //     this.url = "http://amoris.sknt.ru:80/reggae"
-                // }
-                // else if (tmp === "djpepe") {
-                //     this.url = "http://amoris.sknt.ru:80/djpepe"
-                // }
-                // else if (tmp === "trance") {
-                //     this.url = "http://amoris.sknt.ru:80/trance"
-                // }
-                // else if (tmp === "idm") {
-                //     this.url = "http://amoris.sknt.ru:80/idm"
-                // }
                 setTimeout(() => {  
                         document.getElementById('player').play(); 
                 }, 250);
