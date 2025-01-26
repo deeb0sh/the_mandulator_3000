@@ -11,8 +11,12 @@
                     <RouterLink to="/pindos"><img src="../img/logo_pindos.png" width="70"></RouterLink>                      
                 </div>
         </div>
+        <div class="radio">
+            <RadioBlock StyleInfo="Minimal Deep Techno" Style="minimal"/>
+            <RadioBlock StyleInfo="Drum and Bass" Style="dnb"/>
+            <RadioBlock StyleInfo="Techno" Style="techno"/>
+        </div>
         <div>
-            <RadioBlock />
             <br><br><br>
             <button v-on:click="SetStream('minimal')">Minimal Deep Techno</button><br>
             <button v-on:click="SetStream('dnb')">Drum and Bass</button><br>
@@ -102,6 +106,11 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.radio {
+    display: flex;
+    flex-direction: row;
 }
 
 .nav {

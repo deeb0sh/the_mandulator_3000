@@ -7,7 +7,7 @@
             <img src="../img/vinil.png" width="100">
         </div>
         <div>
-            <h2>Minimal Deep Techno</h2>
+            <h2>{{ StyleInfo }}</h2>
             <div class="info">
                 {{ track }}
             </div>
@@ -17,12 +17,15 @@
   
 <script>
     export default {
+        props: [
+            'StyleInfo',
+            'Style'
+        ],
         mounted() {
             this.StreamInfo(),
             this.timer()
         },
         data() {
-
             return {
                 users: "N/A",
                 track: "N/A"
@@ -30,10 +33,10 @@
         },
         methods: {
             timer() {
-                setInterval(this.StreamInfo,7000)
+                setInterval(this.StreamInfo,10000)
             },
             async StreamInfo(){
-                    const resp = await fetch('https://amoris.sknt.ru/minimal/stats.json')
+                    const resp = await fetch("https://amoris.sknt.ru/" + this.Style + "/stats.json")
                     const data = await resp.text()
                     const text = data.replace(/(^metadata.*?\()|(..)$|(\*\ amoris.sknt.ru)/g,'')
                     const info = JSON.parse(text)
@@ -47,7 +50,6 @@
 <style scoped>
 *z {
     border: #8c00ff solid 1px;
-    
 }
 
 img {
