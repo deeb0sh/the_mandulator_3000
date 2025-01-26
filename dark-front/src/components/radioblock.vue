@@ -1,30 +1,39 @@
 <template>
-    <div class="block" @click="StreamInfo()">
-        <div class="dop">
+    <div class="block">
+        <div class="users">
+            user: {{ users }}
+        </div>
+        <div>
             <img src="../img/vinil.png" width="100">
         </div>
         <div>
             <h2>Minimal Deep Techno</h2>
             <div class="info">
-                <b>user:</b> {{ users }}<br>
-                <b>Track:</b> {{ track }}
+                {{ track }}
             </div>
         </div>
     </div>
 </template>
   
 <script>
-//https://amoris.sknt.ru/minimal/stats.json
     export default {
+        mounted() {
+            this.StreamInfo(),
+            this.timer()
+        },
         data() {
+
             return {
-                users: null,
-                track: null
+                users: "N/A",
+                track: "N/A"
             }
         },
         methods: {
-            async StreamInfo() {
-                    const resp = await fetch('http://amoris.sknt.ru:80/minimal/stats.json')
+            timer() {
+                setInterval(this.StreamInfo,7000)
+            },
+            async StreamInfo(){
+                    const resp = await fetch('https://amoris.sknt.ru/minimal/stats.json')
                     const data = await resp.text()
                     const text = data.replace(/(^metadata.*?\()|(..)$|(\*\ amoris.sknt.ru)/g,'')
                     const info = JSON.parse(text)
@@ -44,14 +53,19 @@
 img {
     margin-left: 10px;
     margin-right: 10px;
-    margin-top: 10px;
-    
 }
+
+.users{
+    text-align: right;
+    font-size: 11px;
+    margin-right: 20px;
+}
+
 .info {
     margin-left: 20px;
     margin-right: 20px;
     margin-bottom: 10px;
-    text-align: left;
+    text-align: center;
 }
 .block {
     border: #313131 solid 0px;
