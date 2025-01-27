@@ -12,73 +12,88 @@
                 </div>
         </div>
         <div class="radio">
-            <RadioBlock StyleInfo="Minimal Deep Techno" Style="minimal"/>
-            <RadioBlock StyleInfo="Drum and Bass" Style="dnb"/>
-            <RadioBlock StyleInfo="Techno" Style="techno"/>
+            <RadioBlock StyleInfo="Minimal Deep Techno" Style="minimal" v-on:click="SetStream('minimal')"/>
+            <RadioBlock StyleInfo="Drum and Bass" Style="dnb" v-on:click="SetStream('dnb')"/>
+            <RadioBlock StyleInfo="Techno" Style="techno" v-on:click="SetStream('techno')"/>
+        </div>
+        <div class="radio">
+            <RadioBlock StyleInfo="Dub Techno" Style="dubtechno" v-on:click="SetStream('dubtechno')"/>
+            <RadioBlock StyleInfo="Trip Hop Lounge" Style="triphop" v-on:click="SetStream('triphop')"/>
+            <RadioBlock StyleInfo="Deep Tech House" Style="deeptech" v-on:click="SetStream('deeptech')"/>
+        </div>
+        <div class="radio">
+            <RadioBlock StyleInfo="Ambient" Style="ambient" v-on:click="SetStream('ambient')"/>
+            <RadioBlock StyleInfo="Dub Step" Style="dubstep" v-on:click="SetStream('dubstep')"/>
+            <RadioBlock StyleInfo="Goa Psy Trance" Style="goa" v-on:click="SetStream('goa')"/>           
+        </div>
+        <div class="radio">
+            <RadioBlock StyleInfo="New Age" Style="newage" v-on:click="SetStream('newage')"/>
+            <RadioBlock StyleInfo="Dub Techno Mix" Style="dubtechnomix" v-on:click="SetStream('dubtechnomix')"/>
+            <RadioBlock StyleInfo="Electro" Style="electro" v-on:click="SetStream('electro')"/> 
+        </div>
+        <div class="radio">
+            <RadioBlock StyleInfo="Electronic Styles" Style="electronic" v-on:click="SetStream('electronic')"/>
+            <RadioBlock StyleInfo="Breakbeat Hardcore" Style="breakbeat" v-on:click="SetStream('breakbeat')"/>
+            <RadioBlock StyleInfo="Breaks" Style="breaks" v-on:click="SetStream('breaks')"/> 
+        </div>
+        <div class="radio">
+            <RadioBlock StyleInfo="IDM Breakcore" Style="breakcore" v-on:click="SetStream('breakcore')"/>
+            <RadioBlock StyleInfo="Dub" Style="dub" v-on:click="SetStream('dub')"/>
+            <RadioBlock StyleInfo="Reggae" Style="reggae" v-on:click="SetStream('reggae')"/> 
+        </div>
+        <div class="radio">
+            <RadioBlock StyleInfo="DJ Pepe Collection" Style="djpepe" v-on:click="SetStream('djpepe')"/>
+            <RadioBlock StyleInfo="Trance" Style="trance" v-on:click="SetStream('trance')"/>
+            <RadioBlock StyleInfo="IDM" Style="idm" v-on:click="SetStream('idm')"/> 
         </div>
         <div>
             <br><br><br>
-            <button v-on:click="SetStream('minimal')">Minimal Deep Techno</button><br>
-            <button v-on:click="SetStream('dnb')">Drum and Bass</button><br>
-            <button v-on:click="SetStream('techno')">Techno</button><br>
-            <button v-on:click="SetStream('dubtechno')">Dub Techno</button><br>
-            <button v-on:click="SetStream('triphop')">Trip Hop Lounge</button><br>
-            <button v-on:click="SetStream('deeptech')">Deep Tech House</button><br>
-            <button v-on:click="SetStream('ambient')">Ambient</button><br>
-            <button v-on:click="SetStream('dubstep')">Dub Step</button><br>
-            <button v-on:click="SetStream('goa')">Goa Psy Trance</button><br>
-            <button v-on:click="SetStream('newage')">New Age</button><br>
-            <button v-on:click="SetStream('dubtechnomix')">Dub Techno Mix</button><br>
-            <button v-on:click="SetStream('electro')">Electro</button><br>
-            <button v-on:click="SetStream('electronic')">Electronic Styles</button><br>
-            <button v-on:click="SetStream('breakbeat')">Breakbeat Hardcore</button><br>
-            <button v-on:click="SetStream('breaks')">Breaks</button><br>
-            <button v-on:click="SetStream('breakcore')">IDM Breakcore</button><br>
-            <button v-on:click="SetStream('dub')">Dub</button><br>
-            <button v-on:click="SetStream('reggae')">Reggae</button><br>
-            <button v-on:click="SetStream('djpepe')">DJ Pepe Collection</button><br>
-            <button v-on:click="SetStream('trance')">Trance</button><br>
-            <button v-on:click="SetStream('idm')">IDM</button><br>
-            <br>
-            <button v-on:click="SetStream('STOP')">STOP</button><br>
         </div>
     </div>
     <Player v-bind:Source="url"/>
 </template>
 <script>
+import { TransitionGroup } from 'vue';
+
 export default {
     data(){
             return {
-                url: null
+                url: null,
+                Play: false
             };
     },
     methods: {
             SetStream(tmp) {
-                const StreamUrls = { 
-                    "minimal": "https://amoris.sknt.ru/minimal",
-                    "dnb": "https://amoris.sknt.ru/dnb",
-                    "techno": "https://amoris.sknt.ru/techno",
-                    "dubtechno": "https://amoris.sknt.ru/dubtechno",
-                    "triphop": "https://amoris.sknt.ru/triphop",
-                    "deeptech": "https://amoris.sknt.ru/deeptech",
-                    "ambient": "https://amoris.sknt.ru/ambient",
-                    "dubstep": "https://amoris.sknt.ru/dubstep",
-                    "goa": "https://amoris.sknt.ru/goa",
-                    "newage": "https://amoris.sknt.ru/newage",
-                    "dubtechnomix": "https://amoris.sknt.ru/dubtechnomix",
-                    "electro": "https://amoris.sknt.ru/electro",
-                    "electronic": "https://amoris.sknt.ru/electronic",
-                    "breakbeat": "https://amoris.sknt.ru/breakbeat",
-                    "breaks": "https://amoris.sknt.ru/breaks",
-                    "breakcore": "https://amoris.sknt.ru/breakcore",
-                    "dub": "https://amoris.sknt.ru/dub",
-                    "reggae": "https://amoris.sknt.ru/reggae",
-                    "djpepe": "https://amoris.sknt.ru/djpepe",
-                    "trance": "https://amoris.sknt.ru/trance",
-                    "idm": "https://amoris.sknt.ru/idm",
-                    "STOP": ""
+                this.Play = !this.Play
+                if (this.Play) {
+                    const StreamUrls = { 
+                            "minimal": "https://amoris.sknt.ru/minimal",
+                            "dnb": "https://amoris.sknt.ru/dnb",
+                            "techno": "https://amoris.sknt.ru/techno",
+                            "dubtechno": "https://amoris.sknt.ru/dubtechno",
+                            "triphop": "https://amoris.sknt.ru/triphop",
+                            "deeptech": "https://amoris.sknt.ru/deeptech",
+                            "ambient": "https://amoris.sknt.ru/ambient",
+                            "dubstep": "https://amoris.sknt.ru/dubstep",
+                            "goa": "https://amoris.sknt.ru/goa",
+                            "newage": "https://amoris.sknt.ru/newage",
+                            "dubtechnomix": "https://amoris.sknt.ru/dubtechnomix",
+                            "electro": "https://amoris.sknt.ru/electro",
+                            "electronic": "https://amoris.sknt.ru/electronic",
+                            "breakbeat": "https://amoris.sknt.ru/breakbeat",
+                            "breaks": "https://amoris.sknt.ru/breaks",
+                            "breakcore": "https://amoris.sknt.ru/breakcore",
+                            "dub": "https://amoris.sknt.ru/dub",
+                            "reggae": "https://amoris.sknt.ru/reggae",
+                            "djpepe": "https://amoris.sknt.ru/djpepe",
+                            "trance": "https://amoris.sknt.ru/trance",
+                            "idm": "https://amoris.sknt.ru/idm"
+                        }
+                    this.url = StreamUrls[tmp]
+                } 
+                else {
+                    this.url = ""
                 }
-                this.url = StreamUrls[tmp]
                 setTimeout(() => {  
                         document.getElementById('player').play(); 
                 }, 250);
