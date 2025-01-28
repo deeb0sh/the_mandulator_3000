@@ -1,7 +1,7 @@
 <template>
     <div class="block">
         <div class="users">
-            user: {{ users }}
+            online: {{ users }}
         </div>
         <div>
             <img src="../img/vinil.png" width="100">
@@ -11,6 +11,7 @@
             <div class="info">
                 {{ track }}
             </div>
+           ((( {{ this.WaveActive(Style,isAction) }} )))
         </div>
     </div>
 </template>
@@ -19,7 +20,8 @@
     export default {
         props: [
             'StyleInfo',
-            'Style'
+            'Style',
+            'isAction'
         ],
         mounted() {
             this.StreamInfo(),
@@ -32,6 +34,14 @@
             }
         },
         methods: {
+            WaveActive(x1,x2) {
+                if (x1 === x2) {
+                    return true
+                }
+                else {
+                    return false
+                }
+            },
             timer() {
                 setInterval(this.StreamInfo,10000)
             },
@@ -46,7 +56,6 @@
         }
     }
 </script>
-
 <style scoped>
 *z {
     border: #8c00ff solid 1px;
