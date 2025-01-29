@@ -4,7 +4,7 @@
             online: {{ users }}
         </div>
         <div class="vinil action">
-            <img src="../img/vinil.png" width="90px">
+            <img src="../img/vinil.png" width="100px">
         </div>
         <div>
             <span class="style action"><b>{{ StyleInfo }}</b></span>
@@ -18,7 +18,7 @@
             online: {{ users }}
         </div>
         <div class="vinil">
-            <img src="../img/vinil.png" width="90px">
+            <img src="../img/vinil.png" width="100px">
         </div>
         <div>
             <span class="style"><b>{{ StyleInfo }}</b></span>
@@ -81,17 +81,14 @@
 
 .style.action  {
     font-size: 20px;
-    text-shadow: 0 0 10px #1eff00;
+    text-shadow: 0 0 5px #1eff00;
 }
 
 .vinil {
-    margin-left: 10px;
-    margin-right: 10px;
+    height: 100px;
 }
 
 .vinil.action {
-    margin-left: 10px;
-    margin-right: 10px;
     animation-name: rotation;
     animation-duration: 5s;
     animation-iteration-count: infinite;
@@ -110,22 +107,21 @@
 .users{
     text-align: right;
     font-size: 11px;
-    margin-right: 20px;
+    padding-right: 20px;
 }
 
 .info {
-    margin-left: 20px;
-    margin-right: 20px;
-    margin-bottom: 10px;
     text-align: center;
+    padding: 5px 20px 15px 20px;
 }
 
 .block {
+    margin-bottom: 20px;
     border: #313131 solid 0px;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: start;
     width: 250px;
     text-align: center;
 }
