@@ -1,17 +1,30 @@
 <template>
-    <div class="block">
+    <div class="block" v-if="this.WaveActive(Style,isAction)">
         <div class="users">
             online: {{ users }}
         </div>
-        <div>
-            <img src="../img/vinil.png" width="100">
+        <div class="vinil action">
+            <img src="../img/vinil.png" width="90px">
         </div>
         <div>
-            <h2>{{ StyleInfo }}</h2>
+            <span class="style action"><b>{{ StyleInfo }}</b></span>
             <div class="info">
                 {{ track }}
             </div>
-           ((( {{ this.WaveActive(Style,isAction) }} )))
+        </div>
+    </div>
+    <div class="block" v-else>
+        <div class="users">
+            online: {{ users }}
+        </div>
+        <div class="vinil">
+            <img src="../img/vinil.png" width="90px">
+        </div>
+        <div>
+            <span class="style"><b>{{ StyleInfo }}</b></span>
+            <div class="info">
+                {{ track }}
+            </div>
         </div>
     </div>
 </template>
@@ -30,7 +43,8 @@
         data() {
             return {
                 users: "N/A",
-                track: "N/A"
+                track: "N/A",
+                Active: false
             }
         },
         methods: {
@@ -61,9 +75,36 @@
     border: #8c00ff solid 1px;
 }
 
-img {
+.style {
+    font-size: 20px;
+}
+
+.style.action  {
+    font-size: 20px;
+    text-shadow: 0 0 10px #1eff00;
+}
+
+.vinil {
     margin-left: 10px;
     margin-right: 10px;
+}
+
+.vinil.action {
+    margin-left: 10px;
+    margin-right: 10px;
+    animation-name: rotation;
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@keyframes rotation {
+    0% {
+        transform:rotate(0deg);
+    }
+    100% {
+        transform:rotate(360deg);
+    }
 }
 
 .users{
@@ -78,6 +119,7 @@ img {
     margin-bottom: 10px;
     text-align: center;
 }
+
 .block {
     border: #313131 solid 0px;
     border-radius: 10px;
