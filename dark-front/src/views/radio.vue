@@ -3,7 +3,6 @@
         <div class="container">
                 <div class="nav">
                     <RouterLink to="/"><img src="../img/logozbs.png" width="165"></RouterLink>
-                    
                     <span class="header-text"><i>Anima Amoris</i></span>
                 </div>
                 <div class="nav">
@@ -133,6 +132,7 @@ export default {
 .header-text {
     font-family: HH;
     font-size: 50px;  
-    color: #313131; 
+    color: #313131;
+    
 }
 </style>

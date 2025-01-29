@@ -4,7 +4,7 @@
             online: {{ users }}
         </div>
         <div class="vinil action">
-            <img src="../img/vinil.png" width="100px">
+            <img src="../img/vinil.png" width="80px">
         </div>
         <div>
             <span class="style action"><b>{{ StyleInfo }}</b></span>
@@ -18,7 +18,7 @@
             online: {{ users }}
         </div>
         <div class="vinil">
-            <img src="../img/vinil.png" width="100px">
+            <img src="../img/vinil.png" width="80px">
         </div>
         <div>
             <span class="style"><b>{{ StyleInfo }}</b></span>
@@ -85,7 +85,7 @@
 }
 
 .vinil {
-    height: 100px;
+    height: 80px;
 }
 
 .vinil.action {
