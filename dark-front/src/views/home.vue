@@ -78,7 +78,7 @@ export default {
 
 @media (max-width: 533px) {
     .container {
-        margin-top: -120px; 
+        margin-top: -20%; 
         width: 345px;
         text-align: center;
     }
