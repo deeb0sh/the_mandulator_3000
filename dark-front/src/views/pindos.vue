@@ -1,27 +1,52 @@
 <template> 
-           
-        <font class="header-text"><i>DarkSurf.ru</i></font>
-        <RouterLink to="/"><img src="../img/logozbs.png"></RouterLink>
-        <br>
-        <br>
-        <nav>
-
-            <RouterLink to="/radio"><img src="../img/logo_radio.png"  width="80"></RouterLink>
-            <RouterLink to="/m3000"><img src="../img/logo_mand.png"  width="80"></RouterLink>
-            <RouterLink to="/pindos"><img src="../img/logo_pindos.png" width="80"></RouterLink>
-        </nav>
-        <br>        
-        <h1>Окно к пиндосам</h1>
-     
+<div class="main">          
+    <div class="container">
+        <div class="nav">
+            <RouterLink to="/"><img src="../img/logozbs.png" width="165"></RouterLink>
+            <span class="header-text"><i>The pindos window</i></span>
+        </div>
+        <div class="nav">
+            <RouterLink to="/radio"><img src="../img/logo_radio.png" width="70"></RouterLink>
+            <RouterLink to="/m3000"><img src="../img/logo_mand.png" width="70"></RouterLink>
+            <RouterLink to="/pindos"><img src="../img/logo_pindos.png" width="70"></RouterLink>                      
+        </div>
+    </div>
+</div>     
 </template>
 <script>
 
 </script>
 
 <style scoped>
+
 .header-text {
     font-family: HH;
-    font-size: 60px;  
+    font-size: 50px;  
     color: #313131; 
+}
+
+.main {
+    flex: 1 0 auto;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: top;
+    align-items:center;
+}
+
+.container {
+    margin-top: 20px;
+    margin-bottom: 30px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
 }
 </style>
