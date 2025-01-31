@@ -1,8 +1,8 @@
 <template> 
     <div class="main">
         <div class="container">
-            <div>
-                <span class="header-text"><i>DarkSurf.ru</i></span>
+            <div class="header-text">
+                <span><i>DarkSurf.ru</i></span>
             </div>
             <div class="nav">
                 <div>
@@ -35,7 +35,7 @@ export default {
 </script>
 
 <style scoped>
-*z {
+* {
     border: #00ff15 solid 1px;
 }
 
@@ -49,7 +49,7 @@ export default {
 }
 
 .container {
-    margin-top: -200px;
+    margin-top: -150px;
     width: 525px;
 }
 
@@ -76,11 +76,16 @@ export default {
     color: #313131; 
 }
 
+@media (max-height:400px ){
+    .container {
+        margin-top: 0px;
+    }
+}
+
 @media (max-width: 533px) {
     .container {
-        margin-top: -20%; 
+        margin-top: 0px;
         width: 345px;
-        text-align: center;
     }
     .nav {
         display: flex;
@@ -99,6 +104,12 @@ export default {
         text-align: center;
         width: 200px;
         font-size: 15px;
+    }
+}
+@media (max-width: 915px) {
+    .container {
+        margin-top: 0px;
+        width: 345px;
     }
 }
 @media (max-width: 320px) {
