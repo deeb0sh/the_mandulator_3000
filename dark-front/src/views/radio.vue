@@ -144,8 +144,8 @@ export default {
         width: 100%;
     }
     .container {
-        margin-top: 0px;
-        margin-bottom: 0px;
+        margin-top: 5px;
+        margin-bottom: 10px;
     }
     .header-text {
         font-size: 40px; 
@@ -159,7 +159,7 @@ export default {
         width: 40px;
     }
     .container {
-        margin-top: 0px;
+        margin-top: 5px;
     }
 }
 @media (max-width: 370px) {

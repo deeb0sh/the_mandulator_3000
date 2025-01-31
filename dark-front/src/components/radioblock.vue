@@ -128,13 +128,7 @@
 
 @media (max-width: 914px) {
     .block {
-        width: 180px;
-    }
-    .style {
-        font-size: 20px;
-    }
-    .action {
-        font-family: 20px;
+        width: 160px;
     }
     .info {
         font-size: 12px;
@@ -145,18 +139,17 @@
     .block {
         width: 136px;
     }
-    .style {
-        font-size: 20px;
-    }
-    .action {
-        font-size: 20px;
-    }
     .info {
         font-size: 10px;
         padding: 5px 5px 5px 0px;
     }
     .users {
         font-size: 9px;
+    }
+}
+@media (max-width: 407px) {
+    .block {
+        width: 133px;
     }
 }
 </style>
