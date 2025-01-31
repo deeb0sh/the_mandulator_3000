@@ -92,7 +92,7 @@ export default {
 }
 </script>
 <style scoped>
-* {
+*z {
     border: #ffc400 solid 1px;
 }
 

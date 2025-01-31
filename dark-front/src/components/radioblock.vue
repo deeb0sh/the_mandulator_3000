@@ -7,7 +7,7 @@
             <img src="../img/vinil.png" width="80px">
         </div>
         <div>
-            <span class="style action"><b>{{ StyleInfo }}</b></span>
+            <span class="action"><b>{{ StyleInfo }}</b></span>
             <div class="info">
                 {{ track }}
             </div>
@@ -71,7 +71,7 @@
     }
 </script>
 <style scoped>
-* {
+*z {
     border: #8c00ff solid 1px;
 }
 
@@ -79,7 +79,7 @@
     font-size: 20px;
 }
 
-.style.action  {
+.action  {
     font-size: 20px;
     text-shadow: 0 0 5px #1eff00;
 }
@@ -133,6 +133,9 @@
     .style {
         font-size: 15px;
     }
+    .action {
+        font-family: 15px;
+    }
     .info {
         font-size: 12px;
     }
@@ -143,6 +146,9 @@
         width: 136px;
     }
     .style {
+        font-size: 12px;
+    }
+    .action {
         font-size: 12px;
     }
     .info {
