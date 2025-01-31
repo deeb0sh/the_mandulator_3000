@@ -109,7 +109,6 @@ export default {
 @media (max-width: 915px) {
     .container {
         margin-top: 0px;
-        width: 345px;
     }
 }
 @media (max-width: 320px) {

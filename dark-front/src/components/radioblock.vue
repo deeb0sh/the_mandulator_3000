@@ -131,10 +131,10 @@
         width: 180px;
     }
     .style {
-        font-size: 15px;
+        font-size: 20px;
     }
     .action {
-        font-family: 15px;
+        font-family: 20px;
     }
     .info {
         font-size: 12px;
@@ -146,10 +146,10 @@
         width: 136px;
     }
     .style {
-        font-size: 12px;
+        font-size: 20px;
     }
     .action {
-        font-size: 12px;
+        font-size: 20px;
     }
     .info {
         font-size: 10px;
