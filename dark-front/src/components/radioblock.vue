@@ -71,7 +71,7 @@
     }
 </script>
 <style scoped>
-*z {
+* {
     border: #8c00ff solid 1px;
 }
 
@@ -122,8 +122,36 @@
     display: flex;
     flex-direction: column;
     justify-content: start;
-    width: 250px;
+    width: 230px;
     text-align: center;
+}
+
+@media (max-width: 914px) {
+    .block {
+        width: 180px;
+    }
+    .style {
+        font-size: 15px;
+    }
+    .info {
+        font-size: 12px;
+    }
+
+}
+@media (max-width: 550px) {
+    .block {
+        width: 136px;
+    }
+    .style {
+        font-size: 12px;
+    }
+    .info {
+        font-size: 10px;
+        padding: 5px 5px 5px 0px;
+    }
+    .users {
+        font-size: 9px;
+    }
 }
 </style>
   

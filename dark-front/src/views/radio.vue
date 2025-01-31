@@ -18,21 +18,22 @@
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Dub Techno" Style="dubtechno" v-on:click="SetStream('dubtechno')"/>
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Trance" Style="trance" v-on:click="SetStream('trance')"/>
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Deep Tech House" Style="deeptech" v-on:click="SetStream('deeptech')"/>
-            <RadioBlock v-bind:isAction="LastClick" StyleInfo="Ambient" Style="ambient" v-on:click="SetStream('ambient')"/>
-            <RadioBlock v-bind:isAction="LastClick" StyleInfo="Dub Step" Style="dubstep" v-on:click="SetStream('dubstep')"/>
+            <RadioBlock v-bind:isAction="LastClick" StyleInfo="Breakbeat Hardcore" Style="breakbeat" v-on:click="SetStream('breakbeat')"/>
+            <RadioBlock v-bind:isAction="LastClick" StyleInfo="IDM Breakcore" Style="breakcore" v-on:click="SetStream('breakcore')"/>
+            <RadioBlock v-bind:isAction="LastClick" StyleInfo="IDM" Style="idm" v-on:click="SetStream('idm')"/>
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Goa Psy Trance" Style="goa" v-on:click="SetStream('goa')"/>           
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="New Age" Style="newage" v-on:click="SetStream('newage')"/>
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Dub Techno Mix" Style="dubtechnomix" v-on:click="SetStream('dubtechnomix')"/>
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Electro" Style="electro" v-on:click="SetStream('electro')"/> 
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Electronic Styles" Style="electronic" v-on:click="SetStream('electronic')"/>
-            <RadioBlock v-bind:isAction="LastClick" StyleInfo="Breakbeat Hardcore" Style="breakbeat" v-on:click="SetStream('breakbeat')"/>
+            <RadioBlock v-bind:isAction="LastClick" StyleInfo="Ambient" Style="ambient" v-on:click="SetStream('ambient')"/>
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Breaks" Style="breaks" v-on:click="SetStream('breaks')"/> 
-            <RadioBlock v-bind:isAction="LastClick" StyleInfo="IDM Breakcore" Style="breakcore" v-on:click="SetStream('breakcore')"/>
+            <RadioBlock v-bind:isAction="LastClick" StyleInfo="Dub Step" Style="dubstep" v-on:click="SetStream('dubstep')"/>
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Dub" Style="dub" v-on:click="SetStream('dub')"/>
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Reggae" Style="reggae" v-on:click="SetStream('reggae')"/> 
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="DJ Pepe Collection" Style="djpepe" v-on:click="SetStream('djpepe')"/>
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Trip Hop Lounge" Style="triphop" v-on:click="SetStream('triphop')"/>
-            <RadioBlock v-bind:isAction="LastClick" StyleInfo="IDM" Style="idm" v-on:click="SetStream('idm')"/> 
+             
         </div>
         <div>
             <br><br><br>
@@ -91,7 +92,7 @@ export default {
 }
 </script>
 <style scoped>
-*z {
+* {
     border: #ffc400 solid 1px;
 }
 
@@ -132,7 +133,41 @@ export default {
 .header-text {
     font-family: HH;
     font-size: 50px;  
-    color: #313131;
-    
+    color: #313131; 
+}
+
+@media (max-width: 940px) {
+    img {
+        width: 70px;
+    }
+    .main {
+        width: 100%;
+    }
+    .container {
+        margin-top: 0px;
+        margin-bottom: 0px;
+    }
+    .header-text {
+        font-size: 40px; 
+    }
+}
+@media (max-width: 660px) {
+    .header-text {
+        font-size: 20px;  
+    }
+    img {
+        width: 40px;
+    }
+    .container {
+        margin-top: 0px;
+    }
+}
+@media (max-width: 370px) {
+    .header-text {
+        font-size: 16px;
+    }
+    img {
+        width: 35px;
+    }
 }
 </style>
