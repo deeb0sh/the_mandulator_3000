@@ -31,7 +31,6 @@
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Dub Step" Style="dubstep" v-on:click="SetStream('dubstep')"/>
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Dub" Style="dub" v-on:click="SetStream('dub')"/>
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Reggae" Style="reggae" v-on:click="SetStream('reggae')"/> 
-            <RadioBlock v-bind:isAction="LastClick" StyleInfo="DJ Pepe Collection" Style="djpepe" v-on:click="SetStream('djpepe')"/>
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Trip Hop Lounge" Style="triphop" v-on:click="SetStream('triphop')"/>
              
         </div>
@@ -73,7 +72,6 @@ export default {
                                     "breakcore": "https://amoris.sknt.ru/breakcore",
                                     "dub": "https://amoris.sknt.ru/dub",
                                     "reggae": "https://amoris.sknt.ru/reggae",
-                                    "djpepe": "https://amoris.sknt.ru/djpepe",
                                     "trance": "https://amoris.sknt.ru/trance",
                                     "idm": "https://amoris.sknt.ru/idm"
                         }
