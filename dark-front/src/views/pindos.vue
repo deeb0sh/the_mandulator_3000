@@ -7,42 +7,46 @@
         </div>
         <div class="nav">
             <RouterLink to="/radio"><img src="../img/logo_radio.png" width="70"></RouterLink>
-            <RouterLink to="/m3000"><img src="../img/logo_mand.png" width="70"></RouterLink>
+            <!-- <RouterLink to="/m3000"><img src="../img/logo_mand.png" width="70"></RouterLink> -->
+            <a href="#" @mouseover="OnMouseMSG('Мандулятор 3000')" @click="LoginShow()"><img src="../img/logo_mand.png" width="70"></a>
             <RouterLink to="/pindos"><img src="../img/logo_pindos.png" width="70"></RouterLink>                      
         </div>
     </div>
     <div>
-        <form @submit.prevent="setUrl()">
-            <input class="txt" type="text"  id="user" placeholder="url" v-model.trim="url">
-            <button class="btn inter"> Go </button>
-      </form>
-      <br>
-      <iframe src="https://darksurf.ru">
-
-      </iframe>
-      {{ data }}
+        <h1>Отложено</h1>
     </div>
+    <!-- <div>
+        <form @submit.prevent="">
+            <input class="txt" type="text" id="Url" placeholder="Url" v-model.trim="Url">
+            <button class="btn inter"> Go </button>
+        </form>
+      <br>
+    </div>
+    <iframe v-bind:srcdoc="data" style="width: 100%; height: 80vh; border: none;"></iframe> 
+      <p v-html="data"></p> -->
+      <Logmod ref="modal" />
 </div>     
 </template>
 <script>
 export default {
     data(){
         return {
-            data: "null"
+            data: ''
         };
     },
     methods: {
+        LoginShow() {
+                this.$refs.modal.show = true
+            },
         async setUrl() {
             const resp = await fetch(
-                '/api/login',{
-                    mode: 'no-cors',
+                '/api/proxy',{
+                    mode: 'cors',
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        "url": this.url
-                    })
+                    body: JSON.stringify({ "PostURL" : this.Url })
                 }
             )
             this.data = await resp.text()

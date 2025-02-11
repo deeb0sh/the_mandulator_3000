@@ -7,7 +7,8 @@
                 </div>
                 <div class="nav">
                     <RouterLink to="/radio"><img src="../img/logo_radio.png" width="70"></RouterLink>
-                    <RouterLink to="/m3000"><img src="../img/logo_mand.png" width="70"></RouterLink>
+                    <!-- <RouterLink to="/m3000"><img src="../img/logo_mand.png" width="70"></RouterLink> -->
+                    <a href="#" @mouseover="OnMouseMSG('Мандулятор 3000')" @click="LoginShow()"><img src="../img/logo_mand.png" width="70"></a>
                     <RouterLink to="/pindos"><img src="../img/logo_pindos.png" width="70"></RouterLink>                      
                 </div>
         </div>
@@ -32,10 +33,10 @@
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Dub" Style="dub" v-on:click="SetStream('dub')"/>
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Reggae" Style="reggae" v-on:click="SetStream('reggae')"/> 
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Trip Hop Lounge" Style="triphop" v-on:click="SetStream('triphop')"/>
-             
-        </div>
+         </div>
         <div>
             <br><br><br>
+            <Logmod ref="modal" />
         </div>
     </div>
     <Player v-bind:Source="url"/>
@@ -51,6 +52,9 @@ export default {
             };
     },
     methods: {
+            LoginShow() {
+                this.$refs.modal.show = true
+            },
             SetStream(tmp) {
                 if ((this.LastClick !== tmp) || (this.LastClick == '')) {
                         const StreamUrls = { 

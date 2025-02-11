@@ -10,12 +10,14 @@
                 </div>
                 <div class="nav2">
                     <RouterLink to="/radio" @mouseover="OnMouseMSG('Радио Anima Amoris')"><img src="../img/logo_radio.png" width="70"></RouterLink>
-                    <RouterLink to="/m3000" @mouseover="OnMouseMSG('Мандулятор 3000')"><img src="../img/logo_mand.png" width="70"></RouterLink>
+                    <!-- <RouterLink to="/m3000" @mouseover="OnMouseMSG('Мандулятор 3000')"><img src="../img/logo_mand.png" width="70"></RouterLink> -->
+                    <a href="#" @mouseover="OnMouseMSG('Мандулятор 3000')" @click="LoginShow()"><img src="../img/logo_mand.png" width="70"></a>
                     <RouterLink to="/pindos" @mouseover="OnMouseMSG('Окно к пиндосам')"><img src="../img/logo_pindos.png" width="70"></RouterLink>
                 </div>
             </div>
             <div class="msg">{{ msg }}</div>
         </div>
+        <Logmod ref="modal" />
     </div>
 </template>
 
@@ -29,6 +31,9 @@ export default {
     methods: {
         OnMouseMSG(x) {
             this.msg = x
+        },
+        LoginShow() {
+            this.$refs.modal.show = true
         }
     }
 }
