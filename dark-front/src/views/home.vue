@@ -34,6 +34,7 @@ export default {
         },
         LoginShow() {
             this.$refs.modal.show = true
+            document.documentElement.style.overflow = 'hidden'
         }
     }
 }

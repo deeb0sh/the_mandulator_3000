@@ -37,6 +37,7 @@ export default {
     methods: {
         LoginShow() {
                 this.$refs.modal.show = true
+                document.documentElement.style.overflow = 'hidden'
             },
         async setUrl() {
             const resp = await fetch(

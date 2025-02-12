@@ -33,6 +33,7 @@
         methods: {
             closeModal() {
                 this.show = false
+                document.documentElement.style.overflow = 'auto'
             }
         }
     }

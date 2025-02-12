@@ -54,6 +54,7 @@ export default {
     methods: {
             LoginShow() {
                 this.$refs.modal.show = true
+                document.documentElement.style.overflow = 'hidden'
             },
             SetStream(tmp) {
                 if ((this.LastClick !== tmp) || (this.LastClick == '')) {
