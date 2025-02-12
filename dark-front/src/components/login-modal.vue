@@ -38,9 +38,6 @@
     }
 </script>
 <style>
-*z {
-    border: #00ff15 solid 1px;
-}
 
 .modal-shadow {
     position: absolute;

@@ -16,7 +16,7 @@ export default {
 </script>
 
 <style scoped>
-z* {
+*z {
     border: red solid 1px;
 }
 

@@ -15,7 +15,7 @@
 </script>
 
 <style scoped>
-z* {
+*z {
     border: rgb(140, 0, 255) solid 1px;
 }
 .footer {
