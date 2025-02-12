@@ -36,7 +36,7 @@
          </div>
         <div>
             <br><br><br>
-            <Logmod ref="modal" />
+            <!-- <Logmod ref="modal" /> -->
         </div>
     </div>
     <Player v-bind:Source="url"/>

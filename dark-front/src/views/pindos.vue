@@ -24,7 +24,7 @@
     </div>
     <iframe v-bind:srcdoc="data" style="width: 100%; height: 80vh; border: none;"></iframe> 
       <p v-html="data"></p> -->
-      <Logmod ref="modal" />
+      <!-- <Logmod ref="modal" /> -->
 </div>     
 </template>
 <script>
