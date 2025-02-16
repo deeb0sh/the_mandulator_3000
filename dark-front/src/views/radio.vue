@@ -9,7 +9,7 @@
                     <RouterLink to="/radio"><img src="../img/logo_radio.png" width="70"></RouterLink>
                     <!-- <RouterLink to="/m3000"><img src="../img/logo_mand.png" width="70"></RouterLink> -->
                     <a href="#" @mouseover="OnMouseMSG('Мандулятор 3000')" @click="LoginShow()"><img src="../img/logo_mand.png" width="70"></a>
-                    <RouterLink to="/pindos"><img src="../img/logo_pindos.png" width="70"></RouterLink>                      
+                    <!-- <RouterLink to="/pindos"><img src="../img/logo_pindos.png" width="70"></RouterLink>                       -->
                 </div>
         </div>
         <div class="radio">

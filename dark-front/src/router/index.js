@@ -19,11 +19,11 @@ const router = createRouter({
       name: 'radio',
       component: () => import('../views/radio.vue'),
     },
-    {
-      path: '/pindos',
-      name: 'pindos',
-      component: () => import('../views/pindos.vue'),
-    }
+    // {
+    //   path: '/pindos',
+    //   name: 'pindos',
+    //   component: () => import('../views/pindos.vue'),
+    // }
   ],
 })
 
