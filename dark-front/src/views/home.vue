@@ -12,7 +12,7 @@
                     <RouterLink to="/radio" @mouseover="OnMouseMSG('Радио Anima Amoris')"><img src="../img/logo_radio.png" width="70"></RouterLink>
                     <!-- <RouterLink to="/m3000" @mouseover="OnMouseMSG('Мандулятор 3000')"><img src="../img/logo_mand.png" width="70"></RouterLink> -->
                     <a href="#" @mouseover="OnMouseMSG('Мандулятор 3000')" @click="LoginShow()"><img src="../img/logo_mand.png" width="70"></a>
-                    <a href="#" @mouseover="OnMouseMSG('-273,16')"><img src="../img/logo_zero.png" width="70"></a>
+                    <a href="#" @mouseover="OnMouseMSG('-273,16')"><img src="../img/logo_serp.png" width="70"></a>
                 </div>
             </div>
             <div class="msg">{{ msg }}</div>
@@ -24,7 +24,7 @@
 <script>
 export default {
     data(){
-        return {
+        return { 
             msg: "Расчудесный ресурс ❤️"
         };
     },
