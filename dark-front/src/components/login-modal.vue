@@ -8,12 +8,12 @@
             </div>
             <div>
                 <form @submit.prevent="setPostReg()">
-                      <input class="txt" type="text" id="user" placeholder="Логин" v-model.trim="user">
+                      <input class="txt" type="text" placeholder="Логин" v-model.trim="user">
                       <br>
-                      <input class="txt" type="password" id="password"  placeholder="Пароль" v-model.trim="password" autocomplete="no">
-                      <input class="txt" type="password" id="password2"  placeholder="Повторить пароль" v-model.trim="password2" autocomplete="no">
+                      <input class="txt" type="password" placeholder="Пароль" v-model.trim="password" autocomplete="no">
+                      <input class="txt" type="password" placeholder="Повторить пароль" v-model.trim="password2" autocomplete="no">
                       <br>
-                      <input class="txt" type="text" id="inCode" placeholder="Инвайт код" v-model.trim="inCode">
+                      <input class="txt" type="text" placeholder="Инвайт код" v-model.trim="inCode">
                       <br>
                       <center>
                             <button class="btn inter">Регистрация</button>
