@@ -53,7 +53,7 @@ export default {
     },
     methods: {
             LoginShow() {
-                this.$refs.modal.show = true
+                this.$refs.modal.showLogin = true
                 document.documentElement.style.overflow = 'hidden'
             },
             SetStream(tmp) {

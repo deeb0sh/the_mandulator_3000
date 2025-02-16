@@ -1,12 +1,39 @@
 <template>
-    <div v-if="show" class="modal-shadow">
-        <div class="modal">
+    <div v-if="showLogin" class="modal-login">
+    <!-- модальное окно Регистрация -->
+        <div v-if="showReg" class="modal">
             <div class="header">
-                <!-- <b>Мандулятор</b> -->
+                 <!-- <b>Регистрация</b>  -->
                 <img class="mand" src="../img/logo_mand.png" width="130"/>
             </div>
             <div>
-                <form @submit.prevent="setPost()">
+                <form @submit.prevent="setPostReg()">
+                      <input class="txt" type="text" id="user" placeholder="Логин" v-model.trim="user">
+                      <br>
+                      <input class="txt" type="password" id="password"  placeholder="Пароль" v-model.trim="password" autocomplete="no">
+                      <input class="txt" type="password" id="password2"  placeholder="Повторить пароль" v-model.trim="password2" autocomplete="no">
+                      <br>
+                      <input class="txt" type="text" id="inCode" placeholder="Инвайт код" v-model.trim="inCode">
+                      <br>
+                      <center>
+                            <button class="btn inter">Регистрация</button>
+                      </center>
+                </form>
+          </div><br>
+          <div>
+            <a href="#" @click="closeregForm()">Вход</a><br>
+            <a href="#" @click="closeModal()">Закрыть</a>
+          </div>    
+        </div>
+    
+    <!-- модальное окно Логин -->
+        <div v-else class="modal">
+            <div class="header">
+                <!-- <b>Логин</b>  -->
+                <img class="mand" src="../img/logo_mand.png" width="130"/>
+            </div>
+            <div>
+                <form @submit.prevent="setPostLogin()">
                       <input class="txt" type="text" id="user" placeholder="Логин" v-model.trim="user">
                       <input class="txt" type="password" id="password"  placeholder="Пароль" v-model.trim="password" autocomplete="no">
                       <br>
@@ -14,11 +41,11 @@
                             <button class="btn inter">Вход</button>
                       </center>
                 </form>
-          </div><br>
-          <div>
-            <a href="#">Регистрация</a><br>
-            <a href="#" @click="closeModal()">Закрыть</a>
-          </div>    
+            </div><br>
+            <div>
+                <a href="#" @click="regForm()">Регистрация</a><br>
+                <a href="#" @click="closeModal()">Закрыть</a>
+            </div>    
         </div>
     </div>
 </template>
@@ -27,20 +54,28 @@
         name: "ModalWindow",
         data() {
             return {
-                show: false
+                showLogin: false,
+                showReg: false
             }
         },
         methods: {
             closeModal() {
-                this.show = false
+                this.showLogin = false
+                this.showReg = false
                 document.documentElement.style.overflow = 'auto'
+            },
+            regForm() {
+                this.showReg = true
+            },
+            closeregForm() {
+                this.showReg = false
             }
         }
     }
 </script>
 <style>
 
-.modal-shadow {
+.modal-login {
     position: absolute;
     top: 0;
     left: 0;
