@@ -17,7 +17,7 @@
             </div>
             <div class="msg">{{ msg }}</div>
         </div>
-        <Logmod ref="modal" />
+        <Logmod ref="modal" />       
     </div>
 </template>
 

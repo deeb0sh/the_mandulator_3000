@@ -61,13 +61,13 @@ import { required, minLength } from '@vuelidate/validators'
                 passwd: ''
             })
 
-            const rules = {
+            const rulesLogin = {
                 user: { required, minLength: minLength(3)  },
                 passwd: { required, minLength: minLength(5) }
             }
 
-            const v$ = useVuelidate(rules, login)
-
+            const v$ = useVuelidate(rulesLogin, login)
+            
             return { login, v$ }
         },
         data() {
