@@ -10,8 +10,8 @@
                 <form @submit.prevent="setPostReg()">
                       <input class="txt" type="text" placeholder="Логин" v-model.trim="user">
                       <br>
-                      <input class="txt" type="password" placeholder="Пароль" v-model.trim="password" autocomplete="no">
-                      <input class="txt" type="password" placeholder="Повторить пароль" v-model.trim="password2" autocomplete="no">
+                      <input class="txt" type="password" placeholder="Пароль" v-model.trim="password.password" autocomplete="no">
+                      <input class="txt" type="password" placeholder="Повторить пароль" v-model.trim="password.confrim" autocomplete="no">
                       <br>
                       <input class="txt" type="text" placeholder="Инвайт код" v-model.trim="inCode">
                       <br>
@@ -34,8 +34,8 @@
             </div>
             <div>
                 <form @submit.prevent="setPostLogin()">
-                      <input class="txt" type="text" id="user" placeholder="Логин" v-model.trim="user">
-                      <input class="txt" type="password" id="password"  placeholder="Пароль" v-model.trim="password" autocomplete="no">
+                      <input class="txt" type="text" id="user" placeholder="Логин" v-model.trim="login.user">
+                      <input class="txt" type="password" id="password"  placeholder="Пароль" v-model.trim="login.passwd" autocomplete="no">
                       <br>
                       <center>
                             <button class="btn inter">Вход</button>
@@ -50,15 +50,48 @@
     </div>
 </template>
 <script>
+import { reactive } from 'vue'
+import { useVuelidate } from '@vuelidate/core'
+import { required, minLength } from '@vuelidate/validators'
+
     export default {
-        name: "ModalWindow",
+        setup() {
+            const login = reactive ({
+                user: '',
+                passwd: ''
+            })
+
+            const rules = {
+                user: { required, minLength: minLength(3)  },
+                passwd: { required, minLength: minLength(5) }
+            }
+
+            const v$ = useVuelidate(rules, login)
+
+            return { login, v$ }
+        },
         data() {
             return {
+                showReg: false,
                 showLogin: false,
-                showReg: false
+                passwd: '',
+                password: '',
+                user:'',
+                inCode: ''
             }
         },
         methods: {
+            setPostLogin() {
+                if (!this.v$.$invalid) {
+                    alert('логин улетел')
+                }
+                else {
+                    alert('ХУй')
+                }
+            },
+            setPostReg() {
+                    alert('регистрация улетела')
+            },
             closeModal() {
                 this.showLogin = false
                 this.showReg = false
