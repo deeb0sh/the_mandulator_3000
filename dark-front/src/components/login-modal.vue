@@ -8,13 +8,14 @@
             </div>
             <div>
                 <form @submit.prevent="setPostReg()">
-                      <input class="txt" type="text" placeholder="Логин" v-model.trim="user">
+                      <input class="txt" type="text" id="user2" placeholder="Логин" v-model.trim="forms.reg.user">
                       <br>
-                      <input class="txt" type="password" placeholder="Пароль" v-model.trim="password.password" autocomplete="no">
-                      <input class="txt" type="password" placeholder="Повторить пароль" v-model.trim="password.confrim" autocomplete="no">
+                      <input class="txt" type="password" id="passwd2" placeholder="Пароль" v-model.trim="forms.reg.passwd" autocomplete="no">
+                      <input class="txt" type="password" placeholder="Повторить пароль" v-model.trim="forms.reg.confrim" autocomplete="no">
                       <br>
-                      <input class="txt" type="text" placeholder="Инвайт код" v-model.trim="inCode">
+                      <input class="txt" type="text" placeholder="Инвайт код" v-model.trim="forms.reg.inCode">
                       <br>
+                      {{ v$.$invalid }}
                       <center>
                             <button class="btn inter">Регистрация</button>
                       </center>
@@ -34,9 +35,10 @@
             </div>
             <div>
                 <form @submit.prevent="setPostLogin()">
-                      <input class="txt" type="text" id="user" placeholder="Логин" v-model.trim="login.user">
-                      <input class="txt" type="password" id="password"  placeholder="Пароль" v-model.trim="login.passwd" autocomplete="no">
+                      <input class="txt" type="text" id="user1" placeholder="Логин" v-model.trim="forms.login.user" >
+                      <input class="txt" type="password" id="passwd1" placeholder="Пароль" v-model.trim="forms.login.passwd" autocomplete="no">
                       <br>
+                      {{ v$.$invalid }}
                       <center>
                             <button class="btn inter">Вход</button>
                       </center>
@@ -50,48 +52,82 @@
     </div>
 </template>
 <script>
-import { reactive } from 'vue'
+import { ref } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, minLength } from '@vuelidate/validators'
 
     export default {
         setup() {
-            const login = reactive ({
-                user: '',
-                passwd: ''
+            const forms = ref ({
+                login: {
+                    user: '',
+                    passwd: ''
+                },
+                reg: {
+                    user: '',
+                    passwd: '',
+                    confirm: '',
+                    inCode: ''
+                }
             })
 
-            const rulesLogin = {
-                user: { required, minLength: minLength(3)  },
-                passwd: { required, minLength: minLength(5) }
+            const rules = ref({
+                forms: {
+                    login: {
+                        user: { required, minLength: minLength(3)  },
+                        passwd: { required, minLength: minLength(5) }
+                    },
+                    reg: {
+                        user: { required, minLength: minLength(3)  },
+                        passwd: { required, minLength: minLength(5) },
+                        confrim: { required, minLength: minLength(5)  },
+                        inCode: { required, minLength: minLength(4) }
+                    }
+                }
+            })
+
+            const v$ = useVuelidate(rules, { forms })
+            
+            const setPostLogin = () => {
+                if (v$.value.forms.login.$invalid) {
+                    alert('хуй 1')
+                    return
+                }
+                alert('логин улетел')       
             }
 
-            const v$ = useVuelidate(rulesLogin, login)
-            
-            return { login, v$ }
+            const setPostReg = () => {
+                if (v$.value.forms.reg.$invalid) {
+                    alert('XYq 2')
+                    return
+                }
+                alert('регистрация ушла')
+            }
+
+            return { forms, v$, setPostLogin, setPostReg}
         },
         data() {
             return {
                 showReg: false,
                 showLogin: false,
-                passwd: '',
-                password: '',
-                user:'',
-                inCode: ''
+                // passwd: '',
+                // confirm: '',
+                // user:'',
+                // inCode: ''
             }
         },
         methods: {
-            setPostLogin() {
-                if (!this.v$.$invalid) {
-                    alert('логин улетел')
-                }
-                else {
-                    alert('ХУй')
-                }
-            },
-            setPostReg() {
-                    alert('регистрация улетела')
-            },
+            // setPostLogin() {
+            //     if (!this.$v.$invalid) {
+            //         alert('логин улетел')
+            //     }
+            //     else {
+            //         alert('ХУй')
+            //     }
+            // },
+            // setPostReg() {
+            //         alert('регистрация улетела')
+            // },
             closeModal() {
                 this.showLogin = false
                 this.showReg = false
