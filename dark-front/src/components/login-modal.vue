@@ -8,16 +8,15 @@
             </div>
             <div>
                 <form @submit.prevent="setPostReg()">
-                      <input class="txt" type="text" id="user2" placeholder="Логин" v-model.trim="forms.reg.user">
+                      <input class="txt" type="text" placeholder="Логин" v-model.trim="forms.reg.user">
                       <br>
-                      <input class="txt" type="password" id="passwd2" placeholder="Пароль" v-model.trim="forms.reg.passwd" autocomplete="no">
-                      <input class="txt" type="password" placeholder="Повторить пароль" v-model.trim="forms.reg.confrim" autocomplete="no">
+                      <input class="txt" type="password" id="password" placeholder="Пароль" v-model.trim="forms.reg.password" >
+                      <input class="txt" type="password" id="confirmPassword" placeholder="Повторить пароль" v-model.trim="forms.reg.confirmPassword" >
                       <br>
                       <input class="txt" type="text" placeholder="Инвайт код" v-model.trim="forms.reg.inCode">
                       <br>
-                      {{ v$.$invalid }}
                       <center>
-                            <button class="btn inter">Регистрация</button>
+                            <button class="btn inter" :disabled="v$.forms.reg.$invalid">Регистрация</button>
                       </center>
                 </form>
           </div><br>
@@ -35,12 +34,11 @@
             </div>
             <div>
                 <form @submit.prevent="setPostLogin()">
-                      <input class="txt" type="text" id="user1" placeholder="Логин" v-model.trim="forms.login.user" >
-                      <input class="txt" type="password" id="passwd1" placeholder="Пароль" v-model.trim="forms.login.passwd" autocomplete="no">
-                      <br>
-                      {{ v$.$invalid }}
+                      <input class="txt" type="text" placeholder="Логин" v-model.trim="forms.login.user">
+                      <input class="txt" type="password" placeholder="Пароль" v-model.trim="forms.login.passwd" autocomplete="no">
+                      <br><br>
                       <center>
-                            <button class="btn inter">Вход</button>
+                            <button class="btn inter" :disabled="v$.forms.login.$invalid">Вход</button>
                       </center>
                 </form>
             </div><br>
@@ -52,10 +50,13 @@
     </div>
 </template>
 <script>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
-import { required, minLength } from '@vuelidate/validators'
+import { required, minLength, sameAs, helpers } from '@vuelidate/validators'
 
+    const regexValid = helpers.regex(/^[a-zA-Z0-9_]+$/)
+
+       
     export default {
         setup() {
             const forms = ref ({
@@ -65,8 +66,8 @@ import { required, minLength } from '@vuelidate/validators'
                 },
                 reg: {
                     user: '',
-                    passwd: '',
-                    confirm: '',
+                    password: '',
+                    confirmPassword: '',
                     inCode: ''
                 }
             })
@@ -74,14 +75,14 @@ import { required, minLength } from '@vuelidate/validators'
             const rules = ref({
                 forms: {
                     login: {
-                        user: { required, minLength: minLength(3)  },
-                        passwd: { required, minLength: minLength(5) }
+                        user: { required, regexValid },
+                        passwd: { required, regexValid }
                     },
                     reg: {
-                        user: { required, minLength: minLength(3)  },
-                        passwd: { required, minLength: minLength(5) },
-                        confrim: { required, minLength: minLength(5)  },
-                        inCode: { required, minLength: minLength(4) }
+                        user: { required, regexValid, minLength: minLength(3)  },
+                        password: { required, regexValid, minLength: minLength(5) },
+                        confirmPassword: { required, regexValid, sameAs: sameAs(computed(() => forms.value.reg.password)) },
+                        inCode: { required, regexValid, minLength: minLength(4) }
                     }
                 }
             })
@@ -184,6 +185,9 @@ import { required, minLength } from '@vuelidate/validators'
 .inter {
     color: #ffffff;
     background-color: #313131;
+}
+button:disabled {
+    opacity: 0.5;
 }
 .txt {
     display: block;

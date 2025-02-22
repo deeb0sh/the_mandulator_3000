@@ -15,9 +15,10 @@
                     <a href="#" @mouseover="OnMouseMSG('-273,16')"><img src="../img/logo_serp.png" width="70"></a>
                 </div>
             </div>
-            <div class="msg">{{ msg }}</div>
+            <div class="msg" autofocus>{{ msg }}</div>
         </div>
-        <Logmod ref="modal" />       
+        <Logmod ref="modal" />
+
     </div>
 </template>
 
