@@ -15,9 +15,9 @@
                       <br>
                       <input class="txt" type="text" placeholder="Инвайт код" v-model.trim="forms.reg.inCode">
                       <br>
-                      <center>
+                      <div align="center">
                             <button class="btn inter" :disabled="v$.forms.reg.$invalid">Регистрация</button>
-                      </center>
+                      </div>
                 </form>
           </div><br>
           <div>
@@ -36,10 +36,10 @@
                 <form @submit.prevent="setPostLogin()">
                       <input class="txt" type="text" placeholder="Логин" v-model.trim="forms.login.user">
                       <input class="txt" type="password" placeholder="Пароль" v-model.trim="forms.login.passwd" autocomplete="no">
-                      <br><br>
-                      <center>
+                      <br>
+                      <div align="center">
                             <button class="btn inter" :disabled="v$.forms.login.$invalid">Вход</button>
-                      </center>
+                      </div>
                 </form>
             </div><br>
             <div>
