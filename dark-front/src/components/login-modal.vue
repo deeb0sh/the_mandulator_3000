@@ -14,12 +14,12 @@
             </div>
             <div>
                 <form @submit.prevent="setPostReg()">
-                        <input class="txt" type="text" placeholder="Логин" v-model.trim="forms.reg.user" @input="regTouched=true" @keyup="regTouched=true">
+                        <input class="txt" type="text" placeholder="Логин" v-model.trim="forms.reg.user" @input="regTouched=true" @keyup="regTouched=true" @compositionupdate="regTouched=true">
                         <br>
-                        <input class="txt" type="password" id="password" placeholder="Пароль" v-model.trim="forms.reg.password" @input="regTouched=true" @keyup="regTouched=true">
-                        <input class="txt" type="password" id="confirmPassword" placeholder="Повторить пароль" v-model.trim="forms.reg.confirmPassword" @input="regTouched=true" @keyup="regTouched=true">
+                        <input class="txt" type="password" id="password" placeholder="Пароль" v-model.trim="forms.reg.password" @input="userTouched=true" @keyup="regTouched=true" @compositionupdate="regTouched=true">
+                        <input class="txt" type="password" id="confirmPassword" placeholder="Повторить пароль" v-model.trim="forms.reg.confirmPassword" @input="regTouched=true" @keyup="regTouched=true" @compositionupdate="regTouched=true">
                         <br>
-                        <input class="txt" type="text" placeholder="Инвайт код" v-model.trim="forms.reg.inCode" @input="regTouched=true" @keyup="regTouched=true">
+                        <input class="txt" type="text" placeholder="Инвайт код" v-model.trim="forms.reg.inCode" @input="regTouched=true" @keyup="regTouched=true" @compositionupdate="regTouched=true">
                         <br>
                         <div align="center">
                             <button class="btn inter" :disabled="v$.forms.reg.$invalid">Регистрация</button>
@@ -44,8 +44,8 @@
             </div>
             <div>
                 <form @submit.prevent="setPostLogin()">
-                      <input class="txt" type="text" placeholder="Логин" v-model.trim="forms.login.user" @input="userTouched=true" @keyup="regTouched=true"> 
-                      <input class="txt" type="password" placeholder="Пароль" v-model.trim="forms.login.passwd" @input="userTouched=true" @keyup="regTouched=true" autocomplete="no">
+                      <input class="txt" type="text" placeholder="Логин" v-model.trim="forms.login.user" @input="userTouched=true" @keyup="userTouched=true" @compositionupdate="userTouched=true"> 
+                      <input class="txt" type="password" placeholder="Пароль" v-model.trim="forms.login.passwd" @input="userTouched=true" @keyup="userTouched=true" @compositionupdate="userTouched=true" autocomplete="no">
                       <br>
                       <div align="center">
                             <button class="btn inter" :disabled="v$.forms.login.$invalid">Вход</button>
