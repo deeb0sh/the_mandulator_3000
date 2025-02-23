@@ -6,18 +6,24 @@
                  <!-- <b>Регистрация</b>  -->
                 <img class="mand" src="../img/logo_mand.png" width="130"/>
             </div>
+            <div class="errorMsg" v-if="regTouched && v$.forms.reg.$invalid">
+                <p v-if="v$.forms.reg.user.regexValid.$invalid || v$.forms.reg.password.regexValid.$invalid || v$.forms.reg.confirmPassword.regexValid.$invalid || v$.forms.reg.inCode.regexValid.$invalid">Недопустимые сиволы. </p>
+                <p v-if="v$.forms.reg.user.maxLength.$invalid || v$.forms.reg.password.maxLength.$invalid || v$.forms.reg.confirmPassword.maxLength.$invalid || v$.forms.reg.inCode.maxLength.$invalid">Привышена длина. </p>
+                <p v-if="v$.forms.reg.confirmPassword.sameAs.$invalid">Пароли не совподают. </p>
+                <p v-if="v$.forms.reg.user.minLength.$invalid || v$.forms.reg.password.minLength.$invalid ||  v$.forms.reg.inCode.minLength.$invalid">Минимум 4 символа. </p>
+            </div>
             <div>
                 <form @submit.prevent="setPostReg()">
-                      <input class="txt" type="text" placeholder="Логин" v-model.trim="forms.reg.user">
-                      <br>
-                      <input class="txt" type="password" id="password" placeholder="Пароль" v-model.trim="forms.reg.password" >
-                      <input class="txt" type="password" id="confirmPassword" placeholder="Повторить пароль" v-model.trim="forms.reg.confirmPassword" >
-                      <br>
-                      <input class="txt" type="text" placeholder="Инвайт код" v-model.trim="forms.reg.inCode">
-                      <br>
-                      <div align="center">
+                        <input class="txt" type="text" placeholder="Логин" v-model.trim="forms.reg.user" @focus="regTouched=true">
+                        <br>
+                        <input class="txt" type="password" id="password" placeholder="Пароль" v-model.trim="forms.reg.password" @focus="regTouched=true">
+                        <input class="txt" type="password" id="confirmPassword" placeholder="Повторить пароль" v-model.trim="forms.reg.confirmPassword" @focus="regTouched=true">
+                        <br>
+                        <input class="txt" type="text" placeholder="Инвайт код" v-model.trim="forms.reg.inCode" @focus="regTouched=true">
+                        <br>
+                        <div align="center">
                             <button class="btn inter" :disabled="v$.forms.reg.$invalid">Регистрация</button>
-                      </div>
+                        </div>
                 </form>
           </div><br>
           <div>
@@ -32,10 +38,14 @@
                 <!-- <b>Логин</b>  -->
                 <img class="mand" src="../img/logo_mand.png" width="130"/>
             </div>
+            <div class="errorMsg" v-if="userTouched && v$.forms.login.user.regexValid.$invalid || v$.forms.login.passwd.regexValid.$invalid || v$.forms.login.user.maxLength.$invalid || v$.forms.login.passwd.maxLength.$invalid ">
+                <p v-if="v$.forms.login.user.regexValid.$invalid || v$.forms.login.passwd.regexValid.$invalid">Недопустимые сиволы. </p>
+                <p v-if="v$.forms.login.user.maxLength.$invalid || v$.forms.login.passwd.maxLength.$invalid">Привышена длина. </p>
+            </div>
             <div>
                 <form @submit.prevent="setPostLogin()">
-                      <input class="txt" type="text" placeholder="Логин" v-model.trim="forms.login.user">
-                      <input class="txt" type="password" placeholder="Пароль" v-model.trim="forms.login.passwd" autocomplete="no">
+                      <input class="txt" type="text" placeholder="Логин" v-model.trim="forms.login.user" @focus="userTouched=true">
+                      <input class="txt" type="password" placeholder="Пароль" v-model.trim="forms.login.passwd" @focus="userTouched=true" autocomplete="no">
                       <br>
                       <div align="center">
                             <button class="btn inter" :disabled="v$.forms.login.$invalid">Вход</button>
@@ -52,14 +62,17 @@
 <script>
 import { ref, computed } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
-import { required, minLength, sameAs, helpers } from '@vuelidate/validators'
+import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/validators'
 
     const regexValid = helpers.regex(/^[a-zA-Z0-9_]+$/)
 
-       
+    const userTouched = ref(false)
+    const regTouched = ref(false)
+
     export default {
         setup() {
-            const forms = ref ({
+   
+            const forms = ref({
                 login: {
                     user: '',
                     passwd: ''
@@ -75,14 +88,14 @@ import { required, minLength, sameAs, helpers } from '@vuelidate/validators'
             const rules = ref({
                 forms: {
                     login: {
-                        user: { required, regexValid },
-                        passwd: { required, regexValid }
+                        user: { required, regexValid, maxLength: maxLength(20) },
+                        passwd: { required, regexValid,maxLength: maxLength(20) }
                     },
                     reg: {
-                        user: { required, regexValid, minLength: minLength(3)  },
-                        password: { required, regexValid, minLength: minLength(5) },
-                        confirmPassword: { required, regexValid, sameAs: sameAs(computed(() => forms.value.reg.password)) },
-                        inCode: { required, regexValid, minLength: minLength(4) }
+                        user: { required, regexValid, minLength: minLength(4),maxLength: maxLength(20)  },
+                        password: { required, regexValid, minLength: minLength(4),maxLength: maxLength(20) },
+                        confirmPassword: { required, regexValid,maxLength: maxLength(20), sameAs: sameAs(computed(() => forms.value.reg.password)) },
+                        inCode: { required, regexValid, minLength: minLength(4), maxLength: maxLength(20) }
                     }
                 }
             })
@@ -105,30 +118,15 @@ import { required, minLength, sameAs, helpers } from '@vuelidate/validators'
                 alert('регистрация ушла')
             }
 
-            return { forms, v$, setPostLogin, setPostReg}
+            return { forms, v$, userTouched, regTouched, setPostLogin, setPostReg}
         },
         data() {
             return {
                 showReg: false,
                 showLogin: false,
-                // passwd: '',
-                // confirm: '',
-                // user:'',
-                // inCode: ''
             }
         },
         methods: {
-            // setPostLogin() {
-            //     if (!this.$v.$invalid) {
-            //         alert('логин улетел')
-            //     }
-            //     else {
-            //         alert('ХУй')
-            //     }
-            // },
-            // setPostReg() {
-            //         alert('регистрация улетела')
-            // },
             closeModal() {
                 this.showLogin = false
                 this.showReg = false
@@ -164,6 +162,18 @@ import { required, minLength, sameAs, helpers } from '@vuelidate/validators'
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+.errorMsg {
+    position:fixed; 
+    z-index: 999; 
+    margin-top:-50%;
+    color:#ffffff; 
+    font-size: 10px;
+    align-items: center;
+    text-align: center;
+    width: 185px;
+    background: #2a7449a1;
+    border-radius: 6px;
 }
 .btn {
     display: inline-block;
