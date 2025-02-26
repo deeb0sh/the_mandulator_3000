@@ -1,0 +1,17 @@
+services:
+  pg:
+    image: postgres:alpine
+    container_name: pg
+    restart: always
+    shm_size: 128mb
+    env_file:
+      - .env
+    # ==> file .env
+    # POSTGRES_PASSWORD=
+    # POSTGRES_USER=
+    # POSTGRES_DB=
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
