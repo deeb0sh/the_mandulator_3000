@@ -1,20 +1,35 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "postgres"
+  url      = env("DATABASE_URL") // .env ==> DATABASE_URL="хуёмаё"
 }
 
-model User {
-  id	Int	@id @default(autoincrement())
-  email	String	@unique
-  name	String?
+model users {
+  id String @id @default(uuid()) @unique
+  login String @unique
+  password String
+  salt String
+  roleID Int @default(0)
+  lastLoginAt DateTime?
+  createAt  DateTime @default(now())
+  updatedAt DateTime?
+  
 }
+
+// model inviteList {
+//   id	Int	@id @default(autoincrement())
+//   code	String	@unique
+//   authorID Int // --> user(id)
+//   createDate  DateTime @default(now())
+//   active  Boolean
+// }
+
+// model jwToken {
+//   id	Int	@id @default(autoincrement())
+//   ownerID Int // --> user(id)
+//   token String  @unique
+//   createDate DateTime @default(now())
+// }

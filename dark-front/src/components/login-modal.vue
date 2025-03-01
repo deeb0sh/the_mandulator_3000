@@ -6,20 +6,21 @@
                  <!-- <b>Регистрация</b>  -->
                 <img class="mand" src="../img/logo_mand.png" width="130"/>
             </div>
-            <div class="errorMsg" v-if="regTouched && v$.forms.reg.$invalid">
+            <div class="errorMsg" v-if="regTouched && v$.forms.reg.$invalid || onErr">
                 <p v-if="v$.forms.reg.user.regexValid.$invalid || v$.forms.reg.password.regexValid.$invalid || v$.forms.reg.confirmPassword.regexValid.$invalid || v$.forms.reg.inCode.regexValid.$invalid">Недопустимые сиволы. </p>
                 <p v-if="v$.forms.reg.user.maxLength.$invalid || v$.forms.reg.password.maxLength.$invalid || v$.forms.reg.confirmPassword.maxLength.$invalid || v$.forms.reg.inCode.maxLength.$invalid">Привышена длина. </p>
                 <p v-if="v$.forms.reg.confirmPassword.sameAs.$invalid">Пароли не совподают. </p>
                 <p v-if="v$.forms.reg.user.minLength.$invalid || v$.forms.reg.password.minLength.$invalid ||  v$.forms.reg.inCode.minLength.$invalid">Минимум 4 символа. </p>
+                <p v-if="onErr">{{ onErr }}</p>
             </div>
             <div>
                 <form @submit.prevent="setPostReg()">
-                        <input class="txt" type="text" placeholder="Логин" v-model.trim="forms.reg.user" @input="regTouched=true" @compositionupdate="regTouched=true">
+                        <input class="txt" type="text" placeholder="Логин" v-model.trim="forms.reg.user" @input="regTouched=true; onErr=null" @compositionupdate="regTouched=true; onErr=null">
                         <br>
-                        <input class="txt" type="password" id="password" placeholder="Пароль" v-model.trim="forms.reg.password" @input="userTouched=true" @compositionupdate="regTouched=true">
-                        <input class="txt" type="password" id="confirmPassword" placeholder="Повторить пароль" v-model.trim="forms.reg.confirmPassword" @input="regTouched=true"@compositionupdate="regTouched=true">
+                        <input class="txt" type="password" id="password" placeholder="Пароль" v-model.trim="forms.reg.password" @input="userTouched=true; onErr=null" @compositionupdate="regTouched=true; onErr=null">
+                        <input class="txt" type="password" id="confirmPassword" placeholder="Повторить пароль" v-model.trim="forms.reg.confirmPassword" @input="regTouched=true; onErr=null" @compositionupdate="regTouched=true; onErr=null">
                         <br>
-                        <input class="txt" type="text" placeholder="Инвайт код" v-model.trim="forms.reg.inCode" @input="regTouched=true" @compositionupdate="regTouched=true">
+                        <input class="txt" type="text" placeholder="Инвайт код" v-model.trim="forms.reg.inCode" @input="regTouched=true; onErr=null" @compositionupdate="regTouched=true; onErr=null">
                         <br>
                         <div align="center">
                             <button class="btn inter" :disabled="v$.forms.reg.$invalid">Регистрация</button>
@@ -38,14 +39,15 @@
                 <!-- <b>Логин</b>  -->
                 <img class="mand" src="../img/logo_mand.png" width="130"/>
             </div>
-            <div class="errorMsg" v-if="userTouched && v$.forms.login.user.regexValid.$invalid || v$.forms.login.passwd.regexValid.$invalid || v$.forms.login.user.maxLength.$invalid || v$.forms.login.passwd.maxLength.$invalid ">
+            <div class="errorMsg" v-if="userTouched && v$.forms.login.user.regexValid.$invalid || v$.forms.login.passwd.regexValid.$invalid || v$.forms.login.user.maxLength.$invalid || v$.forms.login.passwd.maxLength.$invalid || onErr">
                 <p v-if="v$.forms.login.user.regexValid.$invalid || v$.forms.login.passwd.regexValid.$invalid">Недопустимые сиволы. </p>
                 <p v-if="v$.forms.login.user.maxLength.$invalid || v$.forms.login.passwd.maxLength.$invalid">Привышена длина. </p>
+                <p v-if="onErr">{{ onErr }}</p>
             </div>
             <div>
                 <form @submit.prevent="setPostLogin()">
-                      <input class="txt" type="text" placeholder="Логин" v-model.trim="forms.login.user" @input="userTouched=true" @compositionupdate="userTouched=true"> 
-                      <input class="txt" type="password" placeholder="Пароль" v-model.trim="forms.login.passwd" @input="userTouched=true" @compositionupdate="userTouched=true" autocomplete="no">
+                      <input class="txt" type="text" placeholder="Логин" v-model.trim="forms.login.user" @input="userTouched=true; onErr=null" @compositionupdate="userTouched=true; onErr=null"> 
+                      <input class="txt" type="password" placeholder="Пароль" v-model.trim="forms.login.passwd" @input="userTouched=true; onErr=null" @compositionupdate="userTouched=true; onErr=null" autocomplete="no">
                       <br>
                       <div align="center">
                             <button class="btn inter" :disabled="v$.forms.login.$invalid">Вход</button>
@@ -64,14 +66,15 @@ import { ref, computed } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/validators'
 
-    const regexValid = helpers.regex(/^[a-zA-Z0-9_]+$/)
-
-    const userTouched = ref(false)
-    const regTouched = ref(false)
-
     export default {
         setup() {
-   
+            const regexValid = helpers.regex(/^[a-zA-Z0-9_]+$/)
+            const userTouched = ref(false)
+            const regTouched = ref(false)
+            const onErr = ref(null)
+            const showReg = ref(false)
+            const showLogin = ref(false)
+
             const forms = ref({
                 login: {
                     user: '',
@@ -110,20 +113,69 @@ import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/vali
                 alert('логин улетел')       
             }
 
-            const setPostReg = () => {
+            const setPostReg = async () => {
                 if (v$.value.forms.reg.$invalid) {
-                    alert('XYq 2')
-                    return
+                    return onErr.value = "Заполните форму корректно"
                 }
-                alert('регистрация ушла')
+                try {
+                    const req = await fetch('/auth/reg', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            user: forms.value.reg.user,
+                            password: forms.value.reg.password,
+                            inCode: forms.value.reg.inCode
+                        })
+                    })
+
+                    if (!req.ok) {
+                        onErr.value = `Ошибка! Статус: ${req.status}`
+                    } 
+
+                    const res = await req.json()
+                    
+                    if (res.message == "ok!") {
+                        onErr.value = "Регистрация прошла успешно"
+                        resetFormReg();
+                    }
+                    else {
+                        onErr.value = res.message;
+                    }    
+                }
+
+                catch(error) {
+                    onErr.value = "Ошибка! Сервер не отвечает"
+                }
             }
 
-            return { forms, v$, userTouched, regTouched, setPostLogin, setPostReg}
+            const resetFormReg = () => {
+                forms.value.reg.user = ''
+                forms.value.reg.password = ''
+                forms.value.reg.confirmPassword = ''
+                forms.value.reg.inCode = ''
+                showReg.value = false
+                showLogin.value = true
+            }
+            
+            const resetAll = () => {
+                forms.value.login.user = '';
+                forms.value.login.passwd = '';
+                forms.value.reg.user = '';
+                forms.value.reg.password = '';
+                forms.value.reg.confirmPassword = '';
+                forms.value.reg.inCode = '';
+                onErr.value = null;
+                userTouched.value = false;
+                regTouched.value = false;
+            };
+
+            return { forms, v$, userTouched, regTouched, setPostLogin, setPostReg, onErr, showReg, showLogin, resetAll  }
         },
         data() {
             return {
-                showReg: false,
-                showLogin: false,
+             
             }
         },
         methods: {
@@ -131,12 +183,26 @@ import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/vali
                 this.showLogin = false
                 this.showReg = false
                 document.documentElement.style.overflow = 'auto'
+                this.resetAll()
             },
             regForm() {
                 this.showReg = true
+                this.resetAll()
             },
             closeregForm() {
                 this.showReg = false
+                this.resetAll()
+            },
+            resetAll() {
+                forms.value.login.user = '';
+                forms.value.login.passwd = '';
+                forms.value.reg.user = '';
+                forms.value.reg.password = '';
+                forms.value.reg.confirmPassword = '';
+                forms.value.reg.inCode = '';
+                onErr.value = null; 
+                userTouched.value = false; 
+                regTouched.value = false; 
             }
         }
     }
@@ -168,7 +234,7 @@ import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/vali
     z-index: 999; 
     margin-top:-50%;
     color:#ffffff; 
-    font-size: 10px;
+    font-size: 11px;
     align-items: center;
     text-align: center;
     width: 185px;

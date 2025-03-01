@@ -1,5 +1,6 @@
 import Fastify from 'fastify'
 import { PrismaClient } from '@prisma/client'
+import { hashPasswd } from './utils/hashPasswd.js'
 
 const prisma = new  PrismaClient()
 const fastify = Fastify({
@@ -11,21 +12,44 @@ fastify.get('/auth', async (request, reply) => {
 })
 
 fastify.get('/auth/login', async (request, reply) => {
-    const users = await prisma.user.findMany()
+    const users = await prisma.users.findMany()
     return users;
 })
 
-fastify.post('/api/reg', async (request, reply) => {
-    const { email, name } = request.body
-    const newUser = await prisma.user.create({
-        data: {
-            email,
-            name,
+fastify.post('/auth/reg', async (request, reply) => {
+    const { user, password, inCode } = request.body
+    
+    const findUser = await prisma.users.findUnique({
+        where: {
+            login: user // Ищем пользователя по логину
         }
     })
-    return newUser
-})
 
+    if (findUser) { // если true воврящаем json с ошибкой
+        return JSON.stringify({ 
+            "message": "Пользователь с таким именем существует" 
+        })
+    }
+
+    const { hash, salt } = await hashPasswd(password) // получаем hash и salt 
+    try {
+        const newUser = await prisma.users.create({
+            data: { 
+               login: user,
+               password: hash,
+               salt: salt
+           }
+        })
+        return JSON.stringify({
+            "message": "ok!"
+        })
+    }
+    catch(err) {
+        return JSON.stringify({ 
+            "message": `Ошибка: ${err.message || err.toString()}`
+        })
+    }
+})
 
 const start = async () => {
     try {
