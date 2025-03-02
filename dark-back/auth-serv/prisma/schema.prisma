@@ -9,27 +9,39 @@ datasource db {
 
 model users {
   id String @id @default(uuid()) @unique
-  login String @unique
-  password String
-  salt String
-  roleID Int @default(0)
-  lastLoginAt DateTime?
-  createAt  DateTime @default(now())
-  updatedAt DateTime?
+  login String @unique 
+  password String // хэш пароля
+  salt String // соль
+  roleID Int @default(0) // id роли
+  lastLoginAt DateTime? // ластлогин 
+  createAt  DateTime @default(now()) //дата создания записи
+  updatedAt DateTime? // дата обновления записи
+  inCode  String? // Инвайткод который ввёл пользователь при регистрация(поле не привязано не к чему(фписдунах))
   
+  inviteLists inviteList[] // массив инвайткодов пользователя
+  token session[] // все сессии пользователя
 }
 
-// model inviteList {
-//   id	Int	@id @default(autoincrement())
-//   code	String	@unique
-//   authorID Int // --> user(id)
-//   createDate  DateTime @default(now())
-//   active  Boolean
-// }
+model inviteList {
+  id	Int	@id @default(autoincrement())
+  code	String @unique // инвайткод
+  authorID String // Внешний ключ, ссылающийся на users(id) Автор инвайта
+  used Int @default(0) // Количество раз использовно
+  limit Int @default(1) // сколько раз использовать
+  // inUserID String // id пользователя который зарегестрировался по инвайткоду
+  createAt  DateTime @default(now()) // дата создания записи
+  updateAt DateTime? // дата обновления записи
+  active  Boolean @default(true) // в работе или нет код
 
-// model jwToken {
-//   id	Int	@id @default(autoincrement())
-//   ownerID Int // --> user(id)
-//   token String  @unique
-//   createDate DateTime @default(now())
-// }
+  author    users    @relation(fields: [authorID], references: [id]) // Связь с моделью users по id
+}
+
+model session {
+  id	Int	@id @default(autoincrement())
+  ownerID String // --> users(id) 
+  token String? // jwt будет жить тут
+  createAt DateTime @default(now())
+  updateAt DateTime?
+
+  owner   users @relation(fields: [ownerID], references: [id]) // Связь с моделью users по id
+}

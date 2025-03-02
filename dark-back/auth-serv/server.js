@@ -16,40 +16,68 @@ fastify.get('/auth/login', async (request, reply) => {
     return users;
 })
 
+// ЛОГИНИЗАЦИЯ тут
+fastify.post('/auth/login', async (request, reply) => {
+    const { user, password } = request.body
+    return reply.status(200).send({ "message": `name-${user}, passworf-${password}` })
+})
+
+// РЕГИСТРАЦИЯ добавляеем пользователя в БД
 fastify.post('/auth/reg', async (request, reply) => {
     const { user, password, inCode } = request.body
-    
-    const findUser = await prisma.users.findUnique({
+    // нужно проверить входящие данные 
+
+    const checkInCode = await prisma.inviteList.findFirst({
         where: {
-            login: user // Ищем пользователя по логину
+            code: {
+                equals: inCode // проверяем инвайт-код с учётом регистра
+            },
+            active: true
         }
     })
 
-    if (findUser) { // если true воврящаем json с ошибкой
-        return JSON.stringify({ 
-            "message": "Пользователь с таким именем существует" 
-        })
+    if (!checkInCode) {
+        return reply.status(400).send({ "message": "инвайт-кода не существует" })
     }
 
-    const { hash, salt } = await hashPasswd(password) // получаем hash и salt 
+    const checkLogin = await prisma.users.findFirst({
+        where: {
+            login: {
+                equals: user.toLowerCase(), // проверяем логины пердварительно переведя символы в нижний регистр
+                mode: 'insensitive'
+            }
+        }
+    })
+
+    if (checkLogin) { // если true воврящаем json с ошибкой
+        return reply.status(400).send({ "message": "Пользователь с таким именем существует" })
+    }
+
+    const { hash, salt } = await hashPasswd(password) // получаем hash и salt (соль и спайс)
     try {
         const newUser = await prisma.users.create({
             data: { 
                login: user,
                password: hash,
-               salt: salt
+               salt: salt,
+               inCode: inCode
            }
         })
-        return JSON.stringify({
-            "message": "ok!"
-        })
+        return reply.status(200).send({ "message": "ok!" })
+        // сюда пишем alter update incode
     }
     catch(err) {
-        return JSON.stringify({ 
-            "message": `Ошибка: ${err.message || err.toString()}`
-        })
+        return reply.status(500).send({ "message": `Ошибка: ${err.message || err.toString()}` })
     }
 })
+
+
+
+
+
+
+
+
 
 const start = async () => {
     try {

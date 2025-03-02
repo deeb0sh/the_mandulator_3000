@@ -105,12 +105,40 @@ import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/vali
 
             const v$ = useVuelidate(rules, { forms })
             
-            const setPostLogin = () => {
+            const setPostLogin = async () => {
                 if (v$.value.forms.login.$invalid) {
-                    alert('хуй 1')
-                    return
+                    return onErr.value = "Заполните форму корректно"
                 }
-                alert('логин улетел')       
+                try {
+                    const req = await fetch('/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            user: forms.value.login.user,
+                            password: forms.value.login.passwd
+                        })
+                    })
+
+                    if (!req.ok) {
+                        onErr.value = `Ошибка! Статус: ${req.status}`
+                    } 
+
+                    const res = await req.json()
+                    
+                    if (res.message == "ok!") {
+                        onErr.value = "Вход ..."
+                        resetFormReg();
+                    }
+                    else {
+                        onErr.value = res.message;
+                    }    
+                }
+                catch {
+                    onErr.value = "Ошибка! Сервер не отвечает"  
+                }
+                
             }
 
             const setPostReg = async () => {
