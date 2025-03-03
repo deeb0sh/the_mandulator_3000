@@ -1,18 +1,20 @@
 import Fastify from 'fastify'
 import { PrismaClient } from '@prisma/client'
-import { hashPasswd } from './utils/hashPasswd.js'
-import { regValid } from './schemas/regvalid.js'
+import { hashPasswd, verifyPasswd } from './utils/hashPasswd.js'
+import { regValid } from './schemas/regvalid.js' // схема валидации
+import ajvErrors from 'ajv-errors' // еррор-плагин
 
 const prisma = new  PrismaClient()
 const fastify = Fastify({
     logger: true,
     ajv: {
         customOptions: {
+            allErrors: true,
             $data: true
-        }
+        },
+        plugins: [ajvErrors]
     }
 })
-
 
 // ЛОГИНИЗАЦИЯ тут
 fastify.post('/auth/login', async (request, reply) => {
