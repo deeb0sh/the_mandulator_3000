@@ -154,6 +154,7 @@ import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/vali
                         body: JSON.stringify({
                             user: forms.value.reg.user,
                             password: forms.value.reg.password,
+                            confirmPassword: forms.value.reg.confirmPassword, 
                             inCode: forms.value.reg.inCode
                         })
                     })
@@ -165,7 +166,7 @@ import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/vali
                     const res = await req.json()
                     
                     if (res.message == "ok!") {
-                        onErr.value = "Регистрация прошла успешно"
+                        onErr.value = "Пользователь успешно зарегистрирован"
                         resetFormReg();
                     }
                     else {

@@ -16,10 +16,9 @@ model users {
   lastLoginAt DateTime? // ластлогин 
   createAt  DateTime @default(now()) //дата создания записи
   updatedAt DateTime? // дата обновления записи
-  inCode  String? // Инвайткод который ввёл пользователь при регистрация(поле не привязано не к чему(фписдунах))
-  
+
   inviteLists inviteList[] // массив инвайткодов пользователя
-  token session[] // все сессии пользователя
+  sessions session[] // все сессии пользователя
 }
 
 model inviteList {
@@ -28,7 +27,6 @@ model inviteList {
   authorID String // Внешний ключ, ссылающийся на users(id) Автор инвайта
   used Int @default(0) // Количество раз использовно
   limit Int @default(1) // сколько раз использовать
-  // inUserID String // id пользователя который зарегестрировался по инвайткоду
   createAt  DateTime @default(now()) // дата создания записи
   updateAt DateTime? // дата обновления записи
   active  Boolean @default(true) // в работе или нет код
