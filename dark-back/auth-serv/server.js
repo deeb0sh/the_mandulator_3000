@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client'
 import { hashPasswd, verifyPasswd } from './utils/hashPasswd.js'
 import { regValid } from './schemas/regvalid.js' // схема валидации
 import ajvErrors from 'ajv-errors' // еррор-плагин
+import cors from '@fastify/cors'
 
 const prisma = new  PrismaClient()
 const fastify = Fastify({
@@ -14,6 +15,17 @@ const fastify = Fastify({
         },
         plugins: [ajvErrors]
     }
+})
+
+fastify.register(cors,{ // залупа
+    origin: false // примаем запросы отовсюду
+    //methods: ['GET', 'POST'],
+    //allowedHeaders: ['Content-Type', 'Authorization'],
+    //credentials: true,
+})
+
+fastify.get('/', async (request, reply) => {
+    reply.send({ message : 'CORS'})
 })
 
 // ЛОГИНИЗАЦИЯ тут
@@ -77,26 +89,28 @@ fastify.post('/auth/reg',{
             })
 
             const checkLimit = () => {
-                if (inv.used >= inv.limit) {
-                    return true
-                } 
-                else {
-                    return false
-                }
+                return inv.used < (inv.limit - 1);
             }
-
-            await prisma.inviteList.update({
-                where: {
-                    code: inCode // находим исаользованый инвайт-код в таблице
-                },
-                data: {
-                    used: {
-                        increment: 1 // увечиливаем значение поля used на 1
+            
+                       
+            if (checkLimit) {
+                await prisma.inviteList.update({
+                    where: {
+                        code: inCode, // находим исаользованый инвайт-код в таблице
+                        active: true
                     },
-                    updateAt: new Date(), // обновили дату updateAt
-                    active: checkLimit? false : inv.active // если checkLimit = true тогда поле active
-                }
-            })
+                    data: {
+                        used: {
+                            increment: 1 // увечиливаем значение поля used на 1
+                        },
+                        updateAt: new Date(), // обновили дату updateAt
+                        active: checkLimit() ? inv.active: false // если checkLimit = true тогда поле active
+                    }
+                })
+            } 
+        
+            console.log(inv.used, inv.limit, checkLimit())
+            
             return reply.status(201).send({ "message": "ok!" })
         }
         catch(err) {
