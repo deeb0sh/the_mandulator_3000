@@ -18,8 +18,8 @@ const fastify = Fastify({
 })
 
 fastify.register(cors,{ // залупа
-    origin: false // примаем запросы отовсюду
-    //methods: ['GET', 'POST'],
+    origin: false, // примаем запросы отовсюду
+    methods: ['GET', 'POST'],
     //allowedHeaders: ['Content-Type', 'Authorization'],
     //credentials: true,
 })
@@ -31,7 +31,7 @@ fastify.get('/', async (request, reply) => {
 // ЛОГИНИЗАЦИЯ тут
 fastify.post('/auth/login', async (request, reply) => {
     const { user, password } = request.body
-    return reply.status(200).send({ "message": `name-${user}, passworf-${password}` })
+    return reply.status(200).send({ message: `name-${user}, passworf-${password}` })
     })
 
 // РЕГИСТРАЦИЯ добавляеем пользователя в БД
@@ -54,7 +54,7 @@ fastify.post('/auth/reg',{
         })
 
         if (!checkInCode) {
-            return reply.status(400).send({ "message": "инвайт-код устарел или его не существует" })
+            return reply.status(400).send({ message: "инвайт-код устарел или его не существует" })
         }
 
         const checkLogin = await prisma.users.findFirst({
@@ -67,7 +67,7 @@ fastify.post('/auth/reg',{
         })
 
         if (checkLogin) { // если true воврящаем json с ошибкой
-            return reply.status(400).send({ "message": "Пользователь с таким именем существует" })
+            return reply.status(400).send({ message: "Пользователь с таким именем существует" })
         }
 
         const { hash, salt } = await hashPasswd(password) // получаем hash и salt (соль и спайс)
@@ -108,13 +108,11 @@ fastify.post('/auth/reg',{
                     }
                 })
             } 
-        
-            console.log(inv.used, inv.limit, checkLimit())
             
-            return reply.status(201).send({ "message": "ok!" })
+            return reply.status(201).send({ message: "ok!" })
         }
         catch(err) {
-            return reply.status(500).send({ "message": `Ошибка: ${err.message || err.toString()}` })
+            return reply.status(500).send({ message: `Ошибка: ${err.message || err.toString()}` })
         }
     })
 

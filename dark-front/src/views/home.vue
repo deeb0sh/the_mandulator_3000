@@ -34,8 +34,9 @@ export default {
             this.msg = x
         },
         LoginShow() {
-            this.$refs.modal.showLogin = true
+            //this.$refs.modal.showLogin = true
             document.documentElement.style.overflow = 'hidden'
+            this.$refs.modal.openLogin() // вызываем функцию openLogin() в компоненте login-modal.vue(ref=modal)
         }
     }
 }

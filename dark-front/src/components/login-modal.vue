@@ -15,12 +15,12 @@
             </div>
             <div>
                 <form @submit.prevent="setPostReg()">
-                        <input class="txt" type="text" placeholder="Логин" v-model.trim="forms.reg.user" @input="regTouched=true; onErr=null" @compositionupdate="regTouched=true; onErr=null">
+                        <input ref="userRegForm" class="txt" type="text" placeholder="Логин" v-model.trim="forms.reg.user" @input="regTouched=true; onErr=null" @compositionupdate="regTouched=true; onErr=null" />
                         <br>
-                        <input class="txt" type="password" id="password" placeholder="Пароль" v-model.trim="forms.reg.password" @input="userTouched=true; onErr=null" @compositionupdate="regTouched=true; onErr=null">
-                        <input class="txt" type="password" id="confirmPassword" placeholder="Повторить пароль" v-model.trim="forms.reg.confirmPassword" @input="regTouched=true; onErr=null" @compositionupdate="regTouched=true; onErr=null">
+                        <input class="txt" type="password" id="password" placeholder="Пароль" v-model.trim="forms.reg.password" @input="userTouched=true; onErr=null" @compositionupdate="regTouched=true; onErr=null" />
+                        <input class="txt" type="password" id="confirmPassword" placeholder="Повторить пароль" v-model.trim="forms.reg.confirmPassword" @input="regTouched=true; onErr=null" @compositionupdate="regTouched=true; onErr=null" />
                         <br>
-                        <input class="txt" type="text" placeholder="Инвайт код" v-model.trim="forms.reg.inCode" @input="regTouched=true; onErr=null" @compositionupdate="regTouched=true; onErr=null">
+                        <input class="txt" type="text" placeholder="Инвайт код" v-model.trim="forms.reg.inCode" @input="regTouched=true; onErr=null" @compositionupdate="regTouched=true; onErr=null" />
                         <br>
                         <div align="center">
                             <button class="btn inter" :disabled="v$.forms.reg.$invalid">Регистрация</button>
@@ -39,15 +39,15 @@
                 <!-- <b>Логин</b>  -->
                 <img class="mand" src="../img/logo_mand.png" width="130"/>
             </div>
-            <div class="errorMsg" v-if="userTouched && v$.forms.login.user.regexValid.$invalid || v$.forms.login.passwd.regexValid.$invalid || v$.forms.login.user.maxLength.$invalid || v$.forms.login.passwd.maxLength.$invalid || onErr">
+            <div class="errorMsg" v-if="userTouched && v$.forms.login.user.regexValid.$invalid || v$.forms.login.passwd.regexValid.$invalid || v$.forms.login.user.maxLength.$invalid || v$.forms.login.passwd.maxLength.$invalid || onErr" >
                 <p v-if="v$.forms.login.user.regexValid.$invalid || v$.forms.login.passwd.regexValid.$invalid">Недопустимые сиволы. </p>
                 <p v-if="v$.forms.login.user.maxLength.$invalid || v$.forms.login.passwd.maxLength.$invalid">Привышена длина. </p>
                 <p v-if="onErr">{{ onErr }}</p>
             </div>
             <div>
                 <form @submit.prevent="setPostLogin()">
-                      <input class="txt" type="text" placeholder="Логин" v-model.trim="forms.login.user" @input="userTouched=true; onErr=null" @compositionupdate="userTouched=true; onErr=null"> 
-                      <input class="txt" type="password" placeholder="Пароль" v-model.trim="forms.login.passwd" @input="userTouched=true; onErr=null" @compositionupdate="userTouched=true; onErr=null" autocomplete="no">
+                      <input ref="userLoginForm" class="txt" type="text" placeholder="Логин" v-model.trim="forms.login.user" @input="userTouched=true; onErr=null" @compositionupdate="userTouched=true; onErr=null" /> 
+                      <input class="txt" type="password" placeholder="Пароль" v-model.trim="forms.login.passwd" @input="userTouched=true; onErr=null" @compositionupdate="userTouched=true; onErr=null" autocomplete="no" />
                       <br>
                       <div align="center">
                             <button class="btn inter" :disabled="v$.forms.login.$invalid">Вход</button>
@@ -62,7 +62,7 @@
     </div>
 </template>
 <script>
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/validators'
 
@@ -74,6 +74,7 @@ import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/vali
             const onErr = ref(null)
             const showReg = ref(false)
             const showLogin = ref(false)
+            const userLoginForm = ref(null); // Создаем ref для доступа к DOM-элементу
 
             const forms = ref({
                 login: {
@@ -106,6 +107,7 @@ import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/vali
             const v$ = useVuelidate(rules, { forms })
             
             const setPostLogin = async () => {
+                // отправка логин формы
                 if (v$.value.forms.login.$invalid) {
                     return onErr.value = "Заполните форму корректно"
                 }
@@ -129,7 +131,7 @@ import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/vali
                     
                     if (res.message == "ok!") {
                         onErr.value = "Вход ..."
-                        resetFormReg();
+                        resetFormReg()
                     }
                     else {
                         onErr.value = res.message;
@@ -140,7 +142,7 @@ import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/vali
                 }
                 
             }
-
+            // отправка рег-формы
             const setPostReg = async () => {
                 if (v$.value.forms.reg.$invalid) {
                     return onErr.value = "Заполните форму корректно"
@@ -167,7 +169,7 @@ import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/vali
                     
                     if (res.message == "ok!") {
                         onErr.value = "Пользователь успешно зарегистрирован"
-                        resetFormReg();
+                        resetFormReg()
                     }
                     else {
                         onErr.value = res.message;
@@ -186,26 +188,32 @@ import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/vali
                 forms.value.reg.inCode = ''
                 showReg.value = false
                 showLogin.value = true
+                nextTick(() => {
+                            userLoginForm.value?.focus() // после сброса фор
+                        })
             }
             
             const resetAll = () => {
-                forms.value.login.user = '';
-                forms.value.login.passwd = '';
-                forms.value.reg.user = '';
-                forms.value.reg.password = '';
-                forms.value.reg.confirmPassword = '';
-                forms.value.reg.inCode = '';
-                onErr.value = null;
-                userTouched.value = false;
-                regTouched.value = false;
-            };
+                forms.value.login.user = ''
+                forms.value.login.passwd = ''
+                forms.value.reg.user = ''
+                forms.value.reg.password = ''
+                forms.value.reg.confirmPassword = ''
+                forms.value.reg.inCode = ''
+                onErr.value = null
+                userTouched.value = false
+                regTouched.value = false
+            }
 
-            return { forms, v$, userTouched, regTouched, setPostLogin, setPostReg, onErr, showReg, showLogin, resetAll  }
+            return { forms, v$, userTouched, regTouched, setPostLogin, setPostReg, onErr, showReg, showLogin, resetAll, userLoginForm }
         },
         data() {
             return {
-             
+                // ...
             }
+        },
+        mounted() {
+            // ...
         },
         methods: {
             closeModal() {
@@ -217,22 +225,40 @@ import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/vali
             regForm() {
                 this.showReg = true
                 this.resetAll()
+                
+                this.$nextTick(() => {
+                    this.$refs.userRegForm.focus() // установка курсорва на поле ЛОГИН
+                })
             },
             closeregForm() {
                 this.showReg = false
                 this.resetAll()
+
+                this.$nextTick(() => {
+                    this.$refs.userLoginForm.focus() // установка курсорва на поле ЛОГИН
+                })
             },
             resetAll() {
-                forms.value.login.user = '';
-                forms.value.login.passwd = '';
-                forms.value.reg.user = '';
-                forms.value.reg.password = '';
-                forms.value.reg.confirmPassword = '';
-                forms.value.reg.inCode = '';
-                onErr.value = null; 
-                userTouched.value = false; 
-                regTouched.value = false; 
+                forms.value.login.user = ''
+                forms.value.login.passwd = ''
+                forms.value.reg.user = ''
+                forms.value.reg.password = ''
+                forms.value.reg.confirmPassword = ''
+                forms.value.reg.inCode = ''
+                onErr.value = null
+                userTouched.value = false
+                regTouched.value = false
+            },
+            openLogin() {
+                this.showLogin = true // показываем модальное окно
+                this.setFocus()
+            },
+            setFocus() {
+                this.$nextTick(() => {
+                    this.$refs.userLoginForm.focus()
+                })
             }
+
         }
     }
 </script>
