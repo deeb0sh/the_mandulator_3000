@@ -21,15 +21,17 @@ export default async function loginApi(fastify) {
         })
 
         if (!checkUser) {
-            reply.status(400).send({ message: "пользователь не найден" })
+            return reply.status(400).send({ message: "пользователь не найден" })
         }
 
         const checkPasswd = await verifyPasswd(password, checkUser.password , checkUser.salt)
         
         if (!checkPasswd) {
-            reply.status(400).send({ message: "пароль не верный" })
+            return reply.status(400).send({ message: "пароль не верный" })
         }
 
-        reply.status(200).send({ message: `ok..` })
+        // обвновить дату lfcn
+
+        return reply.status(200).send({ message: `ok..` })
     })
 }

@@ -21,7 +21,7 @@ export default async function regApi(fastify) {
             })
     
             if (!checkInCode) {
-                reply.status(400).send({ message: "инвайт-код устарел или его не существует" })
+                return reply.status(400).send({ message: "инвайт-код устарел или его не существует" })
             }
     
             const checkLogin = await fastify.prisma.users.findFirst({
@@ -34,7 +34,7 @@ export default async function regApi(fastify) {
             })
     
             if (checkLogin) { // если true воврящаем json с ошибкой
-                reply.status(400).send({ message: "Пользователь с таким именем существует" })
+                return reply.status(400).send({ message: "Пользователь с таким именем существует" })
             }
     
             const { hash, salt } = await hashPasswd(password) // получаем hash и salt (соль и спайс)
@@ -75,10 +75,10 @@ export default async function regApi(fastify) {
                     })
                 } 
                 
-                reply.status(201).send({ message: "ok!" })
+                return reply.status(201).send({ message: "ok!" })
             }
             catch(err) {
-                reply.status(500).send({ message: `Ошибка: ${err.message || err.toString()}` })
+                return reply.status(500).send({ message: `Ошибка: ${err.message || err.toString()}` })
             }
         })
     
