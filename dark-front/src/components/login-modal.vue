@@ -68,12 +68,13 @@ import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/vali
 
     export default {
         setup() {
-            const regexValid = helpers.regex(/^[a-zA-Z0-9_]+$/)
+            const regexValid = ref(helpers.regex(/^[a-zA-Z0-9_]+$/))
             const userTouched = ref(false)
             const regTouched = ref(false)
             const onErr = ref(null)
             const showReg = ref(false)
             const showLogin = ref(false)
+            
             const userLoginForm = ref(null); // Создаем ref для доступа к DOM-элементу
 
             const forms = ref({
@@ -235,10 +236,10 @@ import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/vali
                 this.resetAll()
 
                 this.$nextTick(() => {
-                    this.$refs.userLoginForm.focus() // установка курсорва на поле ЛОГИН
+                    this.$refs.userLoginForm.focus() // установка курсорва на поле ЛОГИН 
                 })
             },
-            resetAll() {
+            resetAll() {  // resetAll() вызывается в setup() 
                 forms.value.login.user = ''
                 forms.value.login.passwd = ''
                 forms.value.reg.user = ''
@@ -246,16 +247,13 @@ import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/vali
                 forms.value.reg.confirmPassword = ''
                 forms.value.reg.inCode = ''
                 onErr.value = null
-                userTouched.value = false
+                userTouched.value = false 
                 regTouched.value = false
             },
             openLogin() {
                 this.showLogin = true // показываем модальное окно
-                this.setFocus()
-            },
-            setFocus() {
-                this.$nextTick(() => {
-                    this.$refs.userLoginForm.focus()
+                this.$nextTick(() => {  
+                    this.$refs.userLoginForm.focus() // после редренига ДОМ устанаилваем фокус на логин
                 })
             }
 
