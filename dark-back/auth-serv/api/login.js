@@ -10,18 +10,26 @@ export default async function loginApi(fastify) {
     async (request, reply) => {
         const { user, password } = request.body
 
-        const userBase = await fastify.prisma.users.findUnique({
+        const checkUser = await fastify.prisma.users.findUnique({
             where: {
                 login: user
+            },
+            select: {
+                password: true,
+                salt: true
             }
         })
 
-        if (!userBase) {
+        if (!checkUser) {
             reply.status(400).send({ message: "пользователь не найден" })
         }
 
-                //const auth = await verifyPasswd(passwd, hash, salt)
+        const checkPasswd = await verifyPasswd(password, checkUser.password , checkUser.salt)
+        
+        if (!checkPasswd) {
+            reply.status(400).send({ message: "пароль не верный" })
+        }
 
-        reply.status(200).send({ message: `name-${userBase}` })
+        reply.status(200).send({ message: `ok..` })
     })
 }
