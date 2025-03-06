@@ -1,8 +1,12 @@
 import { verifyPasswd } from '../utils/hashPasswd.js'
 import { loginValid } from '../schemas/loginvalid.js'
-import { onUpdated } from 'vue'
+import jwt from '@fastify/jwt'
 
 export default async function loginApi(fastify) {
+    fastify.register(jwt,{ // регистарция jwt плагина
+        secret: 'SuperSecretYopta' // секрет пометсить в бд или env
+    })
+
     fastify.post('/auth/login',{
         schema: {
             body: loginValid  // валидация 
@@ -40,7 +44,10 @@ export default async function loginApi(fastify) {
                 updatedAt: new Date()
             }
         })
-
-        return reply.status(200).send({ message: `ok!` })
+        const token = fastify.jwt.sign({ user, expiresIn: '48h'})
+        return reply.status(200).send({ 
+            message: 'ok!', 
+            token: `${token}` 
+        })
     })
 }
