@@ -1,5 +1,6 @@
 import { verifyPasswd } from '../utils/hashPasswd.js'
 import { loginValid } from '../schemas/loginvalid.js'
+import { onUpdated } from 'vue'
 
 export default async function loginApi(fastify) {
     fastify.post('/auth/login',{
@@ -30,8 +31,16 @@ export default async function loginApi(fastify) {
             return reply.status(400).send({ message: "пароль не верный" })
         }
 
-        // обвновить дату lfcn
+        await fastify.prisma.users.update({
+            where: {
+                login: user
+            },
+            data:{
+                lastLoginAt: new Date(),
+                updatedAt: new Date()
+            }
+        })
 
-        return reply.status(200).send({ message: `ok..` })
+        return reply.status(200).send({ message: `ok!` })
     })
 }

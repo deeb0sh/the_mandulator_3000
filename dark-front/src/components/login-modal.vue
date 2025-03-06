@@ -131,7 +131,7 @@ import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/vali
                     const res = await req.json()
                     
                     if (res.message == "ok!") {
-                        onErr.value = "Вход ..."
+                        onErr.value = "выполняется вход..."
                         resetFormReg()
                     }
                     else {
