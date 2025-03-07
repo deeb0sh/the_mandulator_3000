@@ -13,6 +13,7 @@ model users {
   password String // хэш пароля
   salt String // соль
   roleID Int @default(0) // id роли
+  inCodeUsed String? // инвайт-код который использовался при регистрации
   lastLoginAt DateTime? // ластлогин 
   createAt  DateTime @default(now()) //дата создания записи
   updatedAt DateTime? // дата обновления записи
@@ -38,6 +39,9 @@ model session {
   id	Int	@id @default(autoincrement())
   ownerID String // --> users(id) 
   token String? // jwt будет жить тут
+  exp Int @default(24) // время жизни токена в часах
+  userIp String? // ip пользователя в момент получения
+  userAgent String? // юзер агент
   createAt DateTime @default(now())
   updateAt DateTime?
 

@@ -56,7 +56,7 @@ export default async function regApi(fastify) {
                 })
     
                 const checkLimit = () => {
-                    return inv.used < (inv.limit - 1);
+                    return inv.used < ( inv.limit - 1 )
                 }
                                          
                 if (checkLimit) {

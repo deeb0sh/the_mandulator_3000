@@ -6,6 +6,7 @@ import loginApi from './api/login.js'
 import prismaPlugin from './plugins/prisma.js'
 
 const fastify = Fastify({
+    trustProxy: true, // Доверяем заголовку X-Forwarded-For
     logger: true,
     ajv: {
         customOptions: {

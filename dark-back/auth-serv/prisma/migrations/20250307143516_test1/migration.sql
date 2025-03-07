@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "session" ADD COLUMN     "exp" INTEGER NOT NULL DEFAULT 24;
