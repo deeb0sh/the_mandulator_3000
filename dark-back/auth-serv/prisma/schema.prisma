@@ -39,9 +39,10 @@ model session {
   id	Int	@id @default(autoincrement())
   ownerID String // --> users(id) 
   token String? // jwt будет жить тут
-  exp Int @default(24) // время жизни токена в часах
+  exp DateTime // время жизни токена в часах (время портухания) 24 часа
   userIp String? // ip пользователя в момент получения
   userAgent String? // юзер агент
+  fingerPrint String? // отпечаток безЖ ip
   createAt DateTime @default(now())
   updateAt DateTime?
 

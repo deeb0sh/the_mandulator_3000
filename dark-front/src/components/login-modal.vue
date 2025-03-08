@@ -65,6 +65,8 @@
 import { ref, computed, nextTick } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/validators'
+import FingerprintJS from '@fingerprintjs/fingerprintjs'
+//import { getFingerprint } from '../utils/fingerprint.js'
 
     export default {
         setup() {
@@ -74,7 +76,7 @@ import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/vali
             const onErr = ref(null)
             const showReg = ref(false)
             const showLogin = ref(false)
-            
+
             const userLoginForm = ref(null); // Создаем ref для доступа к DOM-элементу
 
             const forms = ref({
@@ -107,12 +109,20 @@ import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/vali
 
             const v$ = useVuelidate(rules, { forms })
             
+            const finp = async () => {
+                const fp = await FingerprintJS.load()
+                const result = await fp.get()
+                return result.visitorId // Уникальный ID устройства
+            }
+
             const setPostLogin = async () => {
                 // отправка логин формы
                 if (v$.value.forms.login.$invalid) {
                     return onErr.value = "Заполните форму корректно"
                 }
                 try {
+                    const fingerprint = await finp() // ждём отпечток
+                    
                     const req = await fetch('/auth/login', {
                         method: 'POST',
                         headers: {
@@ -120,7 +130,8 @@ import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/vali
                         },
                         body: JSON.stringify({
                             user: forms.value.login.user,
-                            password: forms.value.login.passwd
+                            password: forms.value.login.passwd,
+                            fingerprint: fingerprint
                         })
                     })
 
@@ -129,9 +140,9 @@ import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/vali
                     } 
 
                     const res = await req.json()
-                    
+
                     if (res.message == "ok!") {
-                        localStorage.setItem('jwt', res.token); //
+                        localStorage.setItem('jwt', res.token); // принимаем токен и записываем в localStorage 
                         onErr.value = "выполняется вход..."
                         //onErr.value = res.token
                         resetFormReg()
@@ -208,7 +219,7 @@ import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/vali
                 regTouched.value = false
             }
 
-            return { forms, v$, userTouched, regTouched, setPostLogin, setPostReg, onErr, showReg, showLogin, resetAll, userLoginForm }
+            return { forms, v$, userTouched, regTouched, setPostLogin, setPostReg, onErr, showReg, showLogin, resetAll, userLoginForm, finp }
         },
         data() {
             return {

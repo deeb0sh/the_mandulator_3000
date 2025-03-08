@@ -1,10 +1,13 @@
 import { verifyPasswd } from '../utils/hashPasswd.js'
 import { loginValid } from '../schemas/loginvalid.js'
 import jwt from '@fastify/jwt'
+//import cookie from '@fastify/cookie'
 
 export default async function loginApi(fastify) {
+    //fastify.register(cookie) // регистрируем кук-плагин
+    
     fastify.register(jwt,{ // регистарция jwt плагина
-        secret: 'SuperSecretYopta' // секрет пометсить в бд или env
+        secret: process.env.JWT_SECRET // секрет в.env JWT_SECRET=""
     })
 
     fastify.post('/auth/login',{
@@ -13,7 +16,8 @@ export default async function loginApi(fastify) {
         }
     }, 
     async (request, reply) => {
-        const { user, password } = request.body
+        const { user, password, fingerprint } = request.body
+        console.log(fingerprint)
         const userAgent = request.headers['user-agent'] // user-agent пользователя      
         const userIp = request.ip // ip пользователя
         const checkUser = await fastify.prisma.users.findUnique({
@@ -47,7 +51,9 @@ export default async function loginApi(fastify) {
         })
 
         const token = fastify.jwt.sign({ user, expiresIn: '24h'}) // генерируем токет 24 часа ттл
-        
+        const expTime = new Date()
+        expTime.setHours(expTime.getHours() + 24)
+
         const userID = await fastify.prisma.users.findUnique({ // извлекаем id пользователя 
             where: {
                 login: user
@@ -56,35 +62,20 @@ export default async function loginApi(fastify) {
                 id: true
             }
         })
-
-        // const checkUA = await fastify.prisma.session.findFirst({
-        //     where: {
-        //         ownerID: userID.id,
-        //         userIp: userIp,
-        //         userAgent: userAgent
-        //     },
-        //     select: {
-        //         id: true
-        //     }
-        // })
-
-        // if (checkUA) {
-        //     await fastify.prisma.session.delete({
-        //         where: {
-        //             id: checkUA.id
-        //         }
-        //     })
-        // } 
-        
+              
         await fastify.prisma.session.create({ // создаём запись о сессии
             data:{
                 ownerID: userID.id , // user.id 
                 token: token,
+                exp: expTime, // дата протухания 
                 userIp: userIp,
-                userAgent: userAgent
+                userAgent: userAgent,
+                fingerPrint: fingerprint
             }
         })
         
+        //reply.header('set-cookie',`token=${token}; Path=/; HttpOnly; Max-Age=86400; SameSite=Strict`)
+
         return reply.status(200).send({ // возвращаем пользователю токен
             message: 'ok!',
             token: `${token}` 
