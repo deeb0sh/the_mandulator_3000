@@ -18,11 +18,20 @@ export const loginValid = {
                 pattern: 'Недопустимые сиволы'
             },
         },
+        fingerprint: {
+            type: 'string',
+            pattern: '^[a-zA-Z0-9_]+$',
+            errorMessage: {
+                type: 'только строка',
+                pattern: 'Недопустимые сиволы'
+            }   
+        }
     },
     errorMessage: {
         required: {
             user: 'Логин обязателен',
-            password: 'Пароль обязателен'
+            password: 'Пароль обязателен',
+            fingerprint: 'браузер инвалид'
         },
     },
 };

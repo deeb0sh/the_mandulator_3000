@@ -13,17 +13,14 @@ const router = createRouter({
       path: '/m3000',
       name: 'm3000',
       component: () => import('../views/m3000.vue'),
+      // beforeEnter: async (to, from, next) => {
+      // }
     },
     {
       path: '/radio',
       name: 'radio',
       component: () => import('../views/radio.vue'),
     },
-    // {
-    //   path: '/pindos',
-    //   name: 'pindos',
-    //   component: () => import('../views/pindos.vue'),
-    // }
   ],
 })
 

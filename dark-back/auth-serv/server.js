@@ -4,6 +4,7 @@ import cors from '@fastify/cors'
 import regApi from './api/reg.js'
 import loginApi from './api/login.js'
 import prismaPlugin from './plugins/prisma.js'
+import cronDeleteToken from './utils/cron.js'
 
 const fastify = Fastify({
     trustProxy: true, // Доверяем заголовку X-Forwarded-For
@@ -18,6 +19,8 @@ const fastify = Fastify({
 })
 
 fastify.register(prismaPlugin) // подключаем плагин призмы чтобы работало для всех роутов
+
+cronDeleteToken(fastify) // запуск cron.js
 
 fastify.register(loginApi) // ==> auth/reg (api/loginApi.js)
 fastify.register(regApi) // ==> auth/reg (api/regApi.js)

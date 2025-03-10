@@ -7,14 +7,22 @@
             </div>
             <div class="nav">
                 <RouterLink to="/radio"><img src="../img/logo_radio.png" width="70"></RouterLink>
-                <RouterLink to="/m3000"><img src="../img/logo_mand.png" width="70"></RouterLink>
-                <RouterLink to="/pindos"><img src="../img/logo_pindos.png" width="70"></RouterLink>                      
+                <a href="#" @click="logOut()"><img src="../img/exit1.png" width="70"></a>
             </div>
         </div>
     </div>     
     </template>
     <script>
-    
+    export default {
+        methods: {
+            logOut() {
+                if (confirm("Вы уверены, что хотите выйти?")) {
+                    localStorage.removeItem('jwt')
+                    this.$router.push('/')
+                }
+            }
+        }
+    }
     </script>
     
     <style scoped>

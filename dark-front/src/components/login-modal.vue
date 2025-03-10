@@ -66,11 +66,13 @@ import { ref, computed, nextTick } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, minLength, sameAs, helpers, maxLength } from '@vuelidate/validators'
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
-//import { getFingerprint } from '../utils/fingerprint.js'
+import { useRouter } from 'vue-router'
+
+// import { finp }  from '../utils/fingerprint.js'
 
     export default {
         setup() {
-            const regexValid = ref(helpers.regex(/^[a-zA-Z0-9_]+$/))
+            const regexValid = helpers.regex(/^[a-zA-Z0-9_]+$/)
             const userTouched = ref(false)
             const regTouched = ref(false)
             const onErr = ref(null)
@@ -78,6 +80,7 @@ import FingerprintJS from '@fingerprintjs/fingerprintjs'
             const showLogin = ref(false)
 
             const userLoginForm = ref(null); // Создаем ref для доступа к DOM-элементу
+            const router = useRouter()
 
             const forms = ref({
                 login: {
@@ -142,10 +145,11 @@ import FingerprintJS from '@fingerprintjs/fingerprintjs'
                     const res = await req.json()
 
                     if (res.message == "ok!") {
-                        localStorage.setItem('jwt', res.token); // принимаем токен и записываем в localStorage 
+                        localStorage.setItem('jwt', res.token) // принимаем токен и записываем в localStorage 
                         onErr.value = "выполняется вход..."
                         //onErr.value = res.token
                         resetFormReg()
+                        router.push('/m3000')
                     }
                     else {
                         onErr.value = res.message;
@@ -219,7 +223,7 @@ import FingerprintJS from '@fingerprintjs/fingerprintjs'
                 regTouched.value = false
             }
 
-            return { forms, v$, userTouched, regTouched, setPostLogin, setPostReg, onErr, showReg, showLogin, resetAll, userLoginForm, finp }
+            return { forms, v$, userTouched, regTouched, setPostLogin, setPostReg, onErr, showReg, showLogin, resetAll, userLoginForm } //finp }
         },
         data() {
             return {
@@ -252,17 +256,17 @@ import FingerprintJS from '@fingerprintjs/fingerprintjs'
                     this.$refs.userLoginForm.focus() // установка курсорва на поле ЛОГИН 
                 })
             },
-            resetAll() {  // resetAll() вызывается в setup() 
-                forms.value.login.user = ''
-                forms.value.login.passwd = ''
-                forms.value.reg.user = ''
-                forms.value.reg.password = ''
-                forms.value.reg.confirmPassword = ''
-                forms.value.reg.inCode = ''
-                onErr.value = null
-                userTouched.value = false 
-                regTouched.value = false
-            },
+            // resetAll() {  // resetAll() вызывается в setup() 
+            //     forms.value.login.user = ''
+            //     forms.value.login.passwd = ''
+            //     forms.value.reg.user = ''
+            //     forms.value.reg.password = ''
+            //     forms.value.reg.confirmPassword = ''
+            //     forms.value.reg.inCode = ''
+            //     onErr.value = null
+            //     userTouched.value = false 
+            //     regTouched.value = false
+            // },
             openLogin() {
                 this.showLogin = true // показываем модальное окно
                 this.$nextTick(() => {  

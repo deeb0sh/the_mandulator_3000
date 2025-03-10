@@ -46,5 +46,6 @@ model session {
   createAt DateTime @default(now())
   updateAt DateTime?
 
-  owner   users @relation(fields: [ownerID], references: [id]) // Связь с моделью users по id
+  owner   users   @relation(fields: [ownerID], references: [id]) // Связь с моделью users по id
+  @@index([exp]) // индексация поля exp
 }

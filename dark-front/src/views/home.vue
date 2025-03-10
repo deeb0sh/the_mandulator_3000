@@ -11,11 +11,11 @@
                 <div class="nav2">
                     <RouterLink to="/radio" @mouseover="OnMouseMSG('Радио Anima Amoris')"><img src="../img/logo_radio.png" width="70"></RouterLink>
                     <!-- <RouterLink to="/m3000" @mouseover="OnMouseMSG('Мандулятор 3000')"><img src="../img/logo_mand.png" width="70"></RouterLink> -->
-                    <a href="#" @mouseover="OnMouseMSG('Мандулятор 3000')" @click="LoginShow()"><img src="../img/logo_mand.png" width="70"></a>
+                    <a href="#" @mouseover="OnMouseMSG('Мандулятор 3000')" @click="checkToken()"><img src="../img/logo_mand.png" width="70"></a>
                     <a href="#" @mouseover="OnMouseMSG('-273,16')"><img src="../img/logo_serp.png" width="70"></a>
                 </div>
             </div>
-            <div class="msg" autofocus>{{ msg }}</div>
+            <div class="msg">{{ msg }}<br> {{ VisitorId }}</div>
         </div>
         <Logmod ref="modal" />
 
@@ -23,20 +23,64 @@
 </template>
 
 <script>
+import FingerprintJS from '@fingerprintjs/fingerprintjs'
+import { getVisitorId } from '@/utils/test.js'
+
 export default {
     data(){
         return { 
-            msg: "Расчудесный ресурс ❤️"
+            msg: "Расчудесный ресурс ❤️",
+            VisitorId: null
         };
     },
+    mounted() {
+        this.fp()
+    },
     methods: {
+        async fp() {
+            this.VisitorId = await getVisitorId()
+        },
         OnMouseMSG(x) {
             this.msg = x
         },
-        LoginShow() {
-            //this.$refs.modal.showLogin = true
-            document.documentElement.style.overflow = 'hidden'
-            this.$refs.modal.openLogin() // вызываем функцию openLogin() в компоненте login-modal.vue(ref=modal)
+        async checkToken() {
+            const token = localStorage.getItem('jwt') // берём токен из локального хранилища
+            if (!token) {                       // если его там нет, то идём его получать
+                //this.$refs.modal.showLogin = true
+                document.documentElement.style.overflow = 'hidden'
+                this.$refs.modal.openLogin() // вызываем функцию openLogin() в компоненте login-modal.vue(ref=modal)
+            } 
+            else {   // если токен есть то отправлякем его на бэк на валидацию
+                const finp = async () => {
+                    const fp = await FingerprintJS.load()
+                    const result = await fp.get()
+                    return result.visitorId // Уникальный ID устройства
+                }
+                
+                const fingerprint = await finp() // token и fingerprint
+                try {
+                    const resp = await fetch('/auth/login', {
+                        method: 'GET',
+                        headers: {
+                            'Content-type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                            'X-Fingerprint': fingerprint
+                        }
+                    })
+                    const data = await resp.json() // ответ от гет 
+                    if (data.message === "invalid") {
+                        document.documentElement.style.overflow = 'hidden'
+                        this.$refs.modal.openLogin() // вызываем функцию openLogin() в компоненте login-modal.vue(ref=modal)
+                    } 
+                    else {
+                        localStorage.setItem('jwt', data.tokenNew) // перезаписываем
+                        this.$router.push('/m3000')
+                    }
+                }
+                catch(err) {
+                    console.log(err)
+                }
+            } 
         }
     }
 }
