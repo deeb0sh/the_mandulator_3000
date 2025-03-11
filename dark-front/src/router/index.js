@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-//import HomeView from '../views/HomeView.vue'
+import { getVisitorId } from '../utils/fingerP'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -13,8 +13,36 @@ const router = createRouter({
       path: '/m3000',
       name: 'm3000',
       component: () => import('../views/m3000.vue'),
-      // beforeEnter: async (to, from, next) => {
-      // }
+      beforeEnter: async (to, from, next) => { // перехватываем все обращения к маргруту
+        try {
+          const token = localStorage.getItem('jwt') // берём токен из локального хранилища
+          if (!token) {
+            return next('/') // если токена нет, отправляем на главную
+          }
+
+          const fingerprint = await getVisitorId() // генерируем отпечаток браузера
+          const response = await fetch('/auth/login', {
+            method: 'GET',
+            headers: {
+              'Content-type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+              'X-Fingerprint': fingerprint
+            }
+          })
+
+          const data = await response.json()
+          if (data.message === "invalid") {
+            localStorage.removeItem('jwt') // Удаляем невалидный токен
+            return next('/') // Отправляем на главную
+          }
+
+          localStorage.setItem('jwt', data.tokenNew) // Обновляем токен
+          next() // Разрешаем переход
+        }
+        catch(e) {
+          next('/')
+        }
+      }
     },
     {
       path: '/radio',

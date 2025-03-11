@@ -15,7 +15,7 @@
                     <a href="#" @mouseover="OnMouseMSG('-273,16')"><img src="../img/logo_serp.png" width="70"></a>
                 </div>
             </div>
-            <div class="msg">{{ msg }}<br> {{ VisitorId }}</div>
+            <div class="msg">{{ msg }}</div>
         </div>
         <Logmod ref="modal" />
 
@@ -23,23 +23,18 @@
 </template>
 
 <script>
-import FingerprintJS from '@fingerprintjs/fingerprintjs'
-import { getVisitorId } from '@/utils/test.js'
+import { getVisitorId } from '../utils/fingerP' // отпечаток браузера
 
 export default {
     data(){
         return { 
-            msg: "Расчудесный ресурс ❤️",
-            VisitorId: null
+            msg: "Расчудесный ресурс ❤️"
         };
     },
     mounted() {
-        this.fp()
+        //
     },
     methods: {
-        async fp() {
-            this.VisitorId = await getVisitorId()
-        },
         OnMouseMSG(x) {
             this.msg = x
         },
@@ -51,13 +46,7 @@ export default {
                 this.$refs.modal.openLogin() // вызываем функцию openLogin() в компоненте login-modal.vue(ref=modal)
             } 
             else {   // если токен есть то отправлякем его на бэк на валидацию
-                const finp = async () => {
-                    const fp = await FingerprintJS.load()
-                    const result = await fp.get()
-                    return result.visitorId // Уникальный ID устройства
-                }
-                
-                const fingerprint = await finp() // token и fingerprint
+                const fingerprint = await getVisitorId() //  fingerprint
                 try {
                     const resp = await fetch('/auth/login', {
                         method: 'GET',

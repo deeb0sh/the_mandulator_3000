@@ -79,7 +79,7 @@ import { useRouter } from 'vue-router'
             const showReg = ref(false)
             const showLogin = ref(false)
 
-            const userLoginForm = ref(null); // Создаем ref для доступа к DOM-элементу
+            const userLoginForm = ref(null); // Создаем ref для доступа к DOM
             const router = useRouter()
 
             const forms = ref({
