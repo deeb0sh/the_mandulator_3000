@@ -26,7 +26,7 @@ fastify.register(loginApi) // ==> auth/reg (api/loginApi.js)
 fastify.register(regApi) // ==> auth/reg (api/regApi.js)
 
 fastify.register(cors,{ // залупа
-    origin: false, // примаем запросы отовсюду
+    origin: ['darksurf.ru'], // примаем запросы отовсюду
     methods: ['GET', 'POST'],
     //allowedHeaders: ['Content-Type', 'Authorization'],
     //credentials: true,
