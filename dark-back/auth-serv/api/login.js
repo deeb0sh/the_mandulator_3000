@@ -18,7 +18,14 @@ export default async function loginApi(fastify) {
     async(request, reply) => {
         const token = request.headers.authorization.replace('Bearer ', '') // выпилваем из токена bearer
         const fprint = request.headers['x-fingerprint']
+
+        if (!token) {
+            fastify.log.warn('Попытка входа без токена')
+            return reply.send({ message: "invalid" })
+        }
+
         try {
+            fastify.log.info('Проверка токена...')
             const decod = await request.jwtVerify() // request.jwtVerify() берёт токен автоматический из хедера authorization 
             const sessionValid = await fastify.prisma.session.findFirst({
                 where: {
@@ -30,6 +37,7 @@ export default async function loginApi(fastify) {
                 }
             })
             if ( sessionValid === null ) {
+                fastify.log.warn('Невалидная сессия')
                 return reply.send({ "message": "invalid" })
             } 
 
@@ -49,10 +57,12 @@ export default async function loginApi(fastify) {
                     exp: expTime
                 }
             })
- 
+
+            fastify.log.info(`Пользователь ${user} успешно обновил токен`)
             return reply.status(200).send({ message: "valid" , user, tokenNew })
         }
         catch(err) {
+            fastify.log.error(`Ошибка проверки токена: ${err.message}`)
             return reply.send({ message: "invalid" })
         }
     })
@@ -68,6 +78,9 @@ export default async function loginApi(fastify) {
         //console.log(fingerprint)
         const userAgent = request.headers['user-agent'] // user-agent пользователя      
         const userIp = request.ip // ip пользователя
+
+        fastify.log.info(`Попытка входа: ${user} с IP ${userIp}`)
+
         const checkUser = await fastify.prisma.users.findUnique({
             where: {
                 login: user
@@ -79,12 +92,14 @@ export default async function loginApi(fastify) {
         })
 
         if (!checkUser) {
+            fastify.log.warn(`Пользователь ${user} не найден`)
             return reply.send({ message: "пользователь не найден" })
         }
 
         const checkPasswd = await verifyPasswd(password, checkUser.password , checkUser.salt)
         
         if (!checkPasswd) {
+            fastify.log.warn(`Неверный пароль для пользователя ${user}`)
             return reply.send({ message: "пароль не верный" })
         }
 
@@ -123,7 +138,7 @@ export default async function loginApi(fastify) {
         })
         
         //reply.header('set-cookie',`token=${token}; Path=/; HttpOnly; Max-Age=86400; SameSite=Strict`)
-
+        fastify.log.info(`Пользователь ${user} успешно вошел`)
         return reply.status(200).send({ // возвращаем пользователю токен
             message: 'ok!',
             token: token
