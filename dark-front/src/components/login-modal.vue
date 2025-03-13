@@ -280,16 +280,22 @@ import { useRouter } from 'vue-router'
 <style>
 
 .modal-login {
-    position: absolute;
-    top: 0;
-    left: 0;
-    min-height: 100%;
-    width: 100%;
-    background: #2a7449a1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #2a7449a1; /* Полупрозрачный черный цвет */
+  backdrop-filter: blur(5px); /* Размытие фона */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Убедитесь, что модальное окно поверх других элементов */
 }
 .modal {
-    background: #d8d8d8ea;
+    background: #d8d8d8c7;
     border-radius: 8px;
+    
     border: 1px solid #ffffff;
     padding: 15px;
     min-width: 185px;
