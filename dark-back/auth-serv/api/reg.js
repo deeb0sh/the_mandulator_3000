@@ -9,8 +9,9 @@ export default async function regApi(fastify) {
         }, 
         async (request, reply) => {
             const { user, password, confirmPassword, inCode } = request.body
-            // нужно проверить входящие данные 
     
+            request.log.info(`Попытка регистрации: login=${user}, inviteCode=${inCode}`) // фиксируем попытку регистрации
+
             const checkInCode = await fastify.prisma.inviteList.findFirst({
                 where: {
                     code: {
@@ -21,6 +22,7 @@ export default async function regApi(fastify) {
             })
     
             if (!checkInCode) {
+                request.log.warn(`Неверный инвайт-код: ${inCode} (мб брут)`) // фиксация неудачного инвайта
                 return reply.status(400).send({ message: "инвайт-код устарел или его не существует" })
             }
     
@@ -34,6 +36,7 @@ export default async function regApi(fastify) {
             })
     
             if (checkLogin) { // если true воврящаем json с ошибкой
+                request.log.warn(`Попытка регистрации с уже существующим логином: ${user}`)
                 return reply.status(400).send({ message: "Пользователь с таким именем существует" })
             }
     
@@ -49,6 +52,8 @@ export default async function regApi(fastify) {
                    }
                 })
             
+                request.log.info(`Пользователь ${user} зарегистрирован, инвайт-код ${inCode} использован`)
+
                 const inv = await fastify.prisma.inviteList.findFirst({
                     where: {
                         code: inCode // проверяем инвайт-код с учётом регистра
@@ -73,11 +78,14 @@ export default async function regApi(fastify) {
                             active: checkLimit() ? inv.active: false // если checkLimit = true тогда поле active
                         }
                     })
+
+                    request.log.info(`Инвайт-код ${inCode} теперь использован ${inv.used + 1} раз(а)`)
                 } 
                 
                 return reply.status(201).send({ message: "ok!" })
             }
             catch(err) {
+                request.log.error(`Ошибка при регистрации: ${err.message}`)
                 return reply.status(500).send({ message: `Ошибка: ${err.message || err.toString()}` })
             }
         })
