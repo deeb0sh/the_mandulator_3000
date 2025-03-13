@@ -19,7 +19,9 @@
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Dub Techno" Style="dubtechno" v-on:click="SetStream('dubtechno')"/>
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Trance" Style="trance" v-on:click="SetStream('trance')"/>
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Deep Tech House" Style="deeptech" v-on:click="SetStream('deeptech')"/>
+            
             <!-- <RadioBlock v-bind:isAction="LastClick" StyleInfo="Breakbeat Hardcore" Style="breakbeat" v-on:click="SetStream('breakbeat')"/> -->
+            
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="IDM Breakcore" Style="breakcore" v-on:click="SetStream('breakcore')"/>
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="IDM" Style="idm" v-on:click="SetStream('idm')"/>
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Goa Psy Trance" Style="goa" v-on:click="SetStream('goa')"/>           
@@ -28,7 +30,9 @@
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Electro" Style="electro" v-on:click="SetStream('electro')"/> 
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Electronic Styles" Style="electronic" v-on:click="SetStream('electronic')"/>
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Ambient" Style="ambient" v-on:click="SetStream('ambient')"/>
+            
             <!-- <RadioBlock v-bind:isAction="LastClick" StyleInfo="Breaks" Style="breaks" v-on:click="SetStream('breaks')"/>  -->
+            
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Dub Step" Style="dubstep" v-on:click="SetStream('dubstep')"/>
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Dub" Style="dub" v-on:click="SetStream('dub')"/>
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Reggae" Style="reggae" v-on:click="SetStream('reggae')"/> 
