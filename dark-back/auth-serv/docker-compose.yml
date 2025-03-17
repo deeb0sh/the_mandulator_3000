@@ -11,19 +11,16 @@ services:
     # POSTGRES_USER=
     # POSTGRES_DB=
     volumes:
-      - pg_db:/var/lib/postgresql/data
+      - /storage/volumes/pg_db:/var/lib/postgresql/data
     #ports:
     #  - 5432:5432
 
-  auth_server:
-    build: .
+  auth:
+    images: reg.darksurf.local/auth:latest    
     restart: always
     depends_on:
       - db
     env_file:
       - .env
-    ports:
-      - "3000:3000"
-
-volumes:
-  pg_db:
+    #ports:
+    #  - "3000:3000"

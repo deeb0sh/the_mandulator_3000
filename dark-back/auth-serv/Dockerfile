@@ -1,14 +1,14 @@
-FROM node:20-alpine
+FROM node:20-alpine AS builder
 
-WORKDIR /auth-server
+WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm install && npm cache clean --force
 
 COPY . .
 
-RUN npx prisma generate 
+RUN npx prisma generate && npx prisma migrate dev --name init
 
 EXPOSE 3000
 
