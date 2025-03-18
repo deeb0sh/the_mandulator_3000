@@ -1,5 +1,5 @@
 import Fastify from 'fastify'
-import ajvErrors from 'ajv-errors' // еррор-плагин
+import ajvErrors from 'ajv-errors' // еррор-плагин сообщения
 import cors from '@fastify/cors'
 import regApi from './api/reg.js'
 import loginApi from './api/login.js'
