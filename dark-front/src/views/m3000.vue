@@ -3,18 +3,33 @@
         <div class="container">
             <div class="nav">
                 <RouterLink to="/"><img src="../img/logozbs.png" width="165"></RouterLink>
-                <span class="header-text"><i>Mandulator 3000</i></span>
+                <span class="header-text"><i>{{ username }}</i></span>
             </div>
             <div class="nav">
-                <RouterLink to="/radio"><img src="../img/logo_radio.png" width="70"></RouterLink>
+                <!-- <RouterLink to="/radio"><img src="../img/logo_radio.png" width="70"></RouterLink> -->
                 <a href="#" @click="logOut()"><img src="../img/exit1.png" width="70"></a>
             </div>
         </div>
     </div>     
     </template>
     <script>
+    import { jwtDecode } from 'jwt-decode'
+
     export default {
+        data() {
+            return {
+                username: null
+            }
+        },
+        mounted() {
+            this.getJWT()
+        },
         methods: {
+            getJWT() {
+                const token = localStorage.getItem('jwt')
+                const decode = jwtDecode(token)
+                this.username = decode.user
+            },            
             logOut() {
                 if (confirm("Вы уверены, что хотите выйти?")) {
                     localStorage.removeItem('jwt')

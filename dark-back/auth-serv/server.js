@@ -18,6 +18,13 @@ const fastify = Fastify({
     }
 })
 
+fastify.register(cors,{ // залупа
+    origin: ['https://darksurf.ru' , 'https://dev.darksurf.ru'], // примаем запросы от
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+})
+
 fastify.register(prismaPlugin) // подключаем плагин призмы чтобы работало для всех роутов
 
 cronDeleteToken(fastify) // запуск cron.js
@@ -25,12 +32,13 @@ cronDeleteToken(fastify) // запуск cron.js
 fastify.register(loginApi) // ==> auth/reg (api/loginApi.js)
 fastify.register(regApi) // ==> auth/reg (api/regApi.js)
 
-fastify.register(cors,{ // залупа
-    origin: ['darksurf.ru'], // примаем запросы отовсюду
-    methods: ['GET', 'POST'],
-    //allowedHeaders: ['Content-Type', 'Authorization'],
-    //credentials: true,
-})
+
+
+
+fastify.get('/', async (request, reply) => {
+    return { message: 'Hello, CORS is configured!' };
+  });
+  
 
 fastify.listen({ port: 3000, host: "0.0.0.0" }, (err) => {
     if (err) {
