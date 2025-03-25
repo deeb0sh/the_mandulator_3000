@@ -34,7 +34,6 @@ fastify.register(regApi) // ==> auth/reg (api/regApi.js)
 
 
 
-
 fastify.get('/', async (request, reply) => {
     return { message: 'Hello, CORS is configured!' };
   });

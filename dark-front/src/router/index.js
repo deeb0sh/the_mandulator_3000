@@ -36,6 +36,10 @@ const router = createRouter({
             return next('/') // Отправляем на главную
           }
 
+          to.params.user = data.user
+          to.params.role = data.role
+          to.params.code = data.code
+
           localStorage.setItem('jwt', data.tokenNew) // Обновляем токен
           next() // Разрешаем переход
         }

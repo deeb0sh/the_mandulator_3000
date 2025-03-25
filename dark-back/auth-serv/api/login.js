@@ -58,8 +58,35 @@ export default async function loginApi(fastify) {
                 }
             })
 
-            fastify.log.info(`Пользователь ${user} успешно обновил токен`)
-            return reply.status(200).send({ message: "valid" , user, tokenNew })
+            
+            const dataUser = await fastify.prisma.users.findFirst({ // извлекаем uuid пользователя и его роль
+                where: {
+                    login: user
+                },
+                select:{
+                    id: true,
+                    roleID: true,
+                }
+            })
+
+            const role = dataUser.roleID
+            const uuid = dataUser.id
+
+            const invite = await fastify.prisma.inviteList.findFirst({
+                where: {
+                    authorID: uuid,
+                    active: true
+                },
+                select: {
+                    code: true
+                },
+                take: 1
+            })
+
+            const code = invite?.code || null // переменная code равна значению из inviteList.code , если поле пустое то null
+
+            fastify.log.info(`Пользователь ${user} успешно обновил токен `)
+            return reply.status(200).send({ message: "valid" , user, tokenNew, role, code }) // отправляем ответ , имя пользователя , новый токен, роль и инвайты
         }
         catch(err) {
             fastify.log.error(`Ошибка проверки токена: ${err.message}`)
