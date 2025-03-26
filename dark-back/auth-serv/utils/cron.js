@@ -1,7 +1,7 @@
 import cron from 'node-cron'
 
 export default function cronDeleteToken(fastify) {
-    cron.schedule('*/10 * * * *', async () => { // Запуск каждые 10 минут
+    cron.schedule('*/30 * * * *', async () => { // Запуск каждые 30 минут
         try {
             await fastify.prisma.session.deleteMany({
                 where: { 
