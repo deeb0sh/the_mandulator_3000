@@ -1,6 +1,6 @@
 export const loginValid = {
     type: 'object',
-    required: ['user', 'password'],
+    required: ['user', 'password', 'fingerprint'],
     properties: {
         user: {
             type: 'string',

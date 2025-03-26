@@ -17,7 +17,7 @@ export default async function loginApi(fastify) {
     }, 
     async(request, reply) => {
         const token = request.headers.authorization.replace('Bearer ', '') // выпилваем из токена bearer
-        const fprint = request.headers['x-fingerprint']
+        const fprint = request.headers['x-fingerprint'] // выпиливаем fingerprint
 
         if (!token) {
             fastify.log.warn('Попытка входа без токена')
@@ -85,7 +85,7 @@ export default async function loginApi(fastify) {
 
             const code = invite?.code || null // переменная code равна значению из inviteList.code , если поле пустое то null
 
-            fastify.log.info(`Пользователь ${user} успешно обновил токен TEST - ${role}`)
+            fastify.log.info(`Пользователь ${user} успешно обновил токен `)
             return reply.status(200).send({ message: "valid" , user, tokenNew, role, code }) // отправляем ответ , имя пользователя , новый токен, роль и инвайты
         }
         catch(err) {

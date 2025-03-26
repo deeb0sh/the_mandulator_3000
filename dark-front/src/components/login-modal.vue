@@ -72,7 +72,7 @@ import { useRouter } from 'vue-router'
 
     export default {
         setup() {
-            const regexValid = helpers.regex(/^[a-zA-Z0-9_]+$/)
+            const regexValid = helpers.regex(/^[a-zA-Z0-9_-]+$/)
             const userTouched = ref(false)
             const regTouched = ref(false)
             const onErr = ref(null)

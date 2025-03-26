@@ -6,7 +6,7 @@ export const regValid = {
             type: 'string',
             minLength: 4,
             maxLength: 20,
-            pattern: '^[a-zA-Z0-9_]+$',
+            pattern: '^[a-zA-Z0-9_-]+$',
             errorMessage: {
                 type: 'только строка',
                 minLength: 'минимум 4 символов',
@@ -18,7 +18,7 @@ export const regValid = {
             type: 'string',
             minLength: 4,
             maxLength: 20,
-            pattern: '^[a-zA-Z0-9_]+$',
+            pattern: '^[a-zA-Z0-9_-]+$',
             errorMessage: {
                 type: 'только строка',
                 minLength: 'минимум 4 символов',
@@ -30,7 +30,7 @@ export const regValid = {
             type: 'string',
             minLength: 4,
             maxLength: 20,
-            pattern: '^[a-zA-Z0-9_]+$',
+            pattern: '^[a-zA-Z0-9_-]+$',
             const: { $data: '1/password' },
             errorMessage: {
                 type: 'только строка',
@@ -43,7 +43,7 @@ export const regValid = {
             type: 'string',
             minLength: 4,
             maxLength: 20,
-            pattern: '^[a-zA-Z0-9_]+$',
+            pattern: '^[a-zA-Z0-9_-]+$',
             errorMessage: {
                 type: 'только строка',
                 minLength: 'минимум 4 символов',

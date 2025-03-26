@@ -3,16 +3,19 @@
         <div> Инвайт код:</div>
         <div class="invite">{{ inCode }}</div>
         <div class="button">
-            <button class="btn" @click="genInvite()" :disabled="this.$route.params.code">{{ this.$route.params.code ? 'Код не использован' : 'Сгенерировать' }}</button>
+            <button class="btn" @click="genInvite()" :disabled="this.check">{{ this.check ? 'Код не использован' : 'Сгенерировать' }}</button>
         </div>
     </div>
 </template>
   
 <script>
+import { getVisitorId } from '../utils/fingerP'
+
     export default {
         data() {
             return {
-                inCode: "****-****"
+                inCode: "****-****",
+                check: false
             }
         },
         created() {
@@ -22,15 +25,44 @@
             checkCode() {
                 if (this.$route.params.code) {
                     this.inCode = this.$route.params.code
+                    this.check = true
                 }
             },
-            genInvite() { // генерируем инвайт код
+            async genInvite() { // генерируем инвайт код (ХХХХ-ХХХХ)
                 const part1 = Math.random().toString(36).substring(2, 6).toUpperCase()
                 const part2 = Math.random().toString(36).substring(2, 6).toUpperCase()
                 this.inCode = `${part1}-${part2}`
-            }
+                const fingerprint = await getVisitorId() // генерируем отпечаток браузера
+                const token = localStorage.getItem('jwt') // берём токен из локального хранилища
+                
+                const response = await fetch('/auth/incode', {
+                    method: 'POST',
+                    headers: {
+                        'Content-type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                        'X-Fingerprint': fingerprint,
+                    },
+                    body: JSON.stringify({
+                            incode: this.inCode,
+                            role: this.$route.params.role
+                        })
+                    })
+
+                const data = await response.json()
+                
+                if (data.message == "invalid") {
+                    localStorage.removeItem('jwt')
+                    this.$router.push('/')
+                }
+
+                if (data.message == "ok!") {
+                    this.check = true
+                }
+
+            }     
         }
     }
+    
 </script>
 
 <style scoped>
@@ -56,9 +88,11 @@
     font-size: 31px;
     text-align: center;
 }
+
 .button {
     text-align: center;
 }
+
 .btn {
     display: inline-block;
     outline: none;
