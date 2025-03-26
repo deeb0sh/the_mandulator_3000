@@ -256,17 +256,6 @@ import { useRouter } from 'vue-router'
                     this.$refs.userLoginForm.focus() // установка курсорва на поле ЛОГИН 
                 })
             },
-            // resetAll() {  // resetAll() вызывается в setup() 
-            //     forms.value.login.user = ''
-            //     forms.value.login.passwd = ''
-            //     forms.value.reg.user = ''
-            //     forms.value.reg.password = ''
-            //     forms.value.reg.confirmPassword = ''
-            //     forms.value.reg.inCode = ''
-            //     onErr.value = null
-            //     userTouched.value = false 
-            //     regTouched.value = false
-            // },
             openLogin() {
                 this.showLogin = true // показываем модальное окно
                 this.$nextTick(() => {  

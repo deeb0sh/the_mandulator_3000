@@ -85,7 +85,7 @@ export default async function loginApi(fastify) {
 
             const code = invite?.code || null // переменная code равна значению из inviteList.code , если поле пустое то null
 
-            fastify.log.info(`Пользователь ${user} успешно обновил токен `)
+            fastify.log.info(`Пользователь ${user} успешно обновил токен TEST - ${role}`)
             return reply.status(200).send({ message: "valid" , user, tokenNew, role, code }) // отправляем ответ , имя пользователя , новый токен, роль и инвайты
         }
         catch(err) {

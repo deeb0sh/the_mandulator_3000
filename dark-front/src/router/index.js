@@ -21,6 +21,7 @@ const router = createRouter({
           }
 
           const fingerprint = await getVisitorId() // генерируем отпечаток браузера
+          
           const response = await fetch('/auth/login', {
             method: 'GET',
             headers: {
@@ -35,8 +36,9 @@ const router = createRouter({
             localStorage.removeItem('jwt') // Удаляем невалидный токен
             return next('/') // Отправляем на главную
           }
-
-          to.params.user = data.user
+          
+          // передаём информацию о пользвателе из бэка в компаненты
+          to.params.user = data.user 
           to.params.role = data.role
           to.params.code = data.code
 

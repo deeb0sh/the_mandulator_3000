@@ -11,15 +11,12 @@
             </div>
         </div>
         <div class="container">
-            <div>роль - {{ roleID }}</div><br>
-            <div>инвайт - {{ inCode }}</div>
-            <invite />
+            <invite v-if="checkRole3(roleID) || checkRole2(roleID)" />  <!--  инваты создают только роли 2 и 3  -->
         </div>
         
     </div>     
     </template>
     <script>
-    //import { jwtDecode } from 'jwt-decode'
 
     export default {
         data() {
@@ -31,14 +28,25 @@
         },
         created() {
                 this.username = this.$route.params.user // username из jwt передано с auth-serv
-                this.roleID = this.$route.params.role
-                this.inCode = this.$route.params.code
-
+                this.roleID = this.$route.params.role // получаем роль пользлвателя
+                this.inCode = this.$route.params.code // текущий инвайт
         },
         mounted() {
            // 
         },
         methods: {
+            checkRole3(x) {
+                return x === 3
+            },
+            checkRole2(x) {
+                return x === 2
+            },
+            checkRole1(x) {
+                return x === 1
+            },
+            checkRole0 (x) {
+                return x === 0
+            },
             logOut() {
                 if (confirm("Вы уверены, что хотите выйти?")) {
                     localStorage.removeItem('jwt')

@@ -3,7 +3,7 @@
         <div> Инвайт код:</div>
         <div class="invite">{{ inCode }}</div>
         <div class="button">
-            <button class="btn" @click="genInvite()">Сгенерировать</button>
+            <button class="btn" @click="genInvite()" :disabled="this.$route.params.code">{{ this.$route.params.code ? 'Код не использован' : 'Сгенерировать' }}</button>
         </div>
     </div>
 </template>
