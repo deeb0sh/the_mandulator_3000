@@ -15,7 +15,7 @@ export default async function incodeApi(fastify) {
     fastify.post('/auth/incode',{
         schema: {
                body: incodeValid, // схема валидации
-               headers: headersValid
+               headers: headersValid // валидация хедеров
             }
         },
         async(request, reply) => {
@@ -27,7 +27,7 @@ export default async function incodeApi(fastify) {
                 const token = request.headers.authorization.replace('Bearer ', '') // выпилваем из токена bearer
                 const fprint = request.headers['x-fingerprint'] // выпиливаем fingerprint
                 
-                const sessionValid = await fastify.prisma.session.findFirst({
+                const sessionValid = await fastify.prisma.session.findFirst({ // ищем сессию в бд
                     where: {
                         token: token,
                         fingerPrint: fprint
@@ -37,7 +37,18 @@ export default async function incodeApi(fastify) {
                     }
                 })
 
-                if ( sessionValid === null ) {
+                const roleValid = await fastify.prisma.users.findFirst({
+                    where: {
+                        login: user,
+                        roleID: role
+                    },
+                    select:{
+                        id: true
+                    }
+                })
+
+
+                if ( sessionValid === null || roleValid === null ) { // проверяем сессию и результат login|role
                     fastify.log.warn('Невалидная сессия')
                     return reply.send({ "message": "invalid" })
                 } 
