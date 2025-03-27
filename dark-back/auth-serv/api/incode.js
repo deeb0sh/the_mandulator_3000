@@ -40,13 +40,12 @@ export default async function incodeApi(fastify) {
                 const roleValid = await fastify.prisma.users.findFirst({
                     where: {
                         login: user,
-                        roleID: role
+                        roleID: Number(role)
                     },
                     select:{
                         id: true
                     }
                 })
-
 
                 if ( sessionValid === null || roleValid === null ) { // проверяем сессию и результат login|role
                     fastify.log.warn('Невалидная сессия')
