@@ -37,7 +37,7 @@ export default async function incodeApi(fastify) {
                     }
                 })
 
-                const roleValid = await fastify.prisma.users.findFirst({
+                const roleValid = await fastify.prisma.users.findFirst({ // если id есть тогда роль соответствует логину
                     where: {
                         login: user,
                         roleID: Number(role)

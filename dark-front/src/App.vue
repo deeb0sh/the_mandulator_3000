@@ -16,9 +16,9 @@ export default {
 </script>
 
 <style scoped>
-*z {
+/* * {
     border: red solid 1px;
-}
+} */
 
 :global(html) {
     width: 100%;

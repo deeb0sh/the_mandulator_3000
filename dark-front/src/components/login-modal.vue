@@ -266,7 +266,7 @@ import { useRouter } from 'vue-router'
         }
     }
 </script>
-<style>
+<style scoped>
 
 .modal-login {
   position: fixed;

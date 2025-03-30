@@ -66,9 +66,6 @@ import { getVisitorId } from '../utils/fingerP'
 </script>
 
 <style scoped>
-*z {
-    border: rgb(140, 0, 255) solid 1px;
-}
 .aria {
     background: #2a7449a1;
     border-radius: 8px;   
@@ -76,10 +73,7 @@ import { getVisitorId } from '../utils/fingerP'
     padding: 10px;
     min-width: 230px;
     max-width: 230px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    /* transform: translate(-50%, -50%); */
     color: #313131;
 }
 

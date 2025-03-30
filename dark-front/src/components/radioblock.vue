@@ -71,9 +71,9 @@
     }
 </script>
 <style scoped>
-*z {
+/* * {
     border: #8c00ff solid 1px;
-}
+} */
 
 .style {
     font-size: 20px;

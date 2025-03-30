@@ -1,6 +1,6 @@
 <template> 
     <div class="main">          
-        <div class="container">
+        <div class="header">
             <div class="nav">
                 <RouterLink to="/"><img src="../img/logozbs.png" width="80"></RouterLink>
                 <span class="header-text"><i>{{ username }}</i></span>
@@ -12,8 +12,11 @@
         </div>
         <div class="container">
             <invite v-if="checkRole3(roleID) || checkRole2(roleID)" />  <!--  инваты создают только роли 2 и 3  -->
+            <WG />
         </div>
-        
+        <div>
+            
+        </div>
     </div>     
     </template>
     <script>
@@ -58,9 +61,9 @@
     </script>
     
     <style scoped>
-    *z {
-        border: #00ff15 solid 1px;
-    }
+    /* * {
+        border: #ff00ff solid 1px;
+    } */
     .header-text {
         font-family: HH;
         font-size: 50px;  
@@ -77,14 +80,24 @@
         
     }
     
-    .container {
+    .header {
+        display: flex;
+        align-items: flex-start; /* Выравнивание по верхней границе */
+        justify-content: space-between;
+        gap: 10px; 
+        min-width:950px;
         margin-top: 20px;
         margin-bottom: 30px;
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
     }
+
+    .container {
+
+        display: flex;
+        flex-wrap: nowrap; /* Позволяет переносить элементы на новую строку */
+        align-items: flex-start; /* Выравнивание по верхней границе */
+        gap: 3px; 
+     }
+
     
     .nav {
         display: flex;
