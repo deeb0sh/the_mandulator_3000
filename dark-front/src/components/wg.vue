@@ -11,39 +11,72 @@
         </div>
        <!-- ХОБА БЛЕТЬ -->
         <div v-if="!showAddMenu">
-            <!-- <WGadd ref="modal"/> -->
             <button class="btn" @click="showWgAdd()">Добавить</button>
         </div>
         <div v-else class="wgadd">
-            <form @submit.prevent="">
-                <input ref="WGname" class="txt" type="text" placeholder="Имя пользователя" v-model.trim="wguser" />
-                <img src="../img/rus1.png" width="30" @click="setLocaltion('RU')"/>
-                <img src="../img/fin1.png" width="30" @click="setLocaltion('FI')"/>
-                <img src="../img/ger1.png" width="30" @click="setLocaltion('DE')"/>     
+            <form @submit.prevent="createWGuser()">
+                <input ref="WGname" class="txt" type="text" placeholder="Имя пользователя" v-model.trim="form.wguser" />
+                <img src="../img/rus1.png" width="30" :class="{ selected: location === 'RU' }" @click="setLocaltion('RU')" />
+                <img src="../img/fin1.png" width="30" :class="{ selected: location === 'FI' }" @click="setLocaltion('FI')" />
+                <img src="../img/ger1.png" width="30" :class="{ selected: location === 'DE' }" @click="setLocaltion('DE')" />     
                 <button class="btn" @click="">Создать</button>
                 <button class="btn" @click="closeWgAdd()">Отмена</button>
             </form>
+        </div>
+        <div  v-if="v$.form.wguser.$error" class="errorMsg">
+            <span><b>Только: a-z, A-Z, 0-9 и максимум 20 символов</b></span><br>
         </div>
     </div>
 </template>
     
 <script>
+import { useVuelidate } from '@vuelidate/core'
+import { required, maxLength} from '@vuelidate/validators'
+
+const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
+
     export default {
         data() {
             return {
-                showAddMenu: false
+                showAddMenu: false,
+                location: null,
+                form: {
+                    wguser: ''
+                },
+                v$: useVuelidate()
+            }
+        },
+        validations: {
+            form: {
+                wguser: { 
+                    required,
+                    maxLength: maxLength(20),
+                    regexValid
+                }
             }
         },
         methods: {
+            createWGuser() {
+                this.v$.$touch()
+                if ( this.v$.$invalid ) {
+                    
+                    return 
+                }
+            },
             showWgAdd() {
                 this.showAddMenu = true
-                this.$nextTick(() => {
+                this.$nextTick(() => { // textTick ждать полного рендеренга ДОМ
                     this.$refs.WGname.focus() // установка курсорва на поле ЛОГИН 
                 })
             },
-            closeWgAdd() {
+            closeWgAdd() { // закрываем меню добавляние профиля и очищаем форму
                 this.showAddMenu = false
-                this.wguser = ''
+                this.form.wguser = ''
+                this.location = null
+                this.v$.$reset()
+            },
+            setLocaltion(x) {
+                this.location = x
             }
         }
     }
@@ -66,6 +99,13 @@
     margin-left: 5px;
     /* transform: translate(-50%, -50%); */
     color: #313131;
+}
+.errorMsg {
+    padding-top: 5px;
+    width: 490px;
+    color: #313131;
+    font-size: 10px;
+    text-align: left;
 }
 .header {
     display: flex; 
@@ -122,5 +162,10 @@
   display: flex;
   align-items: center; /* Выравнивание по вертикали */
   gap: 5px; /* Отступы между элементами */
+}
+
+.wgadd img.selected {
+    border-bottom: 1px solid #313131;
+    padding-bottom: 3px;   
 }
 </style>
