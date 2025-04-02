@@ -23,8 +23,14 @@
                 <button class="btn" @click="closeWgAdd()">Отмена</button>
             </form>
         </div>
-        <div  v-if="v$.form.wguser.$error" class="errorMsg">
-            <span><b>Только: a-z, A-Z, 0-9 и максимум 20 символов</b></span><br>
+        
+        <div  v-if="v$.form.wguser.$error || v$.location.$error" class="errorMsg">
+            <span v-if="v$.form.wguser.$error" class="user-error">
+                Только: a-z, A-Z, 0-9 и максимум 20 символов
+            </span>
+            <span v-if="v$.location.$error" class="location-error">
+                Выбери локацию
+            </span>
         </div>
     </div>
 </template>
@@ -53,15 +59,30 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
                     maxLength: maxLength(20),
                     regexValid
                 }
-            }
+            },
+            location: { required }
         },
         methods: {
-            createWGuser() {
+            async createWGuser() {
                 this.v$.$touch()
                 if ( this.v$.$invalid ) {
-                    
-                    return 
+                    return // если срабатывает ничего не делаем
                 }
+
+                
+                const token = localStorage.getItem('jwt')
+                const req = await fetch('/users/wgcreate',{
+                    method: 'POST',
+                    headers: {
+                        'Content-type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                            user: this.form.wguser, // передаём имя 
+                            location: this.location // передаём локацию
+                        })
+                })
+
             },
             showWgAdd() {
                 this.showAddMenu = true
@@ -101,11 +122,22 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
     color: #313131;
 }
 .errorMsg {
+    position: relative;
     padding-top: 5px;
     width: 490px;
     color: #313131;
     font-size: 10px;
     text-align: left;
+}
+.user-error {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.location-error {
+    position: absolute;
+    top: 0; 
+    left: 275px;
 }
 .header {
     display: flex; 
@@ -116,9 +148,9 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
     font-size: 25px;
 }
 .header img {
-    width: 30px; /* Примерный размер */
+    width: 30px; 
     height: 30px;
-    margin-right: 10px; /* Отступ между картинкой и текстом */
+    margin-right: 5px;
 }
 .btn {
     display: inline-block;
@@ -159,9 +191,9 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
 }
 
 .wgadd form {
-  display: flex;
-  align-items: center; /* Выравнивание по вертикали */
-  gap: 5px; /* Отступы между элементами */
+    display: flex;
+    align-items: center; 
+    gap: 5px; 
 }
 
 .wgadd img.selected {
