@@ -210,7 +210,7 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
 @media (max-width: 620px) {
     .aria {
         border-radius: 0px;   
-        border: 1px solid #ffffff;
+        border: 0px solid #ffffff;
         padding: 0px;
         width: 100%;
         padding-bottom: 10px;

@@ -2,7 +2,7 @@
     <div class="main">          
         <div class="header">
             <div class="nav">
-                <RouterLink to="/"><img src="../img/logozbs.png" width="80"></RouterLink>
+                <RouterLink to="/"><img class="logo" src="../img/logozbs.png" width="80"></RouterLink>
                 <span class="header-text"><i>{{ username }}</i></span>
             </div>
             <div class="nav">
@@ -134,11 +134,14 @@
     }
 }
 @media (max-width: 410px) {
+    .logo {
+        width: 60px;
+    }
     img {
-        width: 40px;
+        width: 30px;
     }
     .header-text {
-        font-size: 38px;  
+        font-size: 35px;  
     }
     .header {
         margin-bottom: 10px;
