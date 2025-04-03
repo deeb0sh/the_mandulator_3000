@@ -6,7 +6,6 @@
                 <span class="header-text"><i>{{ username }}</i></span>
             </div>
             <div class="nav">
-                <!-- <RouterLink to="/radio"><img src="../img/logo_radio.png" width="70"></RouterLink> -->
                 <a href="#" @click="logOut()"><img src="../img/exit2.png" ></a>
             </div>
         </div>
@@ -18,9 +17,9 @@
             
         </div>
     </div>     
-    </template>
-    <script>
+</template>
 
+<script>
     export default {
         data() {
             return {
@@ -58,9 +57,9 @@
             }
         }
     }
-    </script>
+</script>
     
-    <style scoped>
+<style scoped>
     /* * {
         border: #ff00ff solid 1px;
     } */
@@ -68,41 +67,86 @@
         font-family: HH;
         font-size: 50px;  
         color: #313131; 
-    }
-    
+    }   
     .main {
         flex: 1 0 auto;
-        width: 90%;
+        width: 100%;
         display: flex;
         flex-direction: column;
         justify-content: top;
-        align-items:center;
+        align-items: center;
         
-    }
-    
+    }   
     .header {
         display: flex;
-        align-items: flex-start; /* Выравнивание по верхней границе */
+        align-items: flex-start; 
         justify-content: space-between;
         gap: 10px; 
-        min-width:950px;
+        width: 950px;
         margin-top: 20px;
         margin-bottom: 30px;
     }
 
     .container {
-
         display: flex;
         flex-wrap: nowrap; /* Позволяет переносить элементы на новую строку */
         align-items: flex-start; /* Выравнивание по верхней границе */
         gap: 3px; 
      }
-
-    
+   
     .nav {
         display: flex;
         justify-content: center;
         align-items: center;       
     }
 
-    </style>
+@media (max-width:950px ){
+    .header {
+        display: flex;
+        align-items: flex-start; 
+        justify-content: space-between;
+        gap: 10px; 
+        width: 100%;
+        margin-top: 5px;
+        margin-bottom: 15px;
+    }
+}
+@media (max-width:878px ) {
+    .container {
+        display: flex;
+        flex-direction: column-reverse;  /* Колонка в обратном порядке */
+        flex-wrap: wrap;                 /* Перенос на новую строку */
+        justify-content: center;         /* Центрирование */
+        height: auto;   
+    }
+}
+@media (max-width:620px ) {
+    .container {
+        display: flex;
+        flex-direction: column-reverse;  /* Колонка в обратном порядке */
+        flex-wrap: wrap;                 /* Перенос на новую строку */
+        justify-content: center;         /* Центрирование */
+        height: auto;
+        width: 100%;   
+    }
+    .header-text {
+        font-size: 45px;  
+    }
+}
+@media (max-width: 410px) {
+    img {
+        width: 40px;
+    }
+    .header-text {
+        font-size: 38px;  
+    }
+    .header {
+        margin-bottom: 10px;
+    }
+}
+@media (max-width: 320px) {
+    .header-text {
+        font-size: 27px;  
+    }
+}
+</style>

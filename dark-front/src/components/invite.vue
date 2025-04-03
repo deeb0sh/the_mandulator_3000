@@ -108,5 +108,14 @@ import { getVisitorId } from '../utils/fingerP'
 button:disabled {
     opacity: 0.5;
 }
+@media (max-width: 620px) {
+    .aria {
+        border-radius: 0px;   
+        border: 0px solid #ffffff;
+        padding: 10px;
+        width: 100%;
+        
+    }
+}
 </style>
   

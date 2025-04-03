@@ -15,12 +15,16 @@
         </div>
         <div v-else class="wgadd">
             <form @submit.prevent="createWGuser()">
-                <input ref="WGname" class="txt" type="text" placeholder="Имя пользователя" v-model.trim="form.wguser" />
-                <img src="../img/rus1.png" width="30" :class="{ selected: location === 'RU' }" @click="setLocaltion('RU')" />
-                <img src="../img/fin1.png" width="30" :class="{ selected: location === 'FI' }" @click="setLocaltion('FI')" />
-                <img src="../img/ger1.png" width="30" :class="{ selected: location === 'DE' }" @click="setLocaltion('DE')" />     
-                <button class="btn" @click="">Создать</button>
-                <button class="btn" @click="closeWgAdd()">Отмена</button>
+                <div class="nav">
+                    <input ref="WGname" class="txt" type="text" placeholder="Имя пользователя" v-model.trim="form.wguser" />
+                </div>
+                <div class="nav">
+                    <img src="../img/rus1.png" width="30" :class="{ selected: location === 'RU' }" @click="setLocaltion('RU')" />
+                    <img src="../img/fin1.png" width="30" :class="{ selected: location === 'FI' }" @click="setLocaltion('FI')" />
+                    <img src="../img/ger1.png" width="30" :class="{ selected: location === 'DE' }" @click="setLocaltion('DE')" />     
+                    <button class="btn" @click="">Создать</button>
+                    <button class="btn" @click="closeWgAdd()">Отмена</button>
+                </div>
             </form>
         </div>
         
@@ -117,7 +121,7 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
     border: 1px solid #ffffff;
     padding: 10px;
     width: 600px;
-    margin-left: 5px;
+    /* margin-left: 5px; */
     /* transform: translate(-50%, -50%); */
     color: #313131;
 }
@@ -189,15 +193,55 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
     color: #212529;
     opacity: 0.4;
 }
-
 .wgadd form {
     display: flex;
     align-items: center; 
     gap: 5px; 
 }
-
 .wgadd img.selected {
     border-bottom: 1px solid #313131;
     padding-bottom: 3px;   
 }
+.nav {
+    display: flex;
+    align-items: center; 
+    gap: 5px; 
+}
+@media (max-width: 620px) {
+    .aria {
+        border-radius: 0px;   
+        border: 1px solid #ffffff;
+        padding: 0px;
+        width: 100%;
+        padding-bottom: 10px;
+    }
+    .wgadd form {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        align-items: center; 
+        gap: 5px; 
+    }
+    .txt {
+        width: 220px;
+    }
+    .errorMsg {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        align-items: center; 
+        width: 100%;
+        /* padding: 3px; */
+    }
+    .user-error {
+        position: relative;
+    }
+    .location-error {
+        position: relative;
+        left: 0px;
+    }
+}
+
+
 </style>
