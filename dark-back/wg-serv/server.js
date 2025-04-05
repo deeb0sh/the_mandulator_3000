@@ -1,4 +1,6 @@
 import Fastify from "fastify";
+import wg from './api/wg.js'
+import prismaPlugin from './plugins/prisma.js'
 
 const fastify = Fastify({
     trustProxy: true, // Доверяем заголовку X-Forwarded-For
@@ -11,6 +13,10 @@ const fastify = Fastify({
     //     plugins: [ajvErrors]
     // }
 })
+fastify.register(prismaPlugin) // подключаем плагин призмы чтобы работало для всех роутов
+fastify.register(wg) // ==> ./api/wg.js
+
+
 
 const start = async () => {
     try {

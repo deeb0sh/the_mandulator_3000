@@ -1,0 +1,33 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id    Int     @id
+  name  String? @unique // Например: "basic", "premium" и т.д. (опционально)
+  speed Int     // скорость в Мбит/с
+  limits Limits[]
+}
+
+model Limits {
+  id          Int     @id @default(autoincrement())
+  login       String? @unique // Логин должен быть уникальным
+  roleId      Int?
+  role        Role?   @relation(fields: [roleId], references: [id])
+  userNetwork String  @default("10.0.0.0/29") // Значение по умолчанию
+  
+  // Добавляем виртуальное поле для удобства
+  @@map("limits")
+  @@index([roleId])
+}

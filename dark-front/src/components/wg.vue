@@ -75,14 +75,16 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
 
                 
                 const token = localStorage.getItem('jwt')
-                const req = await fetch('/users/wgcreate',{
+                const req = await fetch('/wg/create',{
                     method: 'POST',
                     headers: {
                         'Content-type': 'application/json',
                         'Authorization': `Bearer ${token}`,
                     },
                     body: JSON.stringify({
-                            user: this.form.wguser, // передаём имя 
+                            login: this.$route.params.user,
+                            role: this.$route.params.role,
+                            wguser: this.form.wguser, // передаём имя 
                             location: this.location // передаём локацию
                         })
                 })
