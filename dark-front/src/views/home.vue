@@ -23,52 +23,33 @@
 </template>
 
 <script>
-import { getVisitorId } from '../utils/fingerP' // отпечаток браузера
-
 export default {
     data(){
         return { 
             msg: "Расчудесный ресурс ❤️"
         };
     },
-    mounted() {
-        //
-    },
     methods: {
         OnMouseMSG(x) {
             this.msg = x
         },
-        async checkToken() {
+        checkToken() {
             const token = localStorage.getItem('jwt') // берём токен из локального хранилища
             if (!token) {                       // если его там нет, то идём его получать
                 //this.$refs.modal.showLogin = true
                 document.documentElement.style.overflow = 'hidden'
                 this.$refs.modal.openLogin() // вызываем функцию openLogin() в компоненте login-modal.vue(ref=modal)
             } 
-            else {   // если токен есть то отправлякем его на бэк на валидацию
-                const fingerprint = await getVisitorId() //  fingerprint
-                try {
-                    const resp = await fetch('/auth/login', {
-                        method: 'GET',
-                        headers: {
-                            'Content-type': 'application/json',
-                            'Authorization': `Bearer ${token}`,
-                            'X-Fingerprint': fingerprint
-                        }
-                    })
-                    const data = await resp.json() // ответ от гет 
-                    if (data.message === "invalid") {
-                        document.documentElement.style.overflow = 'hidden'
-                        this.$refs.modal.openLogin() // вызываем функцию openLogin() в компоненте login-modal.vue(ref=modal)
-                    } 
-                    else {
-                        localStorage.setItem('jwt', data.tokenNew) // перезаписываем
-                        this.$router.push('/m3000')
-                    }
-                }
-                catch(err) {
-                    console.log(err)
-                }
+            else {   // если токен есть то идём на /m3000 дале перехватываем переход роутером index.js             
+                this.$router.replace('/m3000').then(() => {
+                     this.$router.replace('/m3000')
+                })
+                // this.$router.replace('/m3000?qweqwtqqwwqyteqweqwe');
+                // this.$router.replace('/m3000');
+                
+                // if (this.$route.path !== '/m3000') {
+                //     this.$router.push('/m3000');
+                // }
             } 
         }
     }

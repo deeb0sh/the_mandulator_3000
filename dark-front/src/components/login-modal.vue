@@ -144,12 +144,13 @@ import { useRouter } from 'vue-router'
 
                     const res = await req.json()
 
-                    if (res.message == "ok!") {
+                    if (res.message === "valid") {
                         localStorage.setItem('jwt', res.token) // принимаем токен и записываем в localStorage 
                         onErr.value = "выполняется вход..."
                         //onErr.value = res.token
                         resetFormReg()
-                        router.push('/m3000')
+                        router.replace('/m3000')
+
                     }
                     else {
                         onErr.value = res.message;

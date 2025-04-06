@@ -4,12 +4,10 @@ import { headersValid } from '../schemas/headersvalid.js'
 import jwt from '@fastify/jwt'
 
 export default async function loginApi(fastify) {
-    
     fastify.register(jwt,{ // регистарция jwt плагина
         secret: process.env.JWT_SECRET // секрет в.env JWT_SECRET=""
     })
-
-    // валидация токена
+    // валидация токена + поиск сессии
     fastify.get('/auth/login', {
         schema: {
             headers: headersValid // валидация хедеров
@@ -18,16 +16,14 @@ export default async function loginApi(fastify) {
     async(request, reply) => {
         const token = request.headers.authorization.replace('Bearer ', '') // выпилваем из токена bearer
         const fprint = request.headers['x-fingerprint'] // выпиливаем fingerprint
-
         if (!token) {
             fastify.log.warn('Попытка входа без токена')
             return reply.send({ message: "invalid" })
         }
-
         try {
             fastify.log.info('Проверка токена...')
             const decod = await request.jwtVerify() // request.jwtVerify() берёт токен автоматический из хедера authorization 
-            const sessionValid = await fastify.prisma.session.findFirst({
+            const sessionValid = await fastify.prisma.session.findFirst({ // ищем сессию
                 where: {
                     token: token,
                     fingerPrint: fprint
@@ -36,57 +32,13 @@ export default async function loginApi(fastify) {
                     id: true
                 }
             })
-            if ( sessionValid === null ) {
+            if ( sessionValid === null ) { // проверяем сессию (токен + отпечаток) ( фпизду перезапимсываение токена )
                 fastify.log.warn('Невалидная сессия')
                 return reply.send({ "message": "invalid" })
             } 
-
             const user = decod.user
-            const expTime = new Date()
-            expTime.setHours(expTime.getHours() + 24)
-            const tokenNew = fastify.jwt.sign({ user, expiresIn: '24h'})
-            //console.log(user, expTime, sessionValid.id)
-
-            await fastify.prisma.session.update({ // если всё отлично, то перевыпускаем токен и записываем (предотвратили протузание токена во время работы пользователя)
-                where: {
-                     id: sessionValid.id
-                },
-                data: {
-                    updateAt: new Date(),
-                    token: tokenNew,
-                    exp: expTime
-                }
-            })
-
-            
-            const dataUser = await fastify.prisma.users.findFirst({ // извлекаем uuid пользователя и его роль
-                where: {
-                    login: user
-                },
-                select:{
-                    id: true,
-                    roleID: true,
-                }
-            })
-
-            const role = dataUser.roleID
-            const uuid = dataUser.id
-
-            const invite = await fastify.prisma.inviteList.findFirst({
-                where: {
-                    authorID: uuid,
-                    active: true
-                },
-                select: {
-                    code: true
-                },
-                take: 1
-            })
-
-            const code = invite?.code || null // переменная code равна значению из inviteList.code , если поле пустое то null
-
-            fastify.log.info(`Пользователь ${user} успешно обновил токен `)
-            return reply.status(200).send({ message: "valid" , user, tokenNew, role, code }) // отправляем ответ , имя пользователя , новый токен, роль и инвайты
+            fastify.log.info(`Пользователь ${user} вошёл `)
+            return reply.status(200).send({ message: "valid" }) // отправляем ответ , имя пользователя , новый токен, роль и инвайты
         }
         catch(err) {
             fastify.log.error(`Ошибка проверки токена: ${err.message}`)
@@ -94,7 +46,7 @@ export default async function loginApi(fastify) {
         }
     })
 
-    // логинизация :D
+    // логинизация 
     fastify.post('/auth/login',{ 
         schema: {
             body: loginValid  // валидация 
@@ -105,32 +57,28 @@ export default async function loginApi(fastify) {
         //console.log(fingerprint)
         const userAgent = request.headers['user-agent'] // user-agent пользователя      
         const userIp = request.ip // ip пользователя
-
         fastify.log.info(`Попытка входа: ${user} с IP ${userIp}`)
-
         const checkUser = await fastify.prisma.users.findUnique({
             where: {
                 login: user
             },
             select: {
                 password: true,
-                salt: true
+                salt: true,
+                roleID: true,
+                id: true
             }
         })
-
         if (!checkUser) {
             fastify.log.warn(`Пользователь ${user} не найден`)
             return reply.send({ message: "пользователь не найден" })
         }
-
         const checkPasswd = await verifyPasswd(password, checkUser.password , checkUser.salt)
-        
         if (!checkPasswd) {
             fastify.log.warn(`Неверный пароль для пользователя ${user}`)
             return reply.send({ message: "пароль не верный" })
         }
-
-        await fastify.prisma.users.update({
+        await fastify.prisma.users.update({ // обвноляем информации о последнем в ходе 
             where: {
                 login: user
             },
@@ -139,23 +87,13 @@ export default async function loginApi(fastify) {
                 updatedAt: new Date()
             }
         })
-
-        const token = fastify.jwt.sign({ user, expiresIn: '24h'}) // генерируем токет 24 часа ттл
+        const role = checkUser.roleID
+        const token = fastify.jwt.sign({ user, role, expiresIn: '24h'}) // генерируем токет 24 часа ттл + роль передаём в токене
         const expTime = new Date()
         expTime.setHours(expTime.getHours() + 24)
-
-        const userID = await fastify.prisma.users.findUnique({ // извлекаем id пользователя 
-            where: {
-                login: user
-            },
-            select:{
-                id: true
-            }
-        })
-              
         await fastify.prisma.session.create({ // создаём запись о сессии
             data:{
-                ownerID: userID.id , // user.id 
+                ownerID: checkUser.id , // user.id 
                 token: token,
                 exp: expTime, // дата протухания 
                 userIp: userIp,
@@ -163,12 +101,8 @@ export default async function loginApi(fastify) {
                 fingerPrint: fingerprint
             }
         })
-        
         //reply.header('set-cookie',`token=${token}; Path=/; HttpOnly; Max-Age=86400; SameSite=Strict`)
         fastify.log.info(`Пользователь ${user} успешно вошел`)
-        return reply.status(200).send({ // возвращаем пользователю токен
-            message: 'ok!',
-            token: token
-        })
+        return reply.status(200).send({ message: 'valid', token })
     })
 }

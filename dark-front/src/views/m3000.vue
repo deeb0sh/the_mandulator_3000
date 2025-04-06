@@ -1,17 +1,18 @@
 <template> 
-    <div class="main">          
+    <div class="main" v-if="isValidating === false">   <!-- не показываем станицу пока не будит проведена валидация-->      
         <div class="header">
             <div class="nav">
                 <RouterLink to="/"><img class="logo" src="../img/logozbs.png" width="80"></RouterLink>
-                <span class="header-text"><i>{{ username }}</i></span>
+                <span class="header-text"><i> username </i></span>
             </div>
             <div class="nav">
                 <a href="#" @click="logOut()"><img src="../img/exit2.png" ></a>
             </div>
         </div>
         <div class="container">
-            <invite v-if="checkRole3(roleID) || checkRole2(roleID)" />  <!--  инваты создают только роли 2 и 3  -->
-            <WG />
+            {{ token }}
+            <!-- <invite v-if="checkRole3(roleID) || checkRole2(roleID)" />   инваты создают только роли 2 и 3  -->
+           <!-- <WG /> -->
         </div>
         <div>
             
@@ -20,21 +21,21 @@
 </template>
 
 <script>
+import { getVisitorId } from '../utils/fingerP'
+
     export default {
+        name: 'm3000',
         data() {
             return {
-                username: null,
-                roleID: null,
-                inCode: null
+                 token: null,
+                 isValidating: true,
+                //username: null,
+                //roleID: null,
+                // inCode: null
             }
         },
-        created() {
-                this.username = this.$route.params.user // username из jwt передано с auth-serv
-                this.roleID = this.$route.params.role // получаем роль пользлвателя
-                this.inCode = this.$route.params.code // текущий инвайт
-        },
-        mounted() {
-           // 
+        async mounted() { // валидация сессии до рендеренга мандулятора
+            await this.sessionValid()
         },
         methods: {
             checkRole3(x) {
@@ -48,6 +49,36 @@
             },
             checkRole0 (x) {
                 return x === 0
+            },
+            async sessionValid() {
+                try {
+                const token = localStorage.getItem('jwt');
+                if (!token) {
+                    this.$router.push('/') // если токена нет, перенаправляем на главную
+                    return
+                }
+                const fingerprint = await getVisitorId()
+                const res = await fetch('/auth/login', {
+                        method: 'GET',
+                        headers: {
+                                 'Content-Type': 'application/json',
+                                 'Authorization': `Bearer ${token}`,
+                                 'X-Fingerprint': fingerprint,
+                         },
+                })
+                const data = await res.json();
+                if (data.message === 'valid') {
+                    this.token = token
+                    this.isValidating = false // Валидация прошла успешно, показываем страницу   
+                }
+                else {
+                    localStorage.removeItem('jwt');
+                    this.$router.push('/'); // если токен невалидный, перенаправляем на главную
+                }
+              } 
+              catch (e) {
+                this.$router.push('/'); // ошибка, перенаправляем на главную
+              }
             },
             logOut() {
                 if (confirm("Вы уверены, что хотите выйти?")) {

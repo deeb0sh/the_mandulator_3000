@@ -56,6 +56,9 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
                 v$: useVuelidate()
             }
         },
+        created() {
+            this.userCheck()
+        },
         validations: {
             form: {
                 wguser: { 
@@ -67,14 +70,31 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
             location: { required }
         },
         methods: {
-            async createWGuser() {
+            async userCheck() {
+                const token = localStorage.getItem('jwt')
+                const req = await fetch('/wg/check',{
+                    method: 'GET',
+                    headers: {
+                        'Content-type': 'application/json', 
+                        'Authorization': `Bearer ${token}`, // токен на проверку
+                    }
+                })
+
+                const data = await req.json() // ждём ответ от сервера
+                if ( data.message == "invalid") {
+                    localStorage.removeItem('jwt')
+                    this.$router.push('/')
+                }
+                console.log(data)
+            },
+            async createWGuser() { // метод создание впн-полтьзователя
                 this.v$.$touch()
                 if ( this.v$.$invalid ) {
-                    return // если срабатывает ничего не делаем
+                    return // если срабатывает ничего не делаем 
                 }
 
                 
-                const token = localStorage.getItem('jwt')
+                const token = localStorage.getItem('jwt') // 
                 const req = await fetch('/wg/create',{
                     method: 'POST',
                     headers: {

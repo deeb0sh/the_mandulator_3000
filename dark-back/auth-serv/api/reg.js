@@ -23,7 +23,7 @@ export default async function regApi(fastify) {
     
             if (!checkInCode) {
                 request.log.warn(`Неверный инвайт-код: ${inCode} (мб брут)`) // фиксация неудачного инвайта
-                return reply.status(400).send({ message: "инвайт-код устарел или его не существует" })
+                return reply.send({ message: "инвайт-код устарел или его не существует" })
             }
     
             const checkLogin = await fastify.prisma.users.findFirst({
@@ -37,7 +37,7 @@ export default async function regApi(fastify) {
     
             if (checkLogin) { // если true воврящаем json с ошибкой
                 request.log.warn(`Попытка регистрации с уже существующим логином: ${user}`)
-                return reply.status(400).send({ message: "Пользователь с таким именем существует" })
+                return reply.send({ message: "Пользователь с таким именем существует" })
             }
     
             const { hash, salt } = await hashPasswd(password) // получаем hash и salt (соль и спайс)
