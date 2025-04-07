@@ -1,5 +1,5 @@
 import { incodeValid } from "../schemas/incodeValid.js"
-import { headersValid } from "../schemas/headersvalid.js"
+import { headersJwtValid } from '../schemas/headersJWTvalid.js'
 import jwt from '@fastify/jwt'
 
 export default async function incodeApi(fastify) {
@@ -8,63 +8,75 @@ export default async function incodeApi(fastify) {
             secret: process.env.JWT_SECRET // секрет в.env JWT_SECRET=""
     })
 
-    fastify.get('/auth/incode', async (request, reply) => {
-        return { message: 'invalid' };
-    })
-
-    fastify.post('/auth/incode',{
+    fastify.get('/auth/incode', { 
         schema: {
-               body: incodeValid, // схема валидации
-               headers: headersValid // валидация хедеров
+                headers: headersJwtValid // валидация хедеров один JWT
             }
         },
         async(request, reply) => {
-            const { incode, role }  = request.body
             try {
-                const decod = await request.jwtVerify() // валидация JWT
+                const decod = await request.jwtVerify() // валидация JWT если не валидный то возарвщаем ошибку
                 const user = decod.user
-
-                const token = request.headers.authorization.replace('Bearer ', '') // выпилваем из токена bearer
-                const fprint = request.headers['x-fingerprint'] // выпиливаем fingerprint
-                
-                const sessionValid = await fastify.prisma.session.findFirst({ // ищем сессию в бд
+                const getID = await fastify.prisma.users.findFirst ({
                     where: {
-                        token: token,
-                        fingerPrint: fprint
+                        login: user
                     },
                     select: {
-                        ownerID: true
-                    }
-                })
-
-                const roleValid = await fastify.prisma.users.findFirst({ // если id есть тогда роль соответствует логину
-                    where: {
-                        login: user,
-                        roleID: Number(role)
-                    },
-                    select:{
                         id: true
                     }
                 })
+                const uuid = getID.id
+                const getCode = await fastify.prisma.inviteList.findFirst({
+                    where: {
+                        authorID: uuid,
+                        active: true
+                    },
+                    select: {
+                        code: true
+                    }
+                })
+                if (getCode) {
+                    const code = getCode.code
+                    return reply.send({ inCode: code})
+                }
+                return reply.send({ inCode: "null"})
+            }
+            catch (e) {
+                return { message: `invalid ${e}` }
+            }
+        })
 
-                if ( sessionValid === null || roleValid === null ) { // проверяем сессию и результат login|role
-                    fastify.log.warn('Невалидная сессия')
-                    return reply.send({ "message": "invalid" })
-                } 
-                
-                const uuid = sessionValid.ownerID // UUID пользователя
-
+    fastify.post('/auth/incode',{
+        schema: {
+               body: incodeValid, // схема валидации тело POST
+               headers: headersJwtValid // валидация хедерА auth
+            }
+        },
+        async(request, reply) => {
+            const { incode }  = request.body
+            try {
+                const decod = await request.jwtVerify() // валидация JWT если не валидный то возарвщаем ошибку
+                const user = decod.user
+                const getID = await fastify.prisma.users.findFirst ({
+                    where: {
+                        login: user
+                    },
+                    select: {
+                        id: true
+                    }
+                })
+                const uuid = getID.id
                 await fastify.prisma.inviteList.create({
                     data: {
                         authorID: uuid,
                         code: incode
                     }
                 })
-
-                return reply.send({ message: "ok!" })
+                return reply.send({ incode: incode })
             }
             catch(err) {
-                return reply.send({ message: `error ${err}` })
+                fastify.log.warn('Невалидный токен')
+                return reply.send({ message: `invalid ${err}` })
             }
         }
     )

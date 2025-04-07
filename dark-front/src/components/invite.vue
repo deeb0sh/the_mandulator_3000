@@ -9,8 +9,6 @@
 </template>
   
 <script>
-import { getVisitorId } from '../utils/fingerP'
-
     export default {
         data() {
             return {
@@ -22,9 +20,20 @@ import { getVisitorId } from '../utils/fingerP'
             this.checkCode()
         },
         methods: {
-            checkCode() {
-                if (this.$route.params.code) {
-                    this.inCode = this.$route.params.code
+            async checkCode() {
+                const token = localStorage.getItem('jwt') // берём токен из локального хранилища
+                const resp = await fetch('/auth/incode',{
+                    method: 'GET',
+                    headers: {
+                        'Content-type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    }})
+                const data = await resp.json()
+                if (data.inCode === 'null') {
+                    this.check = false
+                } 
+                else {
+                    this.inCode = data.inCode
                     this.check = true
                 }
             },
@@ -32,37 +41,24 @@ import { getVisitorId } from '../utils/fingerP'
                 const part1 = Math.random().toString(36).substring(2, 6).toUpperCase()
                 const part2 = Math.random().toString(36).substring(2, 6).toUpperCase()
                 this.inCode = `${part1}-${part2}`
-                const fingerprint = await getVisitorId() // генерируем отпечаток браузера
+                this.check = true
                 const token = localStorage.getItem('jwt') // берём токен из локального хранилища
-                
-                const response = await fetch('/auth/incode', {
+                const response = await fetch('/auth/incode',{
                     method: 'POST',
                     headers: {
                         'Content-type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                        'X-Fingerprint': fingerprint,
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({
                             incode: this.inCode,
-                            role: this.$route.params.role
                         })
                     })
-
                 const data = await response.json()
-                
-                if (data.message == "invalid") {
-                    localStorage.removeItem('jwt')
-                    this.$router.push('/')
-                }
-
-                if (data.message == "ok!") {
-                    this.check = true
-                }
-
-            }     
+                this.inCode = data.incode
+              
+            }
         }
-    }
-    
+    }  
 </script>
 
 <style scoped>
@@ -110,7 +106,7 @@ button:disabled {
 }
 @media (max-width: 620px) {
     .aria {
-        border-radius: 0px;   
+        border-radius: 6px;   
         border: 0px solid #ffffff;
         padding: 10px;
         width: 100%;

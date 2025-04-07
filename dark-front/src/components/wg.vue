@@ -57,7 +57,7 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
             }
         },
         created() {
-            this.userCheck()
+            // this.userCheck()
         },
         validations: {
             form: {
@@ -85,7 +85,6 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
                     localStorage.removeItem('jwt')
                     this.$router.push('/')
                 }
-                console.log(data)
             },
             async createWGuser() { // метод создание впн-полтьзователя
                 this.v$.$touch()
@@ -142,6 +141,7 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
     border-radius: 8px;   
     border: 1px solid #ffffff;
     padding: 10px;
+    
     width: 600px;
     /* margin-left: 5px; */
     /* transform: translate(-50%, -50%); */
@@ -167,10 +167,10 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
 }
 .header {
     display: flex; 
-    align-items: center; /* Выравнивание по вертикали */
-    justify-content: start; /* Оставляем элементы слева (по умолчанию) */
-    height: 100%; /* Пример фиксированной высоты */
-    padding: 10px; /* Отступы */
+    align-items: center; 
+    justify-content: start; 
+    height: 100%; 
+    padding: 10px; 
     font-size: 25px;
 }
 .header img {
@@ -231,7 +231,7 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
 }
 @media (max-width: 620px) {
     .aria {
-        border-radius: 0px;   
+        border-radius: 6px;   
         border: 0px solid #ffffff;
         padding: 0px;
         width: 100%;

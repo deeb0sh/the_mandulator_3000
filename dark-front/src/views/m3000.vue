@@ -3,16 +3,15 @@
         <div class="header">
             <div class="nav">
                 <RouterLink to="/"><img class="logo" src="../img/logozbs.png" width="80"></RouterLink>
-                <span class="header-text"><i> username </i></span>
+                <span class="header-text"><i> {{ username }}  </i></span>
             </div>
             <div class="nav">
                 <a href="#" @click="logOut()"><img src="../img/exit2.png" ></a>
             </div>
         </div>
         <div class="container">
-            {{ token }}
-            <!-- <invite v-if="checkRole3(roleID) || checkRole2(roleID)" />   инваты создают только роли 2 и 3  -->
-           <!-- <WG /> -->
+            <invite v-if="checkRole3(roleID) || checkRole2(roleID)" />   <!-- инваты создают только роли 2 и 3  -->
+            <WG />
         </div>
         <div>
             
@@ -21,17 +20,17 @@
 </template>
 
 <script>
-import { getVisitorId } from '../utils/fingerP'
-
+import { getVisitorId } from '../utils/fingerP' // фингер принт
+import { jwtDecode } from 'jwt-decode'
     export default {
         name: 'm3000',
         data() {
             return {
                  token: null,
                  isValidating: true,
-                //username: null,
-                //roleID: null,
-                // inCode: null
+                 username: null,
+                 roleID: null,
+                 inCode: null
             }
         },
         async mounted() { // валидация сессии до рендеренга мандулятора
@@ -52,33 +51,36 @@ import { getVisitorId } from '../utils/fingerP'
             },
             async sessionValid() {
                 try {
-                const token = localStorage.getItem('jwt');
-                if (!token) {
-                    this.$router.push('/') // если токена нет, перенаправляем на главную
-                    return
+                    const token = localStorage.getItem('jwt');
+                    if (!token) {
+                        this.$router.push('/') // если токена нет, перенаправляем на главную
+                        return
+                    }
+                    const fingerprint = await getVisitorId()
+                    const res = await fetch('/auth/login', {
+                            method: 'GET',
+                            headers: {
+                                     'Content-Type': 'application/json',
+                                     'Authorization': `Bearer ${token}`,
+                                     'X-Fingerprint': fingerprint,
+                             },
+                    })
+                    const data = await res.json();
+                    if (data.message === 'valid') {
+                        this.token = token
+                        this.isValidating = false // Валидация прошла успешно, показываем страницу
+                        const decod = jwtDecode(token)
+                        this.username = decod.user
+                        this.roleID = decod.role 
+                    }   
+                    else {
+                        localStorage.removeItem('jwt');
+                        this.$router.push('/'); // если токен невалидный, перенаправляем на главную
+                    }
+                } 
+                catch (e) {
+                    this.$router.push('/'); // ошибка, перенаправляем на главную
                 }
-                const fingerprint = await getVisitorId()
-                const res = await fetch('/auth/login', {
-                        method: 'GET',
-                        headers: {
-                                 'Content-Type': 'application/json',
-                                 'Authorization': `Bearer ${token}`,
-                                 'X-Fingerprint': fingerprint,
-                         },
-                })
-                const data = await res.json();
-                if (data.message === 'valid') {
-                    this.token = token
-                    this.isValidating = false // Валидация прошла успешно, показываем страницу   
-                }
-                else {
-                    localStorage.removeItem('jwt');
-                    this.$router.push('/'); // если токен невалидный, перенаправляем на главную
-                }
-              } 
-              catch (e) {
-                this.$router.push('/'); // ошибка, перенаправляем на главную
-              }
             },
             logOut() {
                 if (confirm("Вы уверены, что хотите выйти?")) {
@@ -101,12 +103,11 @@ import { getVisitorId } from '../utils/fingerP'
     }   
     .main {
         flex: 1 0 auto;
-        width: 100%;
+        width: 98%;
         display: flex;
         flex-direction: column;
         justify-content: top;
-        align-items: center;
-        
+        align-items: center;     
     }   
     .header {
         display: flex;
@@ -175,7 +176,7 @@ import { getVisitorId } from '../utils/fingerP'
         font-size: 35px;  
     }
     .header {
-        margin-bottom: 10px;
+        margin: 10px;
     }
 }
 @media (max-width: 320px) {
