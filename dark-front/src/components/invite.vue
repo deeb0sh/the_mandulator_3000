@@ -13,7 +13,7 @@
         data() {
             return {
                 inCode: "****-****",
-                check: false
+                check: true
             }
         },
         created() {
