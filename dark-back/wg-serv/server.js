@@ -1,5 +1,5 @@
 import Fastify from "fastify";
-import wg from './api/wg.js'
+import wgCheckApi from './api/checkApi.js'
 import prismaPlugin from './plugins/prisma.js'
 
 const fastify = Fastify({
@@ -14,7 +14,7 @@ const fastify = Fastify({
     // }
 })
 fastify.register(prismaPlugin) // подключаем плагин призмы чтобы работало для всех роутов
-fastify.register(wg) // ==> ./api/wg.js
+fastify.register(wgCheckApi) // ==> ./api/wg.js
 
 
 

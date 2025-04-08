@@ -3,7 +3,7 @@
         <div class="header">
             <div class="nav">
                 <RouterLink to="/"><img class="logo" src="../img/logozbs.png" width="80"></RouterLink>
-                <span class="header-text"><i> {{ username }}  </i></span>
+                <span class="header-text"><i> DarkSurf.ru </i></span>
             </div>
             <div class="nav">
                 <a href="#" @click="logOut()"><img src="../img/exit2.png" ></a>
@@ -162,7 +162,7 @@ import { jwtDecode } from 'jwt-decode'
         width: 100%;   
     }
     .header-text {
-        font-size: 45px;  
+        font-size: 40px;  
     }
 }
 @media (max-width: 410px) {

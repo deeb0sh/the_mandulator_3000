@@ -13,6 +13,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ServerType {
+  RU
+  DE
+  FI
+}
+
+model UserSubnet {
+  id          Int        @id @default(autoincrement())
+  user        Users      @relation(fields: [userId], references: [id])
+  userId      Int
+  network        String     // например "10.11.0.0/29"
+  serverType  ServerType
+
+  createdAt   DateTime   @default(now())
+
+  @@unique([userId, serverType]) // у одного пользователя одна подсеть на тип сервера
+}
+
+model UserAccess {
+  id         Int        @id @default(autoincrement())
+  userId     Int
+  user       Users      @relation(fields: [userId], references: [id])
+  serverType ServerType
+  allowed    Boolean    @default(true)
+
+  @@unique([userId, serverType])
+}
+
 model Role {
   id    Int     @id // id роли 0 1 2 3 
   name  String? @unique // имя роли
@@ -27,14 +55,16 @@ model Users {
   login       String? @unique
   roleId      Int?
   role        Role?   @relation(fields: [roleId], references: [id])
-  
-  serverRuId  Int?
+  serverRuId  String?
   serverRu    ServerRu? @relation("UserToServerRu", fields: [serverRuId], references: [id])
 
-  serverDeId  Int?
+  access      UserAccess[] // доступ пользователя в серверам поумолчанию true
+  subnets     UserSubnet[]   // cвязь с подсетями
+  
+  serverDeId  String?
   serverDe    ServerDe? @relation("UserToServerDe", fields: [serverDeId], references: [id])
 
-  serverFiId  Int?
+  serverFiId  String?
   serverFi    ServerFi? @relation("UserToServerFi", fields: [serverFiId], references: [id])
 
   @@map("users")
@@ -42,9 +72,9 @@ model Users {
 }
 
 model ServerRu {
-  id         Int       @id @default(autoincrement())
+  id         String    @id @default(uuid())
   name       String    @default("wg-ru")
-  lan        String    @default("10.1.0.0/16") // Address = 
+  lan        String    @default("10.11.0.0/16") // Address = 
   publicKey  String
   privatKey  String
   port       Int       @default(51820) // ListenPort = 51820
@@ -55,9 +85,9 @@ model ServerRu {
 }
 
 model ServerDe {
-  id         Int       @id @default(autoincrement())
+  id         String    @id @default(uuid())
   name       String    @default("wg-de")
-  lan        String    @default("10.2.0.0/16") // Address =
+  lan        String    @default("10.12.0.0/16") // Address =
   publicKey  String
   privatKey  String
   port       Int       @default(51820) // ListenPort = 51820
@@ -68,9 +98,9 @@ model ServerDe {
 }
 
 model ServerFi {
-  id         Int       @id @default(autoincrement())
+  id         String    @id @default(uuid())
   name       String    @default("wg-fi")
-  lan        String    @default("10.3.0.0/16") // Address =
+  lan        String    @default("10.13.0.0/16") // Address =
   publicKey  String
   privatKey  String
   port       Int       @default(51820) // ListenPort = 51820
@@ -91,7 +121,7 @@ model ClientRU {
   dns        String    @default("45.142.122.244, 77.221.159.104")
   createdAt  DateTime  @default(now())
 
-  serverId   Int
+  serverId   String
   server     ServerRu  @relation(fields: [serverId], references: [id])
 }
 
@@ -106,7 +136,7 @@ model ClientDe {
   dns        String    @default("45.142.122.244, 77.221.159.104")
   createdAt  DateTime  @default(now())
 
-  serverId   Int
+  serverId   String
   server     ServerDe  @relation(fields: [serverId], references: [id])
 }
 
@@ -121,6 +151,6 @@ model ClientFi {
   dns        String    @default("45.142.122.244, 77.221.159.104")
   createdAt  DateTime  @default(now())
 
-  serverId   Int
+  serverId   String
   server     ServerFi  @relation(fields: [serverId], references: [id])
 }

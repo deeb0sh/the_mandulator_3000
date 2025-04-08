@@ -53,11 +53,11 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
                 form: {
                     wguser: ''
                 },
-                v$: useVuelidate()
+                v$: useVuelidate() // подрубаем валидатор vuelidate
             }
         },
         created() {
-            // this.userCheck()
+            this.userCheck()
         },
         validations: {
             form: {
@@ -79,7 +79,6 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
                         'Authorization': `Bearer ${token}`, // токен на проверку
                     }
                 })
-
                 const data = await req.json() // ждём ответ от сервера
                 if ( data.message == "invalid") {
                     localStorage.removeItem('jwt')
@@ -87,26 +86,24 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
                 }
             },
             async createWGuser() { // метод создание впн-полтьзователя
-                this.v$.$touch()
-                if ( this.v$.$invalid ) {
-                    return // если срабатывает ничего не делаем 
-                }
-
-                
-                const token = localStorage.getItem('jwt') // 
-                const req = await fetch('/wg/create',{
-                    method: 'POST',
-                    headers: {
-                        'Content-type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
-                    body: JSON.stringify({
-                            login: this.$route.params.user,
-                            role: this.$route.params.role,
-                            wguser: this.form.wguser, // передаём имя 
-                            location: this.location // передаём локацию
-                        })
-                })
+                // this.v$.$touch()
+                // if ( this.v$.$invalid ) {
+                //     return // если срабатывает ничего не делаем 
+                // }
+                // const token = localStorage.getItem('jwt') // 
+                // const req = await fetch('/wg/create',{
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-type': 'application/json',
+                //         'Authorization': `Bearer ${token}`,
+                //     },
+                //     body: JSON.stringify({
+                //             login: this.$route.params.user,
+                //             role: this.$route.params.role,
+                //             wguser: this.form.wguser, // передаём имя 
+                //             location: this.location // передаём локацию
+                //         })
+                // })
 
             },
             showWgAdd() {
