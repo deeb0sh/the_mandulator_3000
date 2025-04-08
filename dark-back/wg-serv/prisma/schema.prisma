@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum ServerType {
+enum ServerName {
   RU
   DE
   FI
@@ -23,31 +17,21 @@ model UserSubnet {
   id          Int        @id @default(autoincrement())
   user        Users      @relation(fields: [userId], references: [id])
   userId      Int
-  network        String     // например "10.11.0.0/29"
-  serverType  ServerType
+  network     String     // Например "10.11.0.0/29"
+  serverName  ServerName // enum (RU, DE, FI)
 
   createdAt   DateTime   @default(now())
 
-  @@unique([userId, serverType]) // у одного пользователя одна подсеть на тип сервера
-}
-
-model UserAccess {
-  id         Int        @id @default(autoincrement())
-  userId     Int
-  user       Users      @relation(fields: [userId], references: [id])
-  serverType ServerType
-  allowed    Boolean    @default(true)
-
-  @@unique([userId, serverType])
+  @@unique([userId, serverName]) // У одного пользователя одна подсеть на тип сервера
 }
 
 model Role {
-  id    Int     @id // id роли 0 1 2 3 
-  name  String? @unique // имя роли
-  speed Int? // ограничение пропускной способности роли
-  network Int? // размер сети роли
-  networkReserv Int @default(28)// Резервирование сети
-  uesrs Users[]
+  id            Int      @id // id роли 0 1 2 3
+  name          String?  @unique // имя роли
+  speed         Int?     // ограничение пропускной способности роли
+  network       Int?     // размер сети роли
+  networkReserv Int      @default(28) // Резервирование сети
+  users         Users[]  // Пользователи с данной ролью
 }
 
 model Users {
@@ -55,102 +39,40 @@ model Users {
   login       String? @unique
   roleId      Int?
   role        Role?   @relation(fields: [roleId], references: [id])
-  serverRuId  String?
-  serverRu    ServerRu? @relation("UserToServerRu", fields: [serverRuId], references: [id])
 
-  access      UserAccess[] // доступ пользователя в серверам поумолчанию true
-  subnets     UserSubnet[]   // cвязь с подсетями
-  
-  serverDeId  String?
-  serverDe    ServerDe? @relation("UserToServerDe", fields: [serverDeId], references: [id])
-
-  serverFiId  String?
-  serverFi    ServerFi? @relation("UserToServerFi", fields: [serverFiId], references: [id])
+  subnets     UserSubnet[]  // Подсети, связанные с пользователем
+  clients     Client[]      // Все клиенты, принадлежащие пользователю
 
   @@map("users")
   @@index([roleId])
 }
 
-model ServerRu {
-  id         String    @id @default(uuid())
-  name       String    @default("wg-ru")
-  lan        String    @default("10.11.0.0/16") // Address = 
+model Server {
+  id         Int     @id @default(autoincrement())
+  serverName ServerName  // Тип сервера (RU, DE, FI)
+  lan        String      // IP адрес с маской подсети (например, "10.11.0.0/16")
   publicKey  String
   privatKey  String
-  port       Int       @default(51820) // ListenPort = 51820
-  createdAt  DateTime  @default(now())
+  port       Int         @default(51820)  // Порт по умолчанию
+  createdAt  DateTime    @default(now())
 
-  clients    ClientRU[]
-  users      Users[]   @relation("UserToServerRu")
+  clients    Client[]    // Все клиенты могут быть привязаны к одному серверу
 }
 
-model ServerDe {
-  id         String    @id @default(uuid())
-  name       String    @default("wg-de")
-  lan        String    @default("10.12.0.0/16") // Address =
-  publicKey  String
-  privatKey  String
-  port       Int       @default(51820) // ListenPort = 51820
-  createdAt  DateTime  @default(now())
-
-  clients    ClientDe[]
-  users      Users[]   @relation("UserToServerDe")
-}
-
-model ServerFi {
-  id         String    @id @default(uuid())
-  name       String    @default("wg-fi")
-  lan        String    @default("10.13.0.0/16") // Address =
-  publicKey  String
-  privatKey  String
-  port       Int       @default(51820) // ListenPort = 51820
-  createdAt  DateTime  @default(now())
-
-  clients    ClientFi[]
-  users      Users[]   @relation("UserToServerFi")
-}
-
-model ClientRU {
-  id         Int       @id @default(autoincrement())
-  name       String
-  ip         String
-  publicKey  String
-  privateKey String
-  endPoint   String  
-  allowIps   String    @default("0.0.0.0/0")
-  dns        String    @default("45.142.122.244, 77.221.159.104")
-  createdAt  DateTime  @default(now())
-
-  serverId   String
-  server     ServerRu  @relation(fields: [serverId], references: [id])
-}
-
-model ClientDe {
-  id         Int       @id @default(autoincrement())
+model Client {
+  id         Int         @id @default(autoincrement())
   name       String
   ip         String
   publicKey  String
   privateKey String
   endPoint   String
-  allowIps   String    @default("0.0.0.0/0")
-  dns        String    @default("45.142.122.244, 77.221.159.104")
-  createdAt  DateTime  @default(now())
+  allowIps   String      @default("0.0.0.0/0")
+  dns        String      @default("45.142.122.244, 77.221.159.104")
+  createdAt  DateTime    @default(now())
 
-  serverId   String
-  server     ServerDe  @relation(fields: [serverId], references: [id])
-}
-
-model ClientFi {
-  id         Int       @id @default(autoincrement())
-  name       String
-  ip         String
-  publicKey  String
-  privateKey String
-  endPoint   String
-  allowIps   String    @default("0.0.0.0/0")
-  dns        String    @default("45.142.122.244, 77.221.159.104")
-  createdAt  DateTime  @default(now())
-
-  serverId   String
-  server     ServerFi  @relation(fields: [serverId], references: [id])
+  serverId   Int         // тип должен быть Int, соответствующий типу id в Server
+  serverName ServerName  // Тип сервера (RU, DE, FI)
+  server     Server      @relation(fields: [serverId], references: [id]) // Связь с сервером
+  userId     Int         // Связь с пользователем
+  user       Users       @relation(fields: [userId], references: [id])  // Пользователь, которому принадлежит клиент
 }

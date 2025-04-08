@@ -43,6 +43,7 @@
 import { useVuelidate } from '@vuelidate/core'
 import { required, maxLength} from '@vuelidate/validators'
 
+
 const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
 
     export default {

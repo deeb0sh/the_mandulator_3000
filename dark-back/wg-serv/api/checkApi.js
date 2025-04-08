@@ -1,5 +1,6 @@
 import jwt from '@fastify/jwt'
 import { headersJwtValid } from '../schemas/headersJWTvalid.js'
+import { Netmask } from 'netmask'
 
 export default async function wgCreateApi(fastify) {
 
@@ -26,21 +27,16 @@ export default async function wgCreateApi(fastify) {
                         }
                     })
                     if (!userCheck) { // если пользователя нет в бд то создаём его и даём доступ ко всем серверам
+                        
+                        // узнаём из бд подсеть пользователя
+                        // узнаём подсети серверов
+                        // вычесляем свобдные подсети и назначаем их пользоватеою
+                      
                         await fastify.prisma.users.create({
                             data: {
                               login: user,
-                              role: {
-                                connect: { id: role } // подключаем к роли в базе
-                              },
-                              access: { 
-                                create: [
-                                  { serverType: 'RU', allowed: true },
-                                  { serverType: 'DE', allowed: true },
-                                  { serverType: 'FI', allowed: true }
-                                ]
-                              }
+                              roleId: role
                             },
-                            include: { access: true }
                           })
                     }
                 return reply.send({ message: "valid" })
