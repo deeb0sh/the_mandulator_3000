@@ -44,6 +44,7 @@
         </div>
     </div>
     <Player v-bind:Source="url"/>
+    <Footer txt="&copy 2025 ebosh-product"/>
 </template>
 <script>
 

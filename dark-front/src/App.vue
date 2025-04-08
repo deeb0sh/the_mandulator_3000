@@ -1,7 +1,7 @@
 <template>
     <div class="wrapper">
-        <RouterView />   
-        <Footer txt="&copy 2025 ebosh-product"/>
+        <RouterView /> 
+        <Footer txt="&copy 2025 ebosh-product"/>  
     </div>
 </template>
 

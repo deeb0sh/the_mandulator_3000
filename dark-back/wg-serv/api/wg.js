@@ -7,18 +7,16 @@ export default async function wgCreateApi(fastify) {
     })
     
     fastify.get('/wg/check', async(request, reply) => {
-            const token = request.headers.authorization.replace('Bearer ', '') // выпилваем из токена bearer
+            //const token = request.headers.authorization.replace('Bearer ', '') // выпилваем из токена bearer
             try {
-                const decod = await request.jwtVerify()
-                const login = request.headers['x-login'] // выпиливаем из хедда логин
-                const role = request.headers['x-role'] // выпиливаем из хедда логин
-
+                const decod = await request.jwtVerify() //первое валидация токена их хедера
+                const user = decod.user // извлекаем логин , дальше будим искать его в таблице лимитов
                 return reply.send({ message: "valid" })
             }
             catch {
+                //return reply.redirect('/')
                 return reply.send({ message: "invalid" })
             }
         }
     )
-
 }

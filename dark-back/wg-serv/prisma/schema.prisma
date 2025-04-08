@@ -14,20 +14,113 @@ datasource db {
 }
 
 model Role {
-  id    Int     @id
-  name  String? @unique // Например: "basic", "premium" и т.д. (опционально)
-  speed Int     // скорость в Мбит/с
-  limits Limits[]
+  id    Int     @id // id роли 0 1 2 3 
+  name  String? @unique // имя роли
+  speed Int? // ограничение пропускной способности роли
+  network Int? // размер сети роли
+  networkReserv Int @default(28)// Резервирование сети
+  uesrs Users[]
 }
 
-model Limits {
+model Users {
   id          Int     @id @default(autoincrement())
-  login       String? @unique // Логин должен быть уникальным
+  login       String? @unique
   roleId      Int?
   role        Role?   @relation(fields: [roleId], references: [id])
-  userNetwork String  @default("10.0.0.0/29") // Значение по умолчанию
   
-  // Добавляем виртуальное поле для удобства
-  @@map("limits")
+  serverRuId  Int?
+  serverRu    ServerRu? @relation("UserToServerRu", fields: [serverRuId], references: [id])
+
+  serverDeId  Int?
+  serverDe    ServerDe? @relation("UserToServerDe", fields: [serverDeId], references: [id])
+
+  serverFiId  Int?
+  serverFi    ServerFi? @relation("UserToServerFi", fields: [serverFiId], references: [id])
+
+  @@map("users")
   @@index([roleId])
+}
+
+model ServerRu {
+  id         Int       @id @default(autoincrement())
+  name       String    @default("wg-ru")
+  lan        String    @default("10.1.0.0/16") // Address = 
+  publicKey  String
+  privatKey  String
+  port       Int       @default(51820) // ListenPort = 51820
+  createdAt  DateTime  @default(now())
+
+  clients    ClientRU[]
+  users      Users[]   @relation("UserToServerRu")
+}
+
+model ServerDe {
+  id         Int       @id @default(autoincrement())
+  name       String    @default("wg-de")
+  lan        String    @default("10.2.0.0/16") // Address =
+  publicKey  String
+  privatKey  String
+  port       Int       @default(51820) // ListenPort = 51820
+  createdAt  DateTime  @default(now())
+
+  clients    ClientDe[]
+  users      Users[]   @relation("UserToServerDe")
+}
+
+model ServerFi {
+  id         Int       @id @default(autoincrement())
+  name       String    @default("wg-fi")
+  lan        String    @default("10.3.0.0/16") // Address =
+  publicKey  String
+  privatKey  String
+  port       Int       @default(51820) // ListenPort = 51820
+  createdAt  DateTime  @default(now())
+
+  clients    ClientFi[]
+  users      Users[]   @relation("UserToServerFi")
+}
+
+model ClientRU {
+  id         Int       @id @default(autoincrement())
+  name       String
+  ip         String
+  publicKey  String
+  privateKey String
+  endPoint   String  
+  allowIps   String    @default("0.0.0.0/0")
+  dns        String    @default("45.142.122.244, 77.221.159.104")
+  createdAt  DateTime  @default(now())
+
+  serverId   Int
+  server     ServerRu  @relation(fields: [serverId], references: [id])
+}
+
+model ClientDe {
+  id         Int       @id @default(autoincrement())
+  name       String
+  ip         String
+  publicKey  String
+  privateKey String
+  endPoint   String
+  allowIps   String    @default("0.0.0.0/0")
+  dns        String    @default("45.142.122.244, 77.221.159.104")
+  createdAt  DateTime  @default(now())
+
+  serverId   Int
+  server     ServerDe  @relation(fields: [serverId], references: [id])
+}
+
+model ClientFi {
+  id         Int       @id @default(autoincrement())
+  name       String
+  ip         String
+  publicKey  String
+  privateKey String
+  endPoint   String
+  allowIps   String    @default("0.0.0.0/0")
+  dns        String    @default("45.142.122.244, 77.221.159.104")
+  createdAt  DateTime  @default(now())
+
+  serverId   Int
+  server     ServerFi  @relation(fields: [serverId], references: [id])
 }
