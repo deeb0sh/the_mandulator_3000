@@ -15,7 +15,6 @@
     "dotenv": "^16.4.7",
     "fastify": "^5.2.1",
     "fastify-plugin": "^5.0.1",
-    "netmask": "^2.0.2",
     "wireguard-tools": "^0.1.0"
   },
   "devDependencies": {

@@ -1,6 +1,6 @@
 import jwt from '@fastify/jwt'
 import { headersJwtValid } from '../schemas/headersJWTvalid.js'
-import { Netmask } from 'netmask'
+
 
 export default async function wgCreateApi(fastify) {
 
