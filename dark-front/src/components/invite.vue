@@ -65,12 +65,13 @@
 .aria {
     background: #2a7449a1;
     border-radius: 8px;   
-    border: 1px solid #ffffff;
+    border: 0px solid #ffffff;
     padding: 10px;
     min-width: 230px;
     max-width: 230px;
     /* transform: translate(-50%, -50%); */
     color: #313131;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .invite {
@@ -106,7 +107,7 @@ button:disabled {
 }
 @media (max-width: 620px) {
     .aria {
-        border-radius: 6px;   
+        border-radius: 8px;   
         border: 0px solid #ffffff;
         padding: 10px;
         width: 100%;

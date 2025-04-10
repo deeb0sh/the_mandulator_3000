@@ -5,9 +5,7 @@
             <span><b>WireGuard</b></span>
         </div>
         <div>
-            <p>user1</p>
-            <p>user1</p>
-            <p>user1</p>
+            <p>{{ onErr }}</p>
         </div>
        <!-- ХОБА БЛЕТЬ -->
         <div v-if="!showAddMenu">
@@ -51,6 +49,7 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
             return {
                 showAddMenu: false,
                 location: null,
+                onErr: null,
                 form: {
                     wguser: ''
                 },
@@ -72,18 +71,23 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
         },
         methods: {
             async userCheck() {
-                const token = localStorage.getItem('jwt')
-                const req = await fetch('/wg/check',{
-                    method: 'GET',
-                    headers: {
-                        'Content-type': 'application/json', 
-                        'Authorization': `Bearer ${token}`, // токен на проверку
+                try {
+                    const token = localStorage.getItem('jwt')
+                    const req = await fetch('/wg/check',{
+                        method: 'GET',
+                        headers: {
+                            'Content-type': 'application/json', 
+                            'Authorization': `Bearer ${token}`, // токен на проверку
+                        }
+                    })
+                    const data = await req.json() // ждём ответ от сервера
+                    if ( data.message == "invalid") {
+                        localStorage.removeItem('jwt')
+                        this.$router.push('/')
                     }
-                })
-                const data = await req.json() // ждём ответ от сервера
-                if ( data.message == "invalid") {
-                    localStorage.removeItem('jwt')
-                    this.$router.push('/')
+                }
+                catch (e) {
+                    this.onErr = `Oшибка! WG-сервер не отвечает`
                 }
             },
             async createWGuser() { // метод создание впн-полтьзователя
@@ -135,11 +139,11 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    background: #cacaca94;
+    background: #cacaca71;
     border-radius: 8px;   
-    border: 1px solid #ffffff;
+    border: 0px solid #ffffff;
     padding: 10px;
-    
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     width: 600px;
     /* margin-left: 5px; */
     /* transform: translate(-50%, -50%); */
@@ -229,7 +233,7 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
 }
 @media (max-width: 620px) {
     .aria {
-        border-radius: 6px;   
+        border-radius: 8px;   
         border: 0px solid #ffffff;
         padding: 0px;
         width: 100%;

@@ -103,7 +103,7 @@ import { jwtDecode } from 'jwt-decode'
     }   
     .main {
         flex: 1 0 auto;
-        width: 98%;
+        width: 95%;
         display: flex;
         flex-direction: column;
         justify-content: top;
@@ -123,7 +123,7 @@ import { jwtDecode } from 'jwt-decode'
         display: flex;
         flex-wrap: nowrap; /* Позволяет переносить элементы на новую строку */
         align-items: flex-start; /* Выравнивание по верхней границе */
-        gap: 3px; 
+        gap: 10px; 
      }
    
     .nav {
