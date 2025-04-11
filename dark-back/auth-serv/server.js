@@ -19,12 +19,16 @@ const fastify = Fastify({
     }
 })
 
-fastify.register(cors,{ // залупа
-    origin: ['https://darksurf.ru' , 'https://dev.darksurf.ru'], // примаем запросы от
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-})
+// const allowedOrigins = ['https://darksurf.ru', 'https://dev.darksurf.ru'];
+// await fastify.register(cors, {
+//   origin: (origin, cb) => {
+//     if (origin && allowedOrigins.includes(origin)) {
+//       cb(null, true);
+//     } else {
+//       cb(new Error('ACCES DENIED .i. / доступ запрещён , пожалуйста пройдите нахуй'), false);
+//     }
+//   }
+// });
 
 fastify.register(prismaPlugin) // подключаем плагин призмы чтобы работало для всех роутов
 

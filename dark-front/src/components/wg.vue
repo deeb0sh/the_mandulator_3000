@@ -28,7 +28,7 @@
         
         <div  v-if="v$.form.wguser.$error || v$.location.$error" class="errorMsg">
             <span v-if="v$.form.wguser.$error" class="user-error">
-                Только: a-z, A-Z, 0-9 и максимум 20 символов
+                Только: a-z, A-Z, 0-9 и максимум 15 символов
             </span>
             <span v-if="v$.location.$error" class="location-error">
                 Выбери локацию
@@ -63,7 +63,7 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
             form: {
                 wguser: { 
                     required,
-                    maxLength: maxLength(20),
+                    maxLength: maxLength(15),
                     regexValid
                 }
             },
@@ -82,8 +82,9 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
                     })
                     const data = await req.json() // ждём ответ от сервера
                     if ( data.message == "invalid") {
+                        this.onErr = data.onErr
                         localStorage.removeItem('jwt')
-                        this.$router.push('/')
+                        //this.$router.push('/')
                     }
                 }
                 catch (e) {
@@ -91,27 +92,24 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
                 }
             },
             async createWGuser() { // метод создание впн-полтьзователя
-                // this.v$.$touch()
-                // if ( this.v$.$invalid ) {
-                //     return // если срабатывает ничего не делаем 
-                // }
-                // const token = localStorage.getItem('jwt') // 
-                // const req = await fetch('/wg/create',{
-                //     method: 'POST',
-                //     headers: {
-                //         'Content-type': 'application/json',
-                //         'Authorization': `Bearer ${token}`,
-                //     },
-                //     body: JSON.stringify({
-                //             login: this.$route.params.user,
-                //             role: this.$route.params.role,
-                //             wguser: this.form.wguser, // передаём имя 
-                //             location: this.location // передаём локацию
-                //         })
-                // })
-
+                this.v$.$touch()
+                if ( this.v$.$invalid ) {
+                     return // если срабатывает ничего не делаем 
+                }
+                const token = localStorage.getItem('jwt') // 
+                const req = await fetch('/wg/create',{
+                    method: 'POST',
+                    headers: {
+                        'Content-type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                            wguser: this.form.wguser, 
+                            location: this.location,              
+                    })
+                })
             },
-            showWgAdd() {
+            showWgAdd() { // показать меню добавления пользователя
                 this.showAddMenu = true
                 this.$nextTick(() => { // textTick ждать полного рендеренга ДОМ
                     this.$refs.WGname.focus() // установка курсорва на поле ЛОГИН 

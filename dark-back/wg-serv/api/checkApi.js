@@ -3,7 +3,7 @@ import { headersJwtValid } from '../schemas/headersJWTvalid.js'
 import getNetwork from '../utils/getNetwork.js' // генерируем все сети для пользователя
 import getUserNetwork from '../utils/getUserNetwork.js' // смотри все сети занетый пользователями
 
-export default async function wgCreateApi(fastify) {
+export default async function wgCheckApi(fastify) {
 
     fastify.register(jwt, { // регистарция jwt плагина
         secret: process.env.JWT_SECRET // секрет в.env JWT_SECRET=""
@@ -11,9 +11,9 @@ export default async function wgCreateApi(fastify) {
 
     fastify.get('/wg/check', {
         schema: {
-            headers: headersJwtValid // валидация хедеров один JWT
-        }
-    },
+                headers: headersJwtValid // валидация хедеров один JWT
+            }
+        },
         async (request, reply) => {
             try {
                 const decod = await request.jwtVerify() //первое валидация токена их хедера
@@ -50,22 +50,50 @@ export default async function wgCreateApi(fastify) {
                         const allNetDe = await getNetwork(fastify,user,'DE')
                         const allNetFi = await getNetwork(fastify,user,'FI')
 
-                        const userNetRu = await getUserNetwork(fastify,'RU')
-                        const userNetDe = await getUserNetwork(fastify,'DE')
-                        const userNetFi = await getUserNetwork(fastify,'FI')
+                        const userNetRu = (await getUserNetwork(fastify, 'RU')).map(n => n.network);
+                        const userNetDe = (await getUserNetwork(fastify, 'DE')).map(n => n.network);
+                        const userNetFi = (await getUserNetwork(fastify, 'FI')).map(n => n.network);
 
                         const freeNetRu = allNetRu.filter(subnet => !userNetRu.includes(subnet))
                         const freeNetDe = allNetDe.filter(subnet => !userNetDe.includes(subnet))
-                        const freeNetFi = allNetFi.filter(subnet => !userNetFi.includes(subnet))
-
-                        console.log("FREENET - ", freeNetDe, freeNetFi, freeNetRu)
+                        const freeNetFi = allNetFi.filter(subnet => !userNetFi.includes(subnet))                       
+                        if (freeNetRu.length > 0 || freeNetDe.length > 0 || freeNetFi.length > 0) {
+                            await fastify.prisma.userSubnet.createMany({
+                                data: [
+                                  { userId: newUser.id, serverName: 'RU', network: freeNetRu[0]},
+                                  { userId: newUser.id, serverName: 'DE', network: freeNetDe[0]},
+                                  { userId: newUser.id, serverName: 'FI', network: freeNetFi[0] }
+                                ],
+                                skipDuplicates: true
+                              });
+                        } 
+                        else  {
+                            fastify.log.error("нет свободный сетей");
+                            return reply.send({ message: "invalid" , onErr: "Нет свободных сетей" })
+                        }
+                    fastify.log.info("✅ сети назначены ");
                     }
                 }
+                // промеряем роль . если роль поменялась то меняем на мандуляторе
+                const curentRole = await fastify.prisma.users.findFirst({
+                    where: { login: user },
+                    select: { roleId: true, }
+                })
+                if (curentRole.roleId !== role ) {
+                    await fastify.prisma.users.update({
+                        where: { login: user },
+                        data: { roleId: role }
+                    })
+                }              
+
+                // тут будим брать список юзеров
+                // в ответ список всех пользователей
+
                 return reply.send({ message: "valid" })
             }
             catch (e) {
                 //return reply.redirect('/')
-                return reply.send({ message: "invalid" })
+                return reply.send({ message: "invalid", onErr: "Ошибка на сервера" })
             }
         }
     )

@@ -22,7 +22,7 @@ model UserSubnet {
 
   createdAt   DateTime   @default(now())
 
-  @@unique([userId, serverName]) // У одного пользователя одна подсеть на тип сервера
+  //@@unique([userId, serverName]) // У одного пользователя одна подсеть на тип сервера
 }
 
 model Role {
