@@ -13,13 +13,13 @@
   "dependencies": {
     "@fastify/cors": "^11.0.0",
     "@fastify/jwt": "^9.0.4",
-    "@prisma/client": "^6.5.0",
+    "@prisma/client": "^6.6.0",
     "ajv-errors": "^3.0.0",
     "bcrypt": "^5.1.1",
     "fastify": "^5.2.1",
     "node-cron": "^3.0.3"
   },
   "devDependencies": {
-    "prisma": "^6.5.0"
+    "prisma": "^6.6.0"
   }
 }

@@ -4,7 +4,7 @@ export const wgNameValid = {
     properties: {
         wguser: {
             type: 'string',
-            minLength: 2,
+            minLength: 1,
             maxLength: 15,
             pattern: '^[a-zA-Z0-9]+$',
         },

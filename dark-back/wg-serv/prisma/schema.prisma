@@ -61,8 +61,8 @@ model Server {
 
 model Client {
   id         Int         @id @default(autoincrement())
-  name       String
-  ip         String
+  name       String      // имя конфига peyta.conf
+  ip         String      // имя пира
   publicKey  String
   privateKey String
   endPoint   String
