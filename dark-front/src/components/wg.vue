@@ -5,10 +5,13 @@
             <span><b>WireGuard</b></span>
         </div>
         <div>
-            <p>{{ onErr }}</p>
+            
+                {{ onErr }}<br>
+                {{ allClient }}
+            
         </div>
        <!-- ХОБА БЛЕТЬ -->
-        <div v-if="!showAddMenu">
+        <div v-if="!showAddMenu" class="nav">
             <button class="btn" @click="showWgAdd()">Добавить</button>
         </div>
         <div v-else class="wgadd">
@@ -25,7 +28,7 @@
                 </div>
             </form>
         </div>
-        
+       
         <div  v-if="v$.form.wguser.$error || v$.location.$error" class="errorMsg">
             <span v-if="v$.form.wguser.$error" class="user-error">
                 Только: a-z, A-Z, 0-9 и максимум 15 символов
@@ -33,6 +36,7 @@
             <span v-if="v$.location.$error" class="location-error">
                 Выбери локацию
             </span>
+            
         </div>
     </div>
 </template>
@@ -50,6 +54,7 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
                 showAddMenu: false,
                 location: null,
                 onErr: null,
+                allClient: null,
                 form: {
                     wguser: ''
                 },
@@ -82,10 +87,14 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
                     })
                     const data = await req.json() // ждём ответ от сервера
                     if ( data.message == "invalid") {
-                        this.onErr = data.onErr
                         localStorage.removeItem('jwt')
+                        this.onErr = data.onErr  
                         //this.$router.push('/')
                     }
+                    if ( data.message == "valid") {
+                        this.allClient = data.allClinet
+                    }
+                          
                 }
                 catch (e) {
                     this.onErr = `Oшибка! WG-сервер не отвечает`
@@ -108,6 +117,11 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
                             location: this.location,              
                     })
                 })
+                const data = await req.json()
+                this.onErr = data.onErr
+                if (!this.onErr) {
+                    this.userCheck()
+                } 
             },
             showWgAdd() { // показать меню добавления пользователя
                 this.showAddMenu = true
@@ -228,6 +242,7 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
     display: flex;
     align-items: center; 
     gap: 5px; 
+    padding-top: 10px;
 }
 @media (max-width: 620px) {
     .aria {

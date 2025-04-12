@@ -70,9 +70,9 @@ export default async function wgCreateApi(fastify) {
      
                 const usedIpsSet = new Set(usedIp.map(client => client.ip.split("/")[0])); // Разделяем на IP и маску
                 const availableIps = ipRange.filter(ip => !usedIpsSet.has(ip.split("/")[0]));
- 
+              
                 if (availableIps.length === 0) {
-                    return reply.send({ onErr: "достигнуты лимиты по локации" })
+                    return reply.send({ onErr: "достигнуты лимиты по локации"})
                 } 
                 const firstFreeIp = availableIps[0];
                 
@@ -92,8 +92,7 @@ export default async function wgCreateApi(fastify) {
                     },
                     select: {
                         id: true
-                    }
-                  
+                    }            
                 })
 
                 const newWgClient = {
@@ -110,13 +109,13 @@ export default async function wgCreateApi(fastify) {
                 await fastify.prisma.client.create({
                     data: newWgClient
                 });
-
-                return reply.send({ message: "valid", newWgClient, firstFreeIp})
+  
+                return reply.send({ message: "valid"})
             }
             catch (onErr) {
                 return reply.send({ 
                     message: "invalid",
-                    onErr: `ошибка! ${onErr}`
+                    onErr: `ошибка! ${onErr}`,
                 })
             }
         })

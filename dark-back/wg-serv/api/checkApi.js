@@ -24,7 +24,8 @@ export default async function wgCheckApi(fastify) {
                         login: user
                     },
                     select: {
-                        role: true
+                        id: true,
+                        //role: true
                     }
                 })
                 if (!userCheck) { // если пользователя нет в бд то создаём его и даём доступ ко всем серверам
@@ -85,11 +86,28 @@ export default async function wgCheckApi(fastify) {
                         data: { roleId: role }
                     })
                 }              
+                // список всеха клиентов пользователя  (((((( ТОЛЬКО ТУТ ))))))))
+                const allClinet = await fastify.prisma.users.findMany({
+                    where: {
+                        id: userCheck.id
+                    },
+                    select:{
+                        clients: {
+                                select: {
+                                //id: true,
+                                name: true,
+                                ip: true,
+                                serverName: true
+                            }
+                        }
+                    }
+                })
 
-                // тут будим брать список юзеров
-                // в ответ список всех пользователей
+                if (!allClinet.length || allClinet[0].clients.length === 0) {
+                    return reply.send({ message: "valid"});
+                }
 
-                return reply.send({ message: "valid" })
+                return reply.send({ message: "valid", allClinet })
             }
             catch (e) {
                 //return reply.redirect('/')
