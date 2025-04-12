@@ -7,6 +7,7 @@ import RadioBlock from './components/radioblock.vue'
 import Logmod from './components/login-modal.vue'
 import invite from './components/invite.vue'
 import WG from './components/wg.vue'
+import clientList from './components/clientList.vue'
 import router from './router'
 
 
@@ -18,6 +19,7 @@ app.component('Player', Player)
 app.component('Footer', Footer)
 app.component('Logmod', Logmod)
 app.component('invite', invite)
+app.component('clientList', clientList)
 app.component('WG', WG)
 app.mount('#app')
 

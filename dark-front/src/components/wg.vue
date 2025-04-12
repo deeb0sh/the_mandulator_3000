@@ -7,8 +7,10 @@
         <div>
             
                 {{ onErr }}<br>
-                {{ allClient }}
-            
+         
+        <clientList  :clients="ruClients" title="RU" />  
+        <clientList  :clients="deClients" title="DE" />
+        <clientList  :clients="fiClients" title="FI" />    
         </div>
        <!-- ХОБА БЛЕТЬ -->
         <div v-if="!showAddMenu" class="nav">
@@ -51,6 +53,9 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
     export default {
         data() {
             return {
+                ruClients: [],
+                deClients: [],
+                fiClients: [],
                 showAddMenu: false,
                 location: null,
                 onErr: null,
@@ -92,12 +97,22 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
                         //this.$router.push('/')
                     }
                     if ( data.message == "valid") {
-                        this.allClient = data.allClinet
+                        if (Array.isArray(data.allClinet) && data.allClinet.length > 0) { // проверяем является ли массивом И его длина больше 0
+                                this.allClient = data.allClinet[0].clients
+                                this.ruClients = this.allClient.filter(c => c.serverName === 'RU') 
+                                this.deClients = this.allClient.filter(c => c.serverName === 'DE')
+                                this.fiClients = this.allClient.filter(c => c.serverName === 'FI')
+                        } 
+                        else {
+                                this.allClient = [] // или обработка ошибки
+                        }
+                        
+                        
                     }
                           
                 }
                 catch (e) {
-                    this.onErr = `Oшибка! WG-сервер не отвечает`
+                    this.onErr = `Oшибка! WG-сервер не отвечает ${e}`
                 }
             },
             async createWGuser() { // метод создание впн-полтьзователя
