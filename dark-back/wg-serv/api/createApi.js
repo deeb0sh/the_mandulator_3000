@@ -140,8 +140,40 @@ export default async function wgCreateApi(fastify) {
                 try{
                     const decod = await request.jwtVerify() //первое валидация токена их хедера
                     const user = decod.user // логин на мандуляторе
-                    const id = request.body // забераем id из тема после валидаций
-                    return reply.send({ message: "valid" })
+                    const { id } = request.body // забераем id из тема после валидаций
+                    
+                    // узнаём id учётки на мандуляторе (логина)
+                    const login = await fastify.prisma.users.findFirst({ 
+                        where: {
+                            login: user
+                        },
+                        select: {
+                            id: true
+                        }
+                    })
+                    const loginId = login.id
+                    // проверяс есть принадлезнасть клиента к пользователю
+                    const checkClient = await fastify.prisma.client.findFirst({ 
+                        where: {
+                            userId: Number(loginId),
+                            id: Number(id)
+                        },
+                        select: {
+                            name: true
+                        }
+                    })
+                    // усли попытка подмены тогда инвалид
+                    if (!checkClient) {
+                        return reply.send({ message: "invalid", onErr: "запрещено, Клиент не пренадлежит пользователю"})
+                    }
+                    // если всё ок удаляем клиента
+                    await fastify.prisma.client.delete({
+                        where: {
+                            id: Number(id) // delete только по одному параментру (призма)
+                         }
+                    })
+                
+                    return reply.send({ message: "valid"})
                 }
                 catch (e) {
                     return reply.send({ message: "invalid", e})

@@ -17,7 +17,7 @@
             </div>
             <div class="control">
                 <img src="../img/qr.png" width="18" title="QR-Код"/>
-                <img src="../img/down.png" width="18" title="Скачать"/>
+                <img src="../img/down.png" width="18" @click="downConf(client.id, client.name)" title="Скачать"/>
                 <img src="../img/del.png" width="18" @click="delConf(client.id, client.name)" title="Удалить"/>
             </div>
         </div>
@@ -44,20 +44,45 @@ export default {
     }
   },
   methods: {
-    async delConf(id, name) {
-      const token = localStorage.getItem('jwt') 
-      const confDel = await fetch('/wg/create', {
-        method: 'DELETE',
-        headers: {
-          'Content-type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          id: id
+    async delConf(id) {
+      if (confirm("удалить?")) {
+        const token = localStorage.getItem('jwt') 
+        const confDel = await fetch('/wg/create', {
+          method: 'DELETE',
+          headers: {
+            'Content-type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            id: id
+          })
         })
-      })
-      const data = await confDel.json()
-    }
+        const data = await confDel.json()
+        if (data.message === "valid") {
+          this.$emit('user-check')
+        }
+      }
+    },
+    async downConf(id, name) {
+      const token = localStorage.getItem('jwt') 
+        const resp = await fetch('/wg/download', {
+          method: 'POST',
+          headers: {
+            'Content-type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            id: id
+          })
+        })
+        const blob = await resp.blob()
+        
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${name}.conf`; // или имя клиента, если знаешь
+        link.click();
+        URL.revokeObjectURL(link.href);
+      }
   }
 }
 </script>

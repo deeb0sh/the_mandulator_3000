@@ -5,9 +5,9 @@
             <span><b>WireGuard</b></span>
         </div>
         <div class="client">
-            <clientList :clients="ruClients" location="RU" />  
-            <clientList :clients="deClients" location="DE" />
-            <clientList :clients="fiClients" location="FI" />    
+            <clientList :clients="ruClients" location="RU" @user-check="userCheck" />  
+            <clientList :clients="deClients" location="DE" @user-check="userCheck" />
+            <clientList :clients="fiClients" location="FI" @user-check="userCheck" />    
         </div>
        <!-- ХОБА БЛЕТЬ -->
         <div v-if="!showAddMenu" class="nav">
