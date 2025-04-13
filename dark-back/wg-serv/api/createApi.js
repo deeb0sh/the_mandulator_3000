@@ -1,7 +1,10 @@
 import jwt from '@fastify/jwt'
 import { headersJwtValid } from '../schemas/headersJWTvalid.js'
 import { wgNameValid } from '../schemas/wgNameValid.js'
+import { wgid } from '../schemas/wgid.js'
+import defIp from '../utils/defaultIp.js'
 import crypto from 'crypto'
+
 
 export default async function wgCreateApi(fastify) {
     fastify.register(jwt, { // регистарция jwt плагина
@@ -44,16 +47,23 @@ export default async function wgCreateApi(fastify) {
                         }
                       }
                     })
+
+                // ip сервера чтобы не назначить его пользователю
+                const wgIp = await defIp(fastify, location) 
+                
                 // вычесляем ip впн-пользователя исходя из его роли сеть / ip 
                 const userSubnet = currentUser.subnets[0] // ок
                 const userNet = userSubnet.network.replace(/\/.*/, `/${currentUser.role.network}`); // переписываем после "/" (меняем сидр)
                 const [ip, mask] = userNet.split("/") // всё понтяно
                 const ipCount = 2 ** (32 - Number(mask)) // Количество ip адресов в маске
                 let [oct1, oct2, oct3, oct4] = ip.split(".").map(Number) // разбиваем ip на октеты и приобразуем в числа
-                let ipRange = [] // инициализируем массив в которм будут все доступные ip адереса пользователя (без broadcast)
+                let ipRangeServ = [] // инициализируем массив в которм будут все доступные ip адереса пользователя (без broadcast)
                 for (let i = 1; i < ipCount - 1; i++) {  // +1 и -1 исключаем броадкаст
-                    ipRange.push(`${oct1}.${oct2}.${oct3}.${oct4 + i}/${mask}`); // генерируем список доступных ip на ноде
+                    ipRangeServ.push(`${oct1}.${oct2}.${oct3}.${oct4 + i}/${mask}`); // генерируем список доступных ip на ноде
                 }
+
+                const ipRange = ipRangeServ.filter(ip => ip !== (wgIp + "/28")) // если находим в массиве с ip , ip шлюза WG , то исключаем его
+
                 // ищем все используемые ip в локации пользователя
                 const usedIp = await fastify.prisma.client.findMany({
                     where: {
@@ -72,7 +82,7 @@ export default async function wgCreateApi(fastify) {
                 const availableIps = ipRange.filter(ip => !usedIpsSet.has(ip.split("/")[0]));
               
                 if (availableIps.length === 0) {
-                    return reply.send({ onErr: "достигнуты лимиты по локации"})
+                    return reply.send({ onErr: "лимит локации"})
                 } 
                 const firstFreeIp = availableIps[0];
                 
@@ -119,4 +129,24 @@ export default async function wgCreateApi(fastify) {
                 })
             }
         })
+
+        fastify.delete('/wg/create', {
+            schema: {
+                    headers: headersJwtValid, // валидация хедеров один JWT
+                    body: wgid // валидация тела запрпса
+                }
+            },
+            async (request, reply) => {
+                try{
+                    const decod = await request.jwtVerify() //первое валидация токена их хедера
+                    const user = decod.user // логин на мандуляторе
+                    const id = request.body // забераем id из тема после валидаций
+                    return reply.send({ message: "valid" })
+                }
+                catch (e) {
+                    return reply.send({ message: "invalid", e})
+                }
+            }
+        )
+
 }

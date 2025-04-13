@@ -94,19 +94,17 @@ export default async function wgCheckApi(fastify) {
                     select:{
                         clients: {
                                 select: {
-                                //id: true,
-                                name: true,
-                                ip: true,
-                                serverName: true
+                                    id: true,
+                                    name: true,
+                                    ip: true,
+                                    serverName: true
                             }
                         }
                     }
                 })
-
-                if (!allClinet.length || allClinet[0].clients.length === 0) {
-                    return reply.send({ message: "valid"});
-                }
-
+                // if (!allClinet.length || allClinet[0].clients.length === 0) {       
+                //     return reply.send({ message: "invalid"});
+                // }
                 return reply.send({ message: "valid", allClinet })
             }
             catch (e) {

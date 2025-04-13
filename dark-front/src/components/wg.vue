@@ -4,13 +4,10 @@
             <img src="../img/wireguard.svg" width="35px"/>
             <span><b>WireGuard</b></span>
         </div>
-        <div>
-            
-                {{ onErr }}<br>
-         
-        <clientList  :clients="ruClients" title="RU" />  
-        <clientList  :clients="deClients" title="DE" />
-        <clientList  :clients="fiClients" title="FI" />    
+        <div class="client">
+            <clientList :clients="ruClients" location="RU" />  
+            <clientList :clients="deClients" location="DE" />
+            <clientList :clients="fiClients" location="FI" />    
         </div>
        <!-- ХОБА БЛЕТЬ -->
         <div v-if="!showAddMenu" class="nav">
@@ -31,14 +28,16 @@
             </form>
         </div>
        
-        <div  v-if="v$.form.wguser.$error || v$.location.$error" class="errorMsg">
+        <div  v-if="v$.form.wguser.$error || v$.location.$error || onErr" class="errorMsg">
             <span v-if="v$.form.wguser.$error" class="user-error">
                 Только: a-z, A-Z, 0-9 и максимум 15 символов
             </span>
             <span v-if="v$.location.$error" class="location-error">
                 Выбери локацию
             </span>
-            
+            <span v-if="onErr" class="limit-error">
+                {{ onErr }}
+            </span>
         </div>
     </div>
 </template>
@@ -106,8 +105,6 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
                         else {
                                 this.allClient = [] // или обработка ошибки
                         }
-                        
-                        
                     }
                           
                 }
@@ -147,7 +144,8 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
             closeWgAdd() { // закрываем меню добавляние профиля и очищаем форму
                 this.showAddMenu = false
                 this.form.wguser = ''
-                this.location = null
+                this.location = null,
+                this.onErr = '',
                 this.v$.$reset()
             },
             setLocaltion(x) {
@@ -160,7 +158,7 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
 <style scoped>
 /* * {
     border: #9e0e0e solid 1px;
-} */
+}  */
 .aria {
     display: flex;
     align-items: center;
@@ -176,6 +174,14 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
     /* transform: translate(-50%, -50%); */
     color: #313131;
 }
+.client {
+    display: flex;
+    align-items:flex-start;
+    justify-content: center;
+    flex-direction: column;
+    width: 90%;
+    padding: 10px
+}
 .errorMsg {
     position: relative;
     padding-top: 5px;
@@ -190,6 +196,11 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
     left: 0;
 }
 .location-error {
+    position: absolute;
+    top: 0; 
+    left: 275px;
+}
+.limit-error {
     position: absolute;
     top: 0; 
     left: 275px;
