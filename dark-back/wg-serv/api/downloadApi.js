@@ -80,11 +80,10 @@ PublicKey = ${client.server.publicKey}
 AllowedIPs = ${client.allowIps}
 Endpoint = ${client.endPoint}:${client.server.port}
 `.trim() // trim удаляет пустое место с начала и конца файла
-            reply
-                .header('Content-Type', 'application/octet-stream')
-                .header('Content-Disposition', `attachment; filename="${client.name}.conf"`)
-                .send(config);
-                return reply.send({ message: "valid", config})
+            reply.header('Content-Type', 'application/octet-stream')
+                 .header('Content-Disposition', `attachment; filename="${client.name}.conf"`)
+                 .send(config);
+               // return reply.send({ message: "valid", config})
             }
             catch (e) {
                 return reply.send({ message: "invalid", onErr: e})
