@@ -1,11 +1,12 @@
 import Fastify from "fastify";
 import wgCheckApi from './api/checkApi.js'
 import wgCreateApi from './api/createApi.js'
-import downloadApi from "./api/downloadApi.js";
+import wgServerApi from './api/serverApi.js'
+import downloadApi from "./api/downloadApi.js"
 import prismaPlugin from './plugins/prisma.js'
-import checkServer from "./plugins/checkServer.js";
-import checkRole from "./plugins/checkRole.js";
-import dotenv from 'dotenv';
+import checkServer from "./plugins/checkServer.js"
+import checkRole from "./plugins/checkRole.js"
+import dotenv from 'dotenv'
 import cors from '@fastify/cors'
 
 const fastify = Fastify({
@@ -31,6 +32,7 @@ fastify.register(prismaPlugin) // подключаем плагин призмы
 fastify.register(wgCheckApi) // ==> ./api/checkApi.js
 fastify.register(wgCreateApi) // ==> ./api/createApi.js
 fastify.register(downloadApi) // ==> ./api/downloadApi.js
+fastify.register(wgServerApi) // ==> ./api/wgServerApi.js
 fastify.register(checkServer) // запиливаем дефолтную инфу на сервер
 fastify.register(checkRole) // запиливаем дефолтныу роли
 
