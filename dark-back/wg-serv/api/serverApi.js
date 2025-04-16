@@ -7,7 +7,7 @@ export default async function wgServerApi(fastify) {
         const { server } = request.body
         
         if (!server) {
-            return reply.code(400).send({ error: 'Не передано поле server' })
+            return reply.send({ error: 'Не передано поле server' })
         }
         console.log('подклчился сервер :', server)
 
@@ -19,7 +19,7 @@ export default async function wgServerApi(fastify) {
         const server = request.params.server
         console.log('Сервер ',server , ' готов к получанию информации о настройках')
        
-        await syncwg(fastify,server)
+        await syncwg(fastify,server) // передаём данные WG-серверу пиры и настройки сети
         return console.log("готово")
     })
 }

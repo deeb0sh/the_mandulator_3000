@@ -87,6 +87,9 @@ export default async function wgCheckApi(fastify) {
                     })
                 }              
                 // список всеха клиентов пользователя  (((((( ТОЛЬКО ТУТ ))))))))
+                if (!userCheck) { // если пользователя ещё нет в базе тогда ничего не отправляем
+                     return reply.send({ message: "first connect"}) // можно и не писать это 
+                }
                 const allClinet = await fastify.prisma.users.findMany({
                     where: {
                         id: userCheck.id
@@ -107,9 +110,10 @@ export default async function wgCheckApi(fastify) {
                 // }
                 return reply.send({ message: "valid", allClinet })
             }
-            catch (e) {
+            catch (err) {
                 //return reply.redirect('/')
-                return reply.send({ message: "invalid", onErr: "Ошибка на сервера" })
+                console.log('ОШИБКА ==> ', err)
+                return reply.send({ message: "invalid", onErr: "Ошибка на сервера 1", e: err })
             }
         }
     )

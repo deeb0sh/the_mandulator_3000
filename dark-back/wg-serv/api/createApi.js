@@ -2,6 +2,7 @@ import jwt from '@fastify/jwt'
 import { headersJwtValid } from '../schemas/headersJWTvalid.js'
 import { wgNameValid } from '../schemas/wgNameValid.js'
 import { wgid } from '../schemas/wgid.js'
+import syncwg from '../utils/syncwg.js'
 import defIp from '../utils/defaultIp.js'
 import crypto from 'crypto'
 
@@ -119,7 +120,7 @@ export default async function wgCreateApi(fastify) {
                 await fastify.prisma.client.create({
                     data: newWgClient
                 });
-  
+                await syncwg(fastify, location) // когда всё созданова отправляем информацию на wg-сервер
                 return reply.send({ message: "valid"})
             }
             catch (onErr) {
@@ -166,13 +167,24 @@ export default async function wgCreateApi(fastify) {
                     if (!checkClient) {
                         return reply.send({ message: "invalid", onErr: "запрещено, Клиент не пренадлежит пользователю"})
                     }
+                    // определяем в какой локации клиент
+                    const loc = await fastify.prisma.client.findFirst({
+                        where: {
+                            id: Number(id)
+                        },
+                        select: {
+                            serverName: true
+                        }
+                    })
+
                     // если всё ок удаляем клиента
                     await fastify.prisma.client.delete({
                         where: {
                             id: Number(id) // delete только по одному параментру (призма)
                          }
                     })
-                
+                    await syncwg(fastify, loc.serverName) // отрплвяем новые данные на сервер
+
                     return reply.send({ message: "valid"})
                 }
                 catch (e) {
