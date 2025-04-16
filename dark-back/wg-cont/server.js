@@ -32,35 +32,40 @@ MTU = 1420
 ListenPort = ${data.port}
 PostUp = iptables -t nat -A POSTROUTING -s ${data.lan} -o eth0 -j MASQUERADE && sysctl -w net.ipv4.ip_forward=1
 `.trim()
-    // Записываем минимум а запускаем wiregard
     console.log(config)
-    exec(`echo "${config}" > /etc/wireguard/wg0.conf && wg-quick up wg0`, (err, stdout, stderr) => {
-      if (err) {
-        console.error(' Ошибка при применении конфига WireGuard:', stderr)
-        return
-      }
-      console.log('Конфиг применён')
-      
-      // отправляем информацию серверу а то что минимум готов и принмиаю остальные настройки
-      try {
-        const serverUrl = `http://localhost:3001/head/start/${server}`
-        fetch(serverUrl, {
-          method: 'GET'
-        })
-      }
-      catch (e) {
-        return console.log('ОШИБКА ', e)
-      }
-
-      })
-
-    
+    // Записываем минимум а запускаем wiregard
+    // exec(`echo "${config}" > /etc/wireguard/wg0.conf && wg-quick up wg0`, 
+    //   (err, stdout, stderr) => {
+    //     if (err) {
+    //       console.error(' Ошибка при применении конфига WireGuard:', stderr)
+    //       return
+    //     }
+    //     console.log('Конфиг применён')
+        // отправляем информацию серверу а то что минимум готов и принмиаю остальные настройки
+        try {
+          const serverUrl = `http://localhost:3001/head/start/${server}`
+          await fetch(serverUrl)
+         }
+         catch (e) {
+          return console.log('ОШИБКА ', e)
+        }
+      //})
   } 
   catch (err) {
     console.log('ОШИБКА: ', err)
   }
+  
 })
 
+fastify.post('/contol', async (request, reply) => { // принимаем пиры сети скорость
+  const { peers, userNet } = request.body
+  console.log('Получены пиры и настройки сети:')
+  console.log('Peers:', peers)
+  console.log('UserNet:', userNet)
 
+  // iptables и tc
+
+  return reply.send({ status: 'Настройки получены' })
+})
 
 fastify.listen({ port: 3003, host: '0.0.0.0' })
