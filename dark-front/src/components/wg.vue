@@ -93,7 +93,7 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
                     if ( data.message == "invalid") {
                         localStorage.removeItem('jwt')
                         this.onErr = data.onErr  
-                        //this.$router.push('/')
+                        this.$router.push('/')
                     }
                     if ( data.message == "valid") {
                         if (Array.isArray(data.allClinet) && data.allClinet.length > 0) { // проверяем является ли массивом И его длина больше 0
