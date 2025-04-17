@@ -2,6 +2,7 @@ import jwt from '@fastify/jwt'
 import { headersJwtValid } from '../schemas/headersJWTvalid.js'
 import getNetwork from '../utils/getNetwork.js' // генерируем все сети для пользователя
 import getUserNetwork from '../utils/getUserNetwork.js' // смотри все сети занетый пользователями
+import syncwg from '../utils/syncwg.js'
 
 export default async function wgCheckApi(fastify) {
 
@@ -75,7 +76,7 @@ export default async function wgCheckApi(fastify) {
                     fastify.log.info("✅ сети назначены ");
                     }
                 }
-                // промеряем роль . если роль поменялась то меняем на мандуляторе
+                // промеряем роль . если роль поменялась то меняем на мандуляторе и отсылаем измеения TC в на wg-точки
                 const curentRole = await fastify.prisma.users.findFirst({
                     where: { login: user },
                     select: { roleId: true, }
@@ -85,10 +86,16 @@ export default async function wgCheckApi(fastify) {
                         where: { login: user },
                         data: { roleId: role }
                     })
+                    // await syncwg(fastify, 'RU')
+                    // await syncwg(fastify, 'DE')
+                    // await syncwg(fastify, 'FI')
+                    for (const loc of ['RU', 'DE', 'FI']) {  // ахуеть как чётко
+                        await syncwg(fastify, loc)
+                    }
                 }              
                 // список всеха клиентов пользователя  (((((( ТОЛЬКО ТУТ ))))))))
                 if (!userCheck) { // если пользователя ещё нет в базе тогда ничего не отправляем
-                     return reply.send({ message: "first connect"}) // можно и не писать это 
+                     return reply.send({ message: "first"}) // можно и не писать это 
                 }
                 const allClinet = await fastify.prisma.users.findMany({
                     where: {
