@@ -17,9 +17,12 @@ export default async function wgCheckApi(fastify) {
         },
         async (request, reply) => {
             try {
+                fastify.log.info('🔐 Начинаем проверку /wg/check');
                 const decod = await request.jwtVerify() //первое валидация токена их хедера
                 const user = decod.user // извлекаем логин , дальше будим искать его в таблице пользователей вг
                 const role = decod.role // извлекаем роль
+
+                fastify.log.info(`🧾 Токен валидирован. Пользователь: ${user}, Роль: ${role}`);
                 const userCheck = await fastify.prisma.Users.findFirst({ // ищем сопадения имеён в бд если нет то создаём пользвателя
                     where: {
                         login: user
@@ -30,6 +33,7 @@ export default async function wgCheckApi(fastify) {
                     }
                 })
                 if (!userCheck) { // если пользователя нет в бд то создаём его и даём доступ ко всем серверам
+                    fastify.log.info(`👤 Новый пользователь: ${user}. Создаём запись...`);
                     const newUser = await fastify.prisma.users.create({
                         data: {
                             login: user,
@@ -46,19 +50,24 @@ export default async function wgCheckApi(fastify) {
                             network: true
                         }
                     })
+                    fastify.log.info(`📡 Подсети у нового пользователя: ${userSubnets.length}`);
                     // если сетей у пользователя нет то начинаем вычеслять и заполнять их
                     if (userSubnets.length === 0) {
+                        fastify.log.info('🔍 Получаем доступные подсети...');
                         const allNetRu = await getNetwork(fastify,user,'RU')
                         const allNetDe = await getNetwork(fastify,user,'DE')
                         const allNetFi = await getNetwork(fastify,user,'FI')
 
+                        fastify.log.info(`📦 Сети (все): RU=${allNetRu.length}, DE=${allNetDe.length}, FI=${allNetFi.length}`);
                         const userNetRu = (await getUserNetwork(fastify, 'RU')).map(n => n.network);
                         const userNetDe = (await getUserNetwork(fastify, 'DE')).map(n => n.network);
                         const userNetFi = (await getUserNetwork(fastify, 'FI')).map(n => n.network);
 
+                        fastify.log.info(`🛑 Уже занятые сети: RU=${userNetRu.length}, DE=${userNetDe.length}, FI=${userNetFi.length}`);
                         const freeNetRu = allNetRu.filter(subnet => !userNetRu.includes(subnet))
                         const freeNetDe = allNetDe.filter(subnet => !userNetDe.includes(subnet))
-                        const freeNetFi = allNetFi.filter(subnet => !userNetFi.includes(subnet))                       
+                        const freeNetFi = allNetFi.filter(subnet => !userNetFi.includes(subnet))   
+                        fastify.log.info(`✅ Свободные сети: RU=${freeNetRu.length}, DE=${freeNetDe.length}, FI=${freeNetFi.length}`);                    
                         if (freeNetRu.length > 0 || freeNetDe.length > 0 || freeNetFi.length > 0) {
                             await fastify.prisma.userSubnet.createMany({
                                 data: [
@@ -68,9 +77,10 @@ export default async function wgCheckApi(fastify) {
                                 ],
                                 skipDuplicates: true
                               });
+                              fastify.log.info('🎯 Подсети успешно назначены новому пользователю');
                         } 
                         else  {
-                            fastify.log.error("нет свободный сетей");
+                            fastify.log.error("🚫 Нет доступных сетей для назначения");
                             return reply.send({ message: "invalid" , onErr: "Нет свободных сетей" })
                         }
                     fastify.log.info("✅ сети назначены ");
@@ -82,6 +92,7 @@ export default async function wgCheckApi(fastify) {
                     select: { roleId: true, }
                 })
                 if (curentRole.roleId !== role ) {
+                    fastify.log.warn(`🔄 Роль пользователя изменилась (${curentRole.roleId} → ${role}), обновляем...`);
                     await fastify.prisma.users.update({
                         where: { login: user },
                         data: { roleId: role }
@@ -89,13 +100,16 @@ export default async function wgCheckApi(fastify) {
                     // await syncwg(fastify, 'RU')
                     // await syncwg(fastify, 'DE')
                     // await syncwg(fastify, 'FI')
+                    fastify.log.info(`🔁 Синхронизация WireGuard конфигов для ${loc}`);
                     for (const loc of ['RU', 'DE', 'FI']) {  // ахуеть как чётко
                         await syncwg(fastify, loc)
                     }
+                    fastify.log.info(`✅ Синхронизация завершена`);
                 }              
                 // список всеха клиентов пользователя  (((((( ТОЛЬКО ТУТ ))))))))
                 if (!userCheck) { // если пользователя ещё нет в базе тогда ничего не отправляем
-                     return reply.send({ message: "first"}) // можно и не писать это 
+                    fastify.log.info('📤 Возвращаем ответ для нового пользователя');
+                    return reply.send({ message: "first"}) // можно и не писать это 
                 }
                 const allClinet = await fastify.prisma.users.findMany({
                     where: {
@@ -115,11 +129,12 @@ export default async function wgCheckApi(fastify) {
                 // if (!allClinet.length || allClinet[0].clients.length === 0) {       
                 //     return reply.send({ message: "invalid"});
                 // }
+                fastify.log.info(`📡 Получены клиенты пользователя: ${allClinet[0]?.clients?.length || 0}`);
                 return reply.send({ message: "valid", allClinet })
             }
             catch (err) {
                 //return reply.redirect('/')
-                console.log('ОШИБКА ==> ', err)
+                fastify.log.error('🔥 ОШИБКА при обработке запроса /wg/check', err);
                 return reply.send({ message: "invalid", onErr: "Ошибка на сервера 1", e: err })
             }
         }

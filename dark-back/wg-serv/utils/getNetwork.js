@@ -1,40 +1,53 @@
-export default async function getNetwork(fastify,user,serverName) {
+export default async function getNetwork(fastify, user, serverName) {
     try {
-        const userRoleLimit = await fastify.prisma.users.findUnique({ // узнаём данные роли пользователя
+        fastify.log.info(`📥 [getNetwork] Запрос подсетей для пользователя: ${user}, сервер: ${serverName}`);
+
+        const userRoleLimit = await fastify.prisma.users.findUnique({
             where: {
                 login: user
             },
             select: {
                 role: true
             }
-        })
-        const userNetworkReserv = userRoleLimit.role.networkReserv
-        // узнаём подсети сервера
+        });
+        fastify.log.info(`📊 [getNetwork] Роль пользователя: ${userRoleLimit.role.name}, размер подсети: /${userRoleLimit.role.networkReserv}`);
+
+        const userNetworkReserv = userRoleLimit.role.networkReserv;
+
         const serverNetwork = await fastify.prisma.server.findMany({
             select: {
                 serverName: true,
                 lan: true
             }
-        })
-        // вычесляем свобдные подсети и назначаем их пользоватеою RU
+        });
+        fastify.log.info(`🌐 [getNetwork] Получено конфигураций серверов: ${serverNetwork.length}`);
+
         const serverMap = new Map(
             serverNetwork.map(server => [server.serverName, server.lan])
-        )
-        const [ip, mask] = serverMap.get(serverName).split("/");
+        );
+
+        const normalizedServerName = serverName.toUpperCase();
+        const lan = serverMap.get(normalizedServerName);
+        fastify.log.info(`🔍 [getNetwork] LAN для сервера ${normalizedServerName}: ${lan}`);
+
+        const [ip, mask] = lan.split("/");
         const serverIpRange = 2 ** (32 - Number(mask));
         const userIpRange = 2 ** (32 - Number(userNetworkReserv));
         const octRange = serverIpRange / 256;
+
         const [oct1, oct2, oct3] = ip.split(".").map(Number);
         const maxOct = oct3 + octRange;
+
         const allNetworks = [];
         for (let i = oct3; i < maxOct; i++) {
-          for (let oct4 = 0; oct4 < 256; oct4 += userIpRange) {
-            allNetworks.push(`${oct1}.${oct2}.${i}.${oct4}/${userNetworkReserv}`);
-          }
+            for (let oct4 = 0; oct4 < 256; oct4 += userIpRange) {
+                allNetworks.push(`${oct1}.${oct2}.${i}.${oct4}/${userNetworkReserv}`);
+            }
         }
+
+        fastify.log.info(`✅ [getNetwork] Сгенерировано подсетей: ${allNetworks.length} для сервера ${normalizedServerName}`);
         return allNetworks;
-        }
-        catch (e) {
-            console.log("E R R O R -  ",e)
-        }
+    } catch (e) {
+        fastify.log.error(`🔥 [getNetwork] Ошибка при генерации подсетей для ${user} на сервере ${serverName}:`, e);
     }
+}
