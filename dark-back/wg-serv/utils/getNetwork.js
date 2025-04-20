@@ -27,9 +27,9 @@ export default async function getNetwork(fastify, user, serverName) {
         );
 
         const normalizedServerName = serverName.toUpperCase();
-        const lan = serverMap.get(normalizedServerName);
+        const rawLan = serverMap.get(normalizedServerName);
+        const lan = rawLan.replace(/"/g, "")
         fastify.log.info(`🔍 [getNetwork] LAN для сервера ${normalizedServerName}: ${lan}`);
-
         const [ip, mask] = lan.split("/");
         const serverIpRange = 2 ** (32 - Number(mask));
         const userIpRange = 2 ** (32 - Number(userNetworkReserv));
