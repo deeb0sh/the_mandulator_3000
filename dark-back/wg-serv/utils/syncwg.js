@@ -41,8 +41,8 @@ export default async function syncwg(fastify, server) {
                 console.log('неизвестный сервер')
                 return
             }
-            //const wgUrl = `http://${serverName[server]}:3003/control` // вставить на в фетч в рабочим варианте
-            await fetch('http://localhost:3003/contol', { //  отдаём вг-севреру информацию о сетях / скорости / пиры
+            const wgUrl = `http://${serverName[server]}:3003/control` // вставить на в фетч в рабочим варианте
+            await fetch(wgUrl, { //  отдаём вг-севреру информацию о сетях / скорости / пиры
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json'

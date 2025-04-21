@@ -10,7 +10,7 @@
             </div>
         </div>
         <div class="container">
-            <invite v-if="checkRole3(roleID) || checkRole2(roleID)" />   <!-- инваты создают только роли 2 и 3  -->
+            <invite v-if="checkRole3(roleID) || checkRole2(roleID) || checkRole1(roleID)" />   <!-- инваты создают только роли 2 и 3 и 1 -->
             <WG />
         </div>
         <div>

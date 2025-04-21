@@ -11,7 +11,7 @@ fastify.ready().then(async () => {  // ready() выполняется при с�
   const server = process.env.SERVERNAME // берём имя сервера из .env SERVERNAME=
   console.log('данные конфига получены')
   try {
-    const response = await fetch('http://localhost:3001/head/start',{ //В А Ж Н О локалхост поменят на робей версии и не забыть закрыть доступ с 10.11.х.х
+    const response = await fetch('http://wg-serv:3001/head/start',{ //В А Ж Н О локалхост поменят на робей версии и не забыть закрыть доступ с 10.11.х.х
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -21,7 +21,7 @@ fastify.ready().then(async () => {  // ready() выполняется при с�
       })
     })
     const data = await response.json() // в ответ получаем минимальный конифига серерва чтобы он включился(пиры будит добалвятся на лету)
-    const [ serverIp, mask ] = data.lan.split("/")
+    const [ serverIp, mask ] = data.lan.replace(/"/g, '').split("/")
     let [oct1, oct2, oct3, oct4] = serverIp.split(".").map(Number)
     oct4++
     const wgIp = `${oct1}.${oct2}.${oct3}.${oct4}/${mask}`
@@ -43,7 +43,7 @@ PostUp = iptables -t nat -A POSTROUTING -s ${data.lan} -o eth0 -j MASQUERADE && 
         console.log('Конфиг применён')
         // отправляем информацию серверу а то что минимум готов и принмиаю остальные настройки
         try {
-          const serverUrl = `http://localhost:3001/head/start/${server}` // поменять на имя сервиса
+          const serverUrl = `http://wg-serv:3001/head/start/${server}` // поменять на имя сервиса
           fetch(serverUrl)
          }
          catch (e) {
