@@ -30,7 +30,7 @@ PrivateKey = ${data.privatKey}
 Address = ${wgIp}
 MTU = 1420
 ListenPort = ${data.port}
-PostUp = iptables -t nat -A POSTROUTING -s ${data.lan} -o eth0 -j MASQUERADE && sysctl -w net.ipv4.ip_forward=1
+PostUp = iptables -t nat -A POSTROUTING -s ${data.lan} -o eth0 -j MASQUERADE 
 `.trim()
     console.log(config)
     // Записываем минимум а запускаем wiregard
