@@ -7,7 +7,7 @@ export default async function defIp(fastify, serverName) {
             lan: true
         }    
     })
-    const serverIp = serverDb.lan.replace(/\/.*/, '')  // Удаляем все после "/"
+    const serverIp = serverDb.lan.replace(/\/.*/, '').replace(/"/g, '') // Удаляем все после "/" и все кавычки
     let [oc1, oc2, oc3, oc4] = serverIp.split(".").map(Number)
     oc4++
     let ipServ = `${oc1}.${oc2}.${oc3}.${oc4}`
