@@ -1,7 +1,5 @@
 import Fastify from 'fastify'
 import { exec } from 'child_process'
-// import dotenv from 'dotenv' // для понимания .env
-// dotenv.config()
 
 const fastify = Fastify({ 
   logger: true 
@@ -23,7 +21,6 @@ fastify.ready().then(async () => {  // ready() выполняется при с�
     })
     fastify.log.info('Ждм ответ от сервера')
     const data = await response.json() // в ответ получаем минимальный конифига серерва чтобы он включился(пиры будит добалвятся на лету)
-    fastify.log.info(data)
     const lan = data.lan.replace(/"/g, '')
     const [ serverIp, mask ] = lan.split("/")
     let [oct1, oct2, oct3, oct4] = serverIp.split(".").map(Number)
@@ -36,7 +33,7 @@ MTU = 1420
 ListenPort = ${data.port.replace(/"/g, '')}
 PostUp = iptables -t nat -A POSTROUTING -s ${lan} -o eth0 -j MASQUERADE 
 `.trim()
-    fastify.log.info(config)
+    console.log(config)
     // Записываем минимум а запускаем wiregard
     exec(`echo "${config}" > /etc/wireguard/wg0.conf && wg-quick up wg0`, 
       (err, stdout, stderr) => {
