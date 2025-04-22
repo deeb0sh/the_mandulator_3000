@@ -32,36 +32,41 @@ MTU = 1420
 ListenPort = ${data.port}
 PostUp = iptables -t nat -A POSTROUTING -s ${data.lan} -o eth0 -j MASQUERADE 
 `.trim()
-    console.log(config)
+    fastify.log.info(config)
     // Записываем минимум а запускаем wiregard
     exec(`echo "${config}" > /etc/wireguard/wg0.conf && wg-quick up wg0`, 
       (err, stdout, stderr) => {
         if (err) {
-          console.error(' Ошибка при применении конфига WireGuard:', stderr)
+          fastify.log.error('❌ Ошибка при применении конфига WireGuard:', stderr)
           return
         }
-        console.log('Конфиг применён')
+        fastify.log.info('✅ Стартовый конфиг Wireguard сервера получен и применён.')
         // отправляем информацию серверу а то что минимум готов и принмиаю остальные настройки
         try {
+          fastify.log.info('⚠️ говорим серверу наше имя и говорим что готовы получить дальнейшие настройки')
           const serverUrl = `http://wg-serv:3001/head/start/${server}` // поменять на имя сервиса
           fetch(serverUrl)
          }
          catch (e) {
-          return console.log('ОШИБКА ', e)
+          return fastify.log.error('❌ ОШИБКА ', e)
         }
       })
   } 
   catch (err) {
-    console.log('ОШИБКА: ', err)
+    return fastify.log.error('❌ ОШИБКА: ', err)
   }
   
 })
 
-fastify.post('/contol', async (request, reply) => { // принимаем пиры сети скорость
+fastify.get('/control/ping', async (request, reply) => {
+  return { pong: true }
+})
+
+fastify.post('/control', async (request, reply) => { // принимаем пиры сети скорость
   const { peers, userNet } = request.body
-  console.log('Получены пиры и настройки сети:')
-  console.log('Peers:', peers)
-  console.log('UserNet:', userNet)
+  fastify.log.info('⚠️ Получены пиры и настройки сети:')
+  fastify.log.info('⚠️ Peers:', peers)
+  fastify.log.info('⚠️ UserNet:', userNet)
 
   function execShell(cmd) {
     return new Promise((resolve, reject) => {
