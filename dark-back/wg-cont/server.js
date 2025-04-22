@@ -21,16 +21,17 @@ fastify.ready().then(async () => {  // ready() выполняется при с�
       })
     })
     const data = await response.json() // в ответ получаем минимальный конифига серерва чтобы он включился(пиры будит добалвятся на лету)
-    const [ serverIp, mask ] = data.lan.replace(/"/g, '').split("/")
+    const lan = data.lan.replace(/"/g, '')
+    const [ serverIp, mask ] = lan.split("/")
     let [oct1, oct2, oct3, oct4] = serverIp.split(".").map(Number)
     oct4++
     const wgIp = `${oct1}.${oct2}.${oct3}.${oct4}/${mask}`
     const config = `[Interface]
-PrivateKey = ${data.privatKey}
-Address = ${wgIp}
+PrivateKey = ${data.privatKey.replace(/"/g, '')}
+Address = ${wgIp.replace(/"/g, '')}
 MTU = 1420
-ListenPort = ${data.port}
-PostUp = iptables -t nat -A POSTROUTING -s ${data.lan} -o eth0 -j MASQUERADE 
+ListenPort = ${data.port.replace(/"/g, '')}
+PostUp = iptables -t nat -A POSTROUTING -s ${lan} -o eth0 -j MASQUERADE 
 `.trim()
     fastify.log.info(config)
     // Записываем минимум а запускаем wiregard
@@ -45,15 +46,16 @@ PostUp = iptables -t nat -A POSTROUTING -s ${data.lan} -o eth0 -j MASQUERADE
         try {
           fastify.log.info('⚠️ говорим серверу наше имя и говорим что готовы получить дальнейшие настройки')
           const serverUrl = `http://wg-serv:3001/head/start/${server}` // поменять на имя сервиса
+          fastify.log.info(server)
           fetch(serverUrl)
          }
          catch (e) {
-          return fastify.log.error('❌ ОШИБКА ', e)
+          return fastify.log.error('❌ ОШИБКА отравки GET ', e)
         }
       })
   } 
   catch (err) {
-    return fastify.log.error('❌ ОШИБКА: ', err)
+    return fastify.log.error('❌ ОШИБКА: сервер не стартовал', err)
   }
   
 })
@@ -87,8 +89,8 @@ fastify.post('/control', async (request, reply) => { // принимаем пи�
       // Пиры, которых больше нет → удалить
       for (const oldKey of existingPeers) {
         if (!newPublicKeys.includes(oldKey)) {
-          await execShell(`wg set wg0 peer ${oldKey} remove`)
-          console.log(`Удалён старый пир ${oldKey}`)
+          await execShell(`wg set wg0 peer ${oldKey.replace(/"/g, '')} remove`)
+          console.log(`Удалён старый пир ${oldKey.replace(/"/g, '')}`)
         }
       }
   
@@ -109,46 +111,47 @@ fastify.post('/control', async (request, reply) => { // принимаем пи�
   }
   
 // TC
-  await execShell('tc qdisc del dev wg0 root').catch(() => {}) // удаляем все правила
-  async function applyTC(userNet) {
-    try {
-      // Удаляем все старые qdisc (если есть)
-      await execShell('tc qdisc del dev wg0 root').catch(() => {})
+//   await execShell('tc qdisc del dev wg0 root').catch(() => {}) // удаляем все правила
+//   async function applyTC(userNet) {
+//     try {
+//       // Удаляем все старые qdisc (если есть)
+//       await execShell('tc qdisc del dev wg0 root').catch(() => {})
   
-      // Создаем корневую очередь
-      await execShell('tc qdisc add dev wg0 root handle 1: htb default 12')
-      await execShell('tc class add dev wg0 parent 1: classid 1:1 htb rate 10000mbit') // максимум
+//       // Создаем корневую очередь
+//       await execShell('tc qdisc add dev wg0 root handle 1: htb default 12')
+//       await execShell('tc class add dev wg0 parent 1: classid 1:1 htb rate 10000mbit') // максимум
   
-      for (let i = 0; i < userNet.length; i++) {
-        const { network, speed } = userNet[i]
-        const classId = 20 + i // уникальный classid для каждого
-        const mbit = `${speed}mbit`
+//       for (let i = 0; i < userNet.length; i++) {
+//         const { network, speed } = userNet[i]
+//         const classId = 20 + i // уникальный classid для каждого
+//         const mbit = `${speed}mbit`
   
-        // Создаем класс с ограничением скорости
-        await execShell(`tc class add dev wg0 parent 1:1 classid 1:${classId} htb rate ${mbit}`)
+//         // Создаем класс с ограничением скорости
+//         await execShell(`tc class add dev wg0 parent 1:1 classid 1:${classId} htb rate ${mbit}`)
   
-        // Применяем фильтр для подсети
-        await execShell(`tc filter add dev wg0 protocol ip parent 1:0 prio 1 u32 match ip dst ${network} flowid 1:${classId}`)
+//         // Применяем фильтр для подсети
+//         await execShell(`tc filter add dev wg0 protocol ip parent 1:0 prio 1 u32 match ip dst ${network} flowid 1:${classId}`)
   
-        console.log(`Ограничение ${mbit} применено к ${network}`)
-      }
+//         console.log(`Ограничение ${mbit} применено к ${network}`)
+//       }
   
-      console.log('Все правила tc применены')
-    } catch (e) {
-      console.error('Ошибка применения tc:', e)
-    }
-  }
+//       console.log('Все правила tc применены')
+//     } catch (e) {
+//       console.error('Ошибка применения tc:', e)
+//     }
+//   }
   
 
-  try {
-    await applyTC(userNet)
-    await updatePeers()
-  } catch (e) {
-    console.error('Ошибка :', e)
-  }
-  // iptables и tc
+//   try {
+//     await applyTC(userNet)
+//     await updatePeers()
+//   } catch (e) {
+//     console.error('Ошибка :', e)
+//   }
+//   // iptables и tc
 
-  return reply.send({ status: 'Настройки получены' })
+//   return reply.send({ status: 'Настройки получены' })
+// 
 })
 
 fastify.listen({ port: 3003, host: '0.0.0.0' })
