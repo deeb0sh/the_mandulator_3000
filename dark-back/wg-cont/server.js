@@ -1,7 +1,7 @@
 import Fastify from 'fastify'
 import { exec } from 'child_process'
-import dotenv from 'dotenv' // для понимания .env
-dotenv.config()
+// import dotenv from 'dotenv' // для понимания .env
+// dotenv.config()
 
 const fastify = Fastify({ 
   logger: true 
@@ -9,8 +9,9 @@ const fastify = Fastify({
 
 fastify.ready().then(async () => {  // ready() выполняется при старте 
   const server = process.env.SERVERNAME // берём имя сервера из .env SERVERNAME=
-  fastify.log.info('Отправляем запрос на статовый конфиг , имя сервера : ', server)
+  
   try {
+    fastify.log.info('Отправляем запрос на статовый конфиг , имя сервера : ', server , ' <== имя сервера')
     const response = await fetch('http://wg-serv:3001/head/start',{ //В А Ж Н О локалхост поменят на робей версии и не забыть закрыть доступ с 10.11.х.х
       method: 'POST',
       headers: {
@@ -20,7 +21,9 @@ fastify.ready().then(async () => {  // ready() выполняется при с�
         server: server 
       })
     })
+    fastify.log.info('Ждм ответ от сервера')
     const data = await response.json() // в ответ получаем минимальный конифига серерва чтобы он включился(пиры будит добалвятся на лету)
+    fastify.log.info(data)
     const lan = data.lan.replace(/"/g, '')
     const [ serverIp, mask ] = lan.split("/")
     let [oct1, oct2, oct3, oct4] = serverIp.split(".").map(Number)
