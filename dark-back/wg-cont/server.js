@@ -65,51 +65,51 @@ fastify.get('/control/ping', async (request, reply) => {
   return { pong: true }
 })
 
-fastify.post('/control', async (request, reply) => { // принимаем пиры сети скорость
-  const { peers, userNet } = request.body
-  fastify.log.info('⚠️ Получены пиры и настройки сети:')
-  fastify.log.info('⚠️ Peers:', peers)
-  fastify.log.info('⚠️ UserNet:', userNet)
+// fastify.post('/control', async (request, reply) => { // принимаем пиры сети скорость
+//   const { peers, userNet } = request.body
+//   fastify.log.info('⚠️ Получены пиры и настройки сети:')
+//   fastify.log.info('⚠️ Peers:', peers)
+//   fastify.log.info('⚠️ UserNet:', userNet)
 
-  function execShell(cmd) {
-    return new Promise((resolve, reject) => {
-      exec(cmd, (err, stdout, stderr) => {
-        if (err) return reject(stderr)
-        resolve(stdout.trim())
-      })
-    })
-  }
+//   function execShell(cmd) {
+//     return new Promise((resolve, reject) => {
+//       exec(cmd, (err, stdout, stderr) => {
+//         if (err) return reject(stderr)
+//         resolve(stdout.trim())
+//       })
+//     })
+//   }
   
-  async function updatePeers() {
-    try {
-      const existingRaw = await execShell('wg show wg0 peers') // извлекаем весь список пиров
-      const existingPeers = existingRaw.split('\n').filter(Boolean) // рабиваем посторочно
+//   async function updatePeers() {
+//     try {
+//       const existingRaw = await execShell('wg show wg0 peers') // извлекаем весь список пиров
+//       const existingPeers = existingRaw.split('\n').filter(Boolean) // рабиваем посторочно
   
-      const newPublicKeys = peers.map(p => p.publicKey) // создаём список всех публичных ключей
+//       const newPublicKeys = peers.map(p => p.publicKey) // создаём список всех публичных ключей
   
-      // Пиры, которых больше нет → удалить
-      for (const oldKey of existingPeers) {
-        if (!newPublicKeys.includes(oldKey)) {
-          await execShell(`wg set wg0 peer ${oldKey.replace(/"/g, '')} remove`)
-          console.log(`Удалён старый пир ${oldKey.replace(/"/g, '')}`)
-        }
-      }
+//       // Пиры, которых больше нет → удалить
+//       for (const oldKey of existingPeers) {
+//         if (!newPublicKeys.includes(oldKey)) {
+//           await execShell(`wg set wg0 peer ${oldKey.replace(/"/g, '')} remove`)
+//           console.log(`Удалён старый пир ${oldKey.replace(/"/g, '')}`)
+//         }
+//       }
   
-      // Новые пиры, которых ещё нет → добавить
-      for (const peer of peers) {
-        if (!existingPeers.includes(peer.publicKey)) {
-          const ip32 = peer.ip.trim().replace(/\/\d+$/, '/32')
-          const cmd = `wg set wg0 peer ${peer.publicKey} allowed-ips ${ip32},${peer.ip}`
-          await execShell(cmd)
-          console.log(`Добавлен пир ${peer.name} (${peer.publicKey})`)
-        }
-      }
+//       // Новые пиры, которых ещё нет → добавить
+//       for (const peer of peers) {
+//         if (!existingPeers.includes(peer.publicKey)) {
+//           const ip32 = peer.ip.trim().replace(/\/\d+$/, '/32')
+//           const cmd = `wg set wg0 peer ${peer.publicKey} allowed-ips ${ip32},${peer.ip}`
+//           await execShell(cmd)
+//           console.log(`Добавлен пир ${peer.name} (${peer.publicKey})`)
+//         }
+//       }
   
-      console.log('Актуализация пиров завершена')
-    } catch (err) {
-      console.error('Ошибка обновления пиров:', err)
-    }
-  }
+//       console.log('Актуализация пиров завершена')
+//     } catch (err) {
+//       console.error('Ошибка обновления пиров:', err)
+//     }
+//   }
   
 // TC
 //   await execShell('tc qdisc del dev wg0 root').catch(() => {}) // удаляем все правила
@@ -153,6 +153,6 @@ fastify.post('/control', async (request, reply) => { // принимаем пи�
 
 //   return reply.send({ status: 'Настройки получены' })
 // 
-})
+//})
 
 fastify.listen({ port: 3003, host: '0.0.0.0' })
