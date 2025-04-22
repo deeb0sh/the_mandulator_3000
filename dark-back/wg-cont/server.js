@@ -9,7 +9,7 @@ const fastify = Fastify({
 
 fastify.ready().then(async () => {  // ready() выполняется при старте 
   const server = process.env.SERVERNAME // берём имя сервера из .env SERVERNAME=
-  console.log('данные конфига получены')
+  fastify.log.info('Отправляем запрос на статовый конфиг , имя сервера : ', server)
   try {
     const response = await fetch('http://wg-serv:3001/head/start',{ //В А Ж Н О локалхост поменят на робей версии и не забыть закрыть доступ с 10.11.х.х
       method: 'POST',
@@ -43,15 +43,16 @@ PostUp = iptables -t nat -A POSTROUTING -s ${lan} -o eth0 -j MASQUERADE
         }
         fastify.log.info('✅ Стартовый конфиг Wireguard сервера получен и применён.')
         // отправляем информацию серверу а то что минимум готов и принмиаю остальные настройки
-        try {
-          fastify.log.info('⚠️ говорим серверу наше имя и говорим что готовы получить дальнейшие настройки')
-          const serverUrl = `http://wg-serv:3001/head/start/${server}` // поменять на имя сервиса
-          fastify.log.info(server)
-          fetch(serverUrl)
-         }
-         catch (e) {
-          return fastify.log.error('❌ ОШИБКА отравки GET ', e)
-        }
+      //   try {
+      //     fastify.log.info('⚠️ говорим серверу наше имя и говорим что готовы получить дальнейшие настройки')
+      //     const serverUrl = `http://wg-serv:3001/head/start/${server}` // поменять на имя сервиса
+      //     fastify.log.info(server)
+      //     fetch(serverUrl)
+      //    }
+      //    catch (e) {
+      //     return fastify.log.error('❌ ОШИБКА отравки GET ', e)
+      //   }
+      // 
       })
   } 
   catch (err) {
