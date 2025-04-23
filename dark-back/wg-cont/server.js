@@ -34,14 +34,17 @@ fastify.ready().then(async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ server: serverName })
     });
-
+    fastify.log.info(`Запрос отправлен, имя сервера: ${serverName}`);
     const data = await response.json();
+    fastify.log.info(`Получшен ответ: ${data}`)
     const lan = data.lan.replace(/"/g, '');
+    fastify.log.info(`Получили ЛАН: ${lan}`)
     const [serverIp, mask] = lan.split("/");
+    fastify.log.info(`Получили ip и маску: ${serverIp} --- ${mask}`)
     let [oct1, oct2, oct3, oct4] = serverIp.split(".").map(Number);
     oct4++;
     const wgIp = `${oct1}.${oct2}.${oct3}.${oct4}/${mask}`;
-
+    fastify.log.info(`Получшен ответ: ${data}`)
     const config = `[Interface]
 PrivateKey = ${data.privateKey}
 Address = ${wgIp}
