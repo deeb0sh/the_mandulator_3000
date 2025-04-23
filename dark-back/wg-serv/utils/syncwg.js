@@ -55,7 +55,9 @@ export default async function syncwg(fastify, server) {
         userNet: userNet
       })
     })
-  
+    fastify.log.info('📡  [syncwg] Пытаемся отправить:', JSON.stringify({ peers, userNet }, null, 2))
+    fastify.log.info(`📨  [syncwg] URL: ${wgUrl}`)
+
   } catch (err) {
     fastify.log.error(`❌ Ошибка связи с сервером ${server}:`, err)
     return
