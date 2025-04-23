@@ -55,12 +55,12 @@ export default async function syncwg(fastify, server) {
         userNet: userNet
       })
     })
-
-    fastify.log.info(`📡 Настройки успешно отправлены на => ${server}`)
+  
   } catch (err) {
     fastify.log.error(`❌ Ошибка связи с сервером ${server}:`, err)
     return
   }
 
   fastify.log.info(`✅ Данные успешно переданы на сервер: ${server}`)
+  return
 }

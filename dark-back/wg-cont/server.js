@@ -44,68 +44,81 @@ PostUp = iptables -t nat -A POSTROUTING -s ${data.lan} -o eth0 -j MASQUERADE
         return
       }
       fastify.log.warn('✅ Стартовый конфиг Wireguard сервера получен и применён.')
-        // отправляем информацию серверу а то что минимум готов и принмиаю остальные настройки
-      //   try {
-      //     fastify.log.info('⚠️ говорим серверу наше имя и говорим что готовы получить дальнейшие настройки')
-      //     const serverUrl = `http://wg-serv:3001/head/start/${server}` // поменять на имя сервиса
-      //     fastify.log.info(server)
-      //     fetch(serverUrl)
-      //    }
-      //    catch (e) {
-      //     return fastify.log.error('❌ ОШИБКА отравки GET ', e)
-      //   }
-      // 
+      // отправляем информацию серверу а то что минимум готов и принмиаю остальные настройки
+        try {
+          fastify.log.info('⚠️ говорим серверу наше имя и говорим что готовы получить дальнейшие настройки')
+          const serverUrl = `http://wg-serv:3001/head/start/${server}` 
+          fetch(serverUrl)
+        }
+        catch (e) {
+          return fastify.log.error(`❌ ОШИБКА отравки GET , ${e}`)
+        }
+      
       })
  
    // fastify.log.error('❌ ОШИБКА: сервер не стартовал', err)
-
+    const stripQuotesDeep = (data) => {
+      if (Array.isArray(data)) {
+        return data.map(stripQuotesDeep)
+      } else if (typeof data === 'object' && data !== null) {
+        return Object.fromEntries(
+          Object.entries(data).map(([k, v]) => [k, stripQuotesDeep(v)])
+        )
+      } else if (typeof data === 'string') {
+        return data.replace(/^"+|"+$/g, '')
+      }
+      return data
+    }
  
-// fastify.post('/control', async (request, reply) => { // принимаем пиры сети скорость
-//   const { peers, userNet } = request.body
-//   fastify.log.info('⚠️ Получены пиры и настройки сети:')
-//   fastify.log.info('⚠️ Peers:', peers)
-//   fastify.log.info('⚠️ UserNet:', userNet)
+   fastify.post('/control', async (request, reply) => { // принимаем пиры сети скорость
+   let { peers, userNet } = request.body
+   peers = stripQuotesDeep(peers)
+   userNet = stripQuotesDeep(userNet)
 
-//   function execShell(cmd) {
-//     return new Promise((resolve, reject) => {
-//       exec(cmd, (err, stdout, stderr) => {
-//         if (err) return reject(stderr)
-//         resolve(stdout.trim())
-//       })
-//     })
-//   }
+   fastify.log.info('⚠️ Получены пиры и настройки сети:')
+   fastify.log.info('⚠️ Peers:', peers)
+   fastify.log.info('⚠️ UserNet:', userNet)
+
+   function execShell(cmd) {
+     return new Promise((resolve, reject) => {
+       exec(cmd, (err, stdout, stderr) => {
+         if (err) return reject(stderr)
+         resolve(stdout.trim())
+       })
+     })
+   }
   
-//   async function updatePeers() {
-//     try {
-//       const existingRaw = await execShell('wg show wg0 peers') // извлекаем весь список пиров
-//       const existingPeers = existingRaw.split('\n').filter(Boolean) // рабиваем посторочно
+   async function updatePeers() {
+     try {
+       const existingRaw = await execShell('wg show wg0 peers') // извлекаем весь список пиров
+       const existingPeers = existingRaw.split('\n').filter(Boolean) // рабиваем посторочно
   
-//       const newPublicKeys = peers.map(p => p.publicKey) // создаём список всех публичных ключей
+       const newPublicKeys = peers.map(p => p.publicKey) // создаём список всех публичных ключей
   
-//       // Пиры, которых больше нет → удалить
-//       for (const oldKey of existingPeers) {
-//         if (!newPublicKeys.includes(oldKey)) {
-//           await execShell(`wg set wg0 peer ${oldKey.replace(/"/g, '')} remove`)
-//           console.log(`Удалён старый пир ${oldKey.replace(/"/g, '')}`)
-//         }
-//       }
+       // Пиры, которых больше нет - удалить
+       for (const oldKey of existingPeers) {
+         if (!newPublicKeys.includes(oldKey)) {
+           await execShell(`wg set wg0 peer ${oldKey} remove`)
+           console.log(`Удалён старый пир ${oldKey}`)
+         }
+       }
   
-//       // Новые пиры, которых ещё нет → добавить
-//       for (const peer of peers) {
-//         if (!existingPeers.includes(peer.publicKey)) {
-//           const ip32 = peer.ip.trim().replace(/\/\d+$/, '/32')
-//           const cmd = `wg set wg0 peer ${peer.publicKey} allowed-ips ${ip32},${peer.ip}`
-//           await execShell(cmd)
-//           console.log(`Добавлен пир ${peer.name} (${peer.publicKey})`)
-//         }
-//       }
+       // Новые пиры, которых ещё нет -добавить
+       for (const peer of peers) {
+         if (!existingPeers.includes(peer.publicKey)) {
+           const ip32 = peer.ip.trim().replace(/\/\d+$/, '/32')
+           const cmd = `wg set wg0 peer ${peer.publicKey} allowed-ips ${ip32},${peer.ip}`
+           await execShell(cmd)
+           console.log(`Добавлен пир ${peer.name} (${peer.publicKey})`)
+         }
+       }
   
-//       console.log('Актуализация пиров завершена')
-//     } catch (err) {
-//       console.error('Ошибка обновления пиров:', err)
-//     }
-//   }
-  
+       console.log('Актуализация пиров завершена')
+     } catch (err) {
+       console.error('Ошибка обновления пиров:', err)
+     }
+   }}
+  )
 // TC
 //   await execShell('tc qdisc del dev wg0 root').catch(() => {}) // удаляем все правила
 //   async function applyTC(userNet) {
@@ -148,6 +161,6 @@ PostUp = iptables -t nat -A POSTROUTING -s ${data.lan} -o eth0 -j MASQUERADE
 
 //   return reply.send({ status: 'Настройки получены' })
 // 
-//})
+
 
 fastify.listen({ port: 3003, host: '0.0.0.0' })
