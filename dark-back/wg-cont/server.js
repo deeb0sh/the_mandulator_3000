@@ -57,23 +57,9 @@ PostUp = iptables -t nat -A POSTROUTING -s ${data.lan} -o eth0 -j MASQUERADE
       })
  
    // fastify.log.error('❌ ОШИБКА: сервер не стартовал', err)
-    const stripQuotesDeep = (data) => {
-      if (Array.isArray(data)) {
-        return data.map(stripQuotesDeep)
-      } else if (typeof data === 'object' && data !== null) {
-        return Object.fromEntries(
-          Object.entries(data).map(([k, v]) => [k, stripQuotesDeep(v)])
-        )
-      } else if (typeof data === 'string') {
-        return data.replace(/^"+|"+$/g, '')
-      }
-      return data
-    }
  
    fastify.post('/control', async (request, reply) => { // принимаем пиры сети скорость
-   let { peers, userNet } = request.body
-   peers = stripQuotesDeep(peers)
-   userNet = stripQuotesDeep(userNet)
+   const { peers, userNet } = request.body
 
    fastify.log.info('⚠️ Получены пиры и настройки сети:')
    fastify.log.info('⚠️ Peers:', peers)
