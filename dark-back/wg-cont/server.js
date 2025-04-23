@@ -23,24 +23,17 @@ const fastify = Fastify({
   })
   fastify.log.warn('Ждм ответ от сервера')
   const data = await response.json() // в ответ получаем минимальный конифига серерва чтобы он включился(пиры будит добалвятся на лету)
-  const lan = data.lan.replace(/"/g, '')
-  const [ serverIp, mask ] = lan.split("/")
+  const [ serverIp, mask ] = data.lan.split("/")
   let [oct1, oct2, oct3, oct4] = serverIp.split(".").map(Number)
   oct4++
   const wgIp = `${oct1}.${oct2}.${oct3}.${oct4}/${mask}`
-  
-  const rawKey = data.privatKey
-  const privKey = rawKey.replace(/"/g, '')
-  
-  const rawPort = data.port
-  const port = rawPort.replace(/"/g, '')
-  
+   
   const config = `[Interface]
-PrivateKey = ${privKey}
+PrivateKey = ${data.privatKey}
 Address = ${wgIp}
 MTU = 1420
-ListenPort = ${port}
-PostUp = iptables -t nat -A POSTROUTING -s ${lan} -o eth0 -j MASQUERADE 
+ListenPort = ${data.port}
+PostUp = iptables -t nat -A POSTROUTING -s ${data.lan} -o eth0 -j MASQUERADE 
 `.trim()
   console.log(config)
   // Записываем минимум а запускаем wiregard

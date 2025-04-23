@@ -9,5 +9,11 @@ export default async function sendconf(fastify, server) {
             port: true,
         }
     })
-    return serverDb  
+    //return serverDb
+    return {
+        lan: serverDb.lan.replace(/"/g, ''),
+        privatKey: serverDb.privatKey.replace(/"/g, ''),
+        port: serverDb.port
+      }
+        
 }

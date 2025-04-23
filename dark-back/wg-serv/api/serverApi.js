@@ -9,7 +9,8 @@ export default async function wgServerApi(fastify) {
         if (!server) {
             return reply.send({ error: 'Не передано поле server' })
         }
-        fastify.log.info(`✅ Подключился сервер: ${server}`)
+        fastify.log.info(`✅⚠️ Подключился сервер: ${server}`)
+        fastify.log.info(`📥 Получен body: ${JSON.stringify(request.body)}`)
 
         const config = await sendconf(fastify,server)
         return reply.send(config)
