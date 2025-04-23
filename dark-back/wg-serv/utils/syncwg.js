@@ -7,7 +7,7 @@ export default async function syncwg(fastify, server) {
       publicKey: true,
     }
   })
-
+  //console.log(peers)
   const userNetdb = await fastify.prisma.userSubnet.findMany({
     where: { serverName: server },
     select: {
@@ -23,14 +23,14 @@ export default async function syncwg(fastify, server) {
       }
     }
   })
-
+  
   const userNet = userNetdb.map(entry => {
     return {
       network: entry.network,
       speed: entry.user?.role?.speed ?? null // безопасный доступ
     }
   })
-
+  //console.log(userNet)
   try {
     const serverName = {
       RU: 'wgru',
@@ -42,7 +42,7 @@ export default async function syncwg(fastify, server) {
       fastify.log.warn('⚠️ Неизвестный сервер: ' + server)
       return
     }
-
+    console.log('📡📡📡 Пытаемся отправить:', JSON.stringify({ peers, userNet }, null, 2))
     const wgUrl = `http://${serverName[server]}:3003/control`
 
     await fetch(wgUrl, {
@@ -55,8 +55,7 @@ export default async function syncwg(fastify, server) {
         userNet: userNet
       })
     })
-    fastify.log.info('📡  [syncwg] Пытаемся отправить:', JSON.stringify({ peers, userNet }, null, 2))
-    fastify.log.info(`📨  [syncwg] URL: ${wgUrl}`)
+    
 
   } catch (err) {
     fastify.log.error(`❌ Ошибка связи с сервером ${server}:`, err)
