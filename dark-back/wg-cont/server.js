@@ -61,9 +61,9 @@ PostUp = iptables -t nat -A POSTROUTING -s ${data.lan} -o eth0 -j MASQUERADE
    fastify.post('/control', async (request, reply) => { // принимаем пиры сети скорость
    const { peers, userNet } = request.body
 
-   fastify.log.info('⚠️ Получены пиры и настройки сети:')
-   fastify.log.info('⚠️ Peers:', peers)
-   fastify.log.info('⚠️ UserNet:', userNet)
+   console.log('⚠️ Получены пиры и настройки сети:')
+   console.log('⚠️ Peers:', peers)
+   console.log('⚠️ UserNet:', userNet)
 
    function execShell(cmd) {
      return new Promise((resolve, reject) => {
@@ -94,6 +94,7 @@ PostUp = iptables -t nat -A POSTROUTING -s ${data.lan} -o eth0 -j MASQUERADE
          if (!existingPeers.includes(peer.publicKey)) {
            const ip32 = peer.ip.trim().replace(/\/\d+$/, '/32')
            const cmd = `wg set wg0 peer ${peer.publicKey} allowed-ips ${ip32},${peer.ip}`
+           console.log(cmd)
            await execShell(cmd)
            console.log(`Добавлен пир ${peer.name} (${peer.publicKey})`)
          }
