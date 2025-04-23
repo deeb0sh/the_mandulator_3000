@@ -93,7 +93,7 @@ PostUp = iptables -t nat -A POSTROUTING -s ${data.lan} -o eth0 -j MASQUERADE
        for (const peer of peers) {
          if (!existingPeers.includes(peer.publicKey)) {
            const ip32 = peer.ip.trim().replace(/\/\d+$/, '/32')
-           const cmd = `wg set wg0 peer ${peer.publicKey} allowed-ips ${ip32},${peer.ip}`
+           const cmd = `wg set wg0 peer ${peer.publicKey} allowed-ips ${ip32}`
            console.log(cmd)
            await execShell(cmd)
            console.log(`Добавлен пир ${peer.name} (${peer.publicKey})`)
