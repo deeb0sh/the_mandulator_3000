@@ -11,7 +11,7 @@ const fastify = Fastify({
 })
 
 
-  fastify.log.info('Отправляем запрос на статовый конфиг , имя сервера : ', server , ' <== имя сервера')
+  fastify.log.warn(`Отправляем запрос на статовый конфиг , имя сервера : , ${server} ,  <== имя сервера`)
   const response = await fetch('http://wg-serv:3001/head/start',{ //В А Ж Н О локалхост поменят на робей версии и не забыть закрыть доступ с 10.11.х.х
     method: 'POST',
     headers: {
@@ -21,18 +21,25 @@ const fastify = Fastify({
       server: server 
     })
   })
-  fastify.log.info('Ждм ответ от сервера')
+  fastify.log.warn('Ждм ответ от сервера')
   const data = await response.json() // в ответ получаем минимальный конифига серерва чтобы он включился(пиры будит добалвятся на лету)
   const lan = data.lan.replace(/"/g, '')
   const [ serverIp, mask ] = lan.split("/")
   let [oct1, oct2, oct3, oct4] = serverIp.split(".").map(Number)
   oct4++
   const wgIp = `${oct1}.${oct2}.${oct3}.${oct4}/${mask}`
+  
+  const rawKey = data.privatKey
+  const privKey = rawKey.replace(/"/g, '')
+  
+  const rawPort = data.port
+  const port = rawPort.replace(/"/g, '')
+  
   const config = `[Interface]
-PrivateKey = ${data.privatKey.replace(/"/g, '')}
-Address = ${wgIp.replace(/"/g, '')}
+PrivateKey = ${privKey}
+Address = ${wgIp}
 MTU = 1420
-ListenPort = ${data.port.replace(/"/g, '')}
+ListenPort = ${port}
 PostUp = iptables -t nat -A POSTROUTING -s ${lan} -o eth0 -j MASQUERADE 
 `.trim()
   console.log(config)
@@ -40,10 +47,10 @@ PostUp = iptables -t nat -A POSTROUTING -s ${lan} -o eth0 -j MASQUERADE
   exec(`echo "${config}" > /etc/wireguard/wg0.conf && wg-quick up wg0`, 
     (err, stdout, stderr) => {
       if (err) {
-        fastify.log.error('❌ Ошибка при применении конфига WireGuard:', stderr)
+        fastify.log.error(`❌ Ошибка при применении конфига WireGuard: ${stderr}`)
         return
       }
-      fastify.log.info('✅ Стартовый конфиг Wireguard сервера получен и применён.')
+      fastify.log.warn('✅ Стартовый конфиг Wireguard сервера получен и применён.')
         // отправляем информацию серверу а то что минимум готов и принмиаю остальные настройки
       //   try {
       //     fastify.log.info('⚠️ говорим серверу наше имя и говорим что готовы получить дальнейшие настройки')
