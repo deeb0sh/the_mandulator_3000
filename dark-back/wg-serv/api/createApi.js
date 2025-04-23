@@ -4,7 +4,7 @@ import { wgNameValid } from '../schemas/wgNameValid.js'
 import { wgid } from '../schemas/wgid.js'
 import syncwg from '../utils/syncwg.js'
 import defIp from '../utils/defaultIp.js'
-import crypto from 'crypto'
+import { generateWireGuardKeys } from '../utils/wireguard.js'
 
 export default async function wgCreateApi(fastify) {
     fastify.register(jwt, {
@@ -88,8 +88,9 @@ export default async function wgCreateApi(fastify) {
             }
 
             const firstFreeIp = availableIps[0]
-            const privateKey = crypto.randomBytes(32).toString('base64')
-            const publicKey = crypto.createHash('sha256').update(privateKey).digest('base64')
+            const { privateKey, publicKey } = await generateWireGuardKeys()
+            //const privateKey = crypto.randomBytes(32).toString('base64')
+            //const publicKey = crypto.createHash('sha256').update(privateKey).digest('base64')
 
             const servers = {
                 "RU": "ru.darksurf.ru",
