@@ -10,41 +10,40 @@ const fastify = Fastify({
   logger: true 
 })
 
-fastify.ready().then(async () => {  // ready() выполняется при старте 
-   try {
-    fastify.log.info('Отправляем запрос на статовый конфиг , имя сервера : ', server , ' <== имя сервера')
-    const response = await fetch('http://wg-serv:3001/head/start',{ //В А Ж Н О локалхост поменят на робей версии и не забыть закрыть доступ с 10.11.х.х
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        server: server 
-      })
+try {
+  fastify.log.info('Отправляем запрос на статовый конфиг , имя сервера : ', server , ' <== имя сервера')
+  const response = await fetch('http://wg-serv:3001/head/start',{ //В А Ж Н О локалхост поменят на робей версии и не забыть закрыть доступ с 10.11.х.х
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      server: server 
     })
-    fastify.log.info('Ждм ответ от сервера')
-    const data = await response.json() // в ответ получаем минимальный конифига серерва чтобы он включился(пиры будит добалвятся на лету)
-    const lan = data.lan.replace(/"/g, '')
-    const [ serverIp, mask ] = lan.split("/")
-    let [oct1, oct2, oct3, oct4] = serverIp.split(".").map(Number)
-    oct4++
-    const wgIp = `${oct1}.${oct2}.${oct3}.${oct4}/${mask}`
-    const config = `[Interface]
+  })
+  fastify.log.info('Ждм ответ от сервера')
+  const data = await response.json() // в ответ получаем минимальный конифига серерва чтобы он включился(пиры будит добалвятся на лету)
+  const lan = data.lan.replace(/"/g, '')
+  const [ serverIp, mask ] = lan.split("/")
+  let [oct1, oct2, oct3, oct4] = serverIp.split(".").map(Number)
+  oct4++
+  const wgIp = `${oct1}.${oct2}.${oct3}.${oct4}/${mask}`
+  const config = `[Interface]
 PrivateKey = ${data.privatKey.replace(/"/g, '')}
 Address = ${wgIp.replace(/"/g, '')}
 MTU = 1420
 ListenPort = ${data.port.replace(/"/g, '')}
 PostUp = iptables -t nat -A POSTROUTING -s ${lan} -o eth0 -j MASQUERADE 
 `.trim()
-    console.log(config)
-    // Записываем минимум а запускаем wiregard
-    exec(`echo "${config}" > /etc/wireguard/wg0.conf && wg-quick up wg0`, 
-      (err, stdout, stderr) => {
-        if (err) {
-          fastify.log.error('❌ Ошибка при применении конфига WireGuard:', stderr)
-          return
-        }
-        fastify.log.info('✅ Стартовый конфиг Wireguard сервера получен и применён.')
+  console.log(config)
+  // Записываем минимум а запускаем wiregard
+  exec(`echo "${config}" > /etc/wireguard/wg0.conf && wg-quick up wg0`, 
+    (err, stdout, stderr) => {
+      if (err) {
+        fastify.log.error('❌ Ошибка при применении конфига WireGuard:', stderr)
+        return
+      }
+      fastify.log.info('✅ Стартовый конфиг Wireguard сервера получен и применён.')
         // отправляем информацию серверу а то что минимум готов и принмиаю остальные настройки
       //   try {
       //     fastify.log.info('⚠️ говорим серверу наше имя и говорим что готовы получить дальнейшие настройки')
@@ -62,7 +61,7 @@ PostUp = iptables -t nat -A POSTROUTING -s ${lan} -o eth0 -j MASQUERADE
     return fastify.log.error('❌ ОШИБКА: сервер не стартовал', err)
   }
   
-})
+
 
 fastify.get('/control/ping', async (request, reply) => {
   return { pong: true }
