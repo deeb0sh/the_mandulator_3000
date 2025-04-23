@@ -58,7 +58,7 @@ PostUp = iptables -t nat -A POSTROUTING -s ${lan} -o eth0 -j MASQUERADE
       })
   } 
   catch (err) {
-    return fastify.log.error('❌ ОШИБКА: сервер не стартовал', err)
+    fastify.log.error('❌ ОШИБКА: сервер не стартовал', err)
   }
   
 
