@@ -10,7 +10,7 @@ const fastify = Fastify({
   logger: true 
 })
 
-try {
+
   fastify.log.info('Отправляем запрос на статовый конфиг , имя сервера : ', server , ' <== имя сервера')
   const response = await fetch('http://wg-serv:3001/head/start',{ //В А Ж Н О локалхост поменят на робей версии и не забыть закрыть доступ с 10.11.х.х
     method: 'POST',
@@ -56,17 +56,10 @@ PostUp = iptables -t nat -A POSTROUTING -s ${lan} -o eth0 -j MASQUERADE
       //   }
       // 
       })
-  } 
-  catch (err) {
-    fastify.log.error('❌ ОШИБКА: сервер не стартовал', err)
-  }
-  
+ 
+   // fastify.log.error('❌ ОШИБКА: сервер не стартовал', err)
 
-
-fastify.get('/control/ping', async (request, reply) => {
-  return { pong: true }
-})
-
+ 
 // fastify.post('/control', async (request, reply) => { // принимаем пиры сети скорость
 //   const { peers, userNet } = request.body
 //   fastify.log.info('⚠️ Получены пиры и настройки сети:')
