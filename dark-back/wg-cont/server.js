@@ -138,12 +138,12 @@ PostUp = iptables -t nat -A POSTROUTING -s ${data.lan} -o eth0 -j MASQUERADE
 //   }
   
 
-//   try {
-//     await applyTC(userNet)
-//     await updatePeers()
-//   } catch (e) {
-//     console.error('Ошибка :', e)
-//   }
+  try {
+    //await applyTC(userNet)
+    await updatePeers()
+  } catch (e) {
+    console.error('Ошибка :', e)
+  }
 //   // iptables и tc
 
 //   return reply.send({ status: 'Настройки получены' })
