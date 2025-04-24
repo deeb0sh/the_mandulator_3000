@@ -88,7 +88,7 @@ export default async function wgCreateApi(fastify) {
             }
 
             const firstFreeIp = availableIps[0]
-            const { privateKey, publicKey } = await generateWireGuardKeys()
+            const { privateKey, publicKey } = await generateWireGuardKeys() // генерируем пару ключей
             //const privateKey = crypto.randomBytes(32).toString('base64')
             //const publicKey = crypto.createHash('sha256').update(privateKey).digest('base64')
 

@@ -66,7 +66,6 @@ export default async function downloadApi(fastify) {
                         }
                     }
                 })
-
                 const config = `
 # darksurf.ru Мандулятор v2.0
 
@@ -76,7 +75,7 @@ Address = ${client.ip}
 DNS = ${client.dns}
 
 [Peer]
-PublicKey = ${client.server.publicKey}
+PublicKey = ${client.server.publicKey.replace(/"/g, '')}
 AllowedIPs = ${client.allowIps}
 Endpoint = ${client.endPoint}:${client.server.port}
 `.trim() // trim удаляет пустое место с начала и конца файла
