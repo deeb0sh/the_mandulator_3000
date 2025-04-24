@@ -29,7 +29,7 @@ PrivateKey = ${data.privatKey}
 Address = ${wgIp}
 MTU = 1420
 ListenPort = ${data.port}
-PostUp = iptables -t nat -A POSTROUTING -s ${data.lan} -o eth0 -j MASQUERADE`.trim()
+PostUp = iptables -t nat -A POSTROUTING -s ${data.lan} -o eth1 -j MASQUERADE`.trim()
 
 console.log(config)
 
