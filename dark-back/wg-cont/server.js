@@ -84,29 +84,55 @@ fastify.post('/control', async (request, reply) => {
       // Добавляем новые
       for (const peer of peers) {
         if (!existingPeers.includes(peer.publicKey)) {
-          const ip32 = peer.ip.trim().replace(/\/\d+$/, '/32')
-          const network = peer.network.replace(/"/g, '').trim()
-
-          const cmd = `wg set wg0 peer ${peer.publicKey} allowed-ips ${ip32}`
-          console.log(cmd)
-          await execShell(cmd)
-          console.log(`Добавлен пир ${peer.name} (${peer.publicKey})`)
-
-          // Проверка и добавление MASQUERADE
-          const natCheck = `iptables -t nat -C POSTROUTING -s ${network} -o eth1 -j MASQUERADE`
-          try {
-            await execShell(natCheck)
-            console.log(`ℹ️ MASQUERADE уже существует для ${network}`)
-          } catch {
-            const natAdd = `iptables -t nat -A POSTROUTING -s ${network} -o eth1 -j MASQUERADE`
-            await execShell(natAdd)
-            console.log(`🧱 MASQUERADE добавлен для ${network}`)
-          }
-
-          
-          
+            try {
+                // 1. Добавляем пир в WireGuard
+                const ip32 = peer.ip.trim().replace(/\/\d+$/, '/32');
+                const network = peer.network.replace(/"/g, '').trim();
+                
+                const cmd = `wg set wg0 peer ${peer.publicKey} allowed-ips ${ip32}`;
+                console.log(`[WireGuard] Добавляем пир: ${cmd}`);
+                await execShell(cmd);
+                
+                // 2. Настройка iptables (с проверкой дублирования)
+                const rules = [
+                    {
+                        check: `iptables -t nat -C POSTROUTING -s ${network} -o eth1 -j MASQUERADE`,
+                        add: `iptables -t nat -A POSTROUTING -s ${network} -o eth1 -j MASQUERADE`,
+                        existsMsg: `ℹ️ MASQUERADE уже существует для ${network}`,
+                        addMsg: `🧱 Добавлен MASQUERADE для ${network}`
+                    },
+                    {
+                        check: `iptables -C FORWARD -s ${network} -o eth1 -j ACCEPT`,
+                        add: `iptables -I FORWARD 1 -s ${network} -o eth1 -j ACCEPT`, // В начало цепочки
+                        existsMsg: `ℹ️ ACCEPT правило уже существует для ${network}`,
+                        addMsg: `🧱 Добавлено ACCEPT для ${network}`
+                    },
+                    {
+                        check: `iptables -C FORWARD -s ${network} -d ${data.lan} ! -d ${network} -j DROP`,
+                        add: `iptables -A FORWARD -s ${network} -d ${data.lan} ! -d ${network} -j DROP`,
+                        existsMsg: `ℹ️ DROP изоляция уже настроена для ${network}`,
+                        addMsg: `🧱 Добавлена DROP изоляция для ${network}`
+                    }
+                ];
+    
+                for (const rule of rules) {
+                    try {
+                        await execShell(rule.check);
+                        console.log(rule.existsMsg);
+                    } catch {
+                        await execShell(rule.add);
+                        console.log(rule.addMsg);
+                    }
+                }
+    
+                console.log(`✅ Пир ${peer.name} (${peer.publicKey}) успешно настроен`);
+                
+            } catch (error) {
+                console.error(`❌ Ошибка настройки пира ${peer.name}:`, error);
+                // Можно добавить повторную попытку или уведомление
+            }
         }
-      }
+    }
 
       console.log('Актуализация пиров завершена')
     } catch (err) {
