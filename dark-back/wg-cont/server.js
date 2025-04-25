@@ -84,7 +84,7 @@ fastify.post('/control', async (request, reply) => {
       for (const peer of peers) {
         if (!existingPeers.includes(peer.publicKey)) {
           const ip32 = peer.ip.trim().replace(/\/\d+$/, '/32')
-          const cmd = `wg set wg0 peer ${peer.publicKey} allowed-ips ${ip32}`
+          const cmd = `wg set wg0 peer ${peer.publicKey} allowed-ips ${ip32},${peer.network.replace(/"/g, '').trim()}`
           console.log(cmd)
           await execShell(cmd)
           console.log(`Добавлен пир ${peer.name} (${peer.publicKey})`)

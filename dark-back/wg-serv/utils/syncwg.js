@@ -1,13 +1,42 @@
 export default async function syncwg(fastify, server) {
+  // const peers = await fastify.prisma.client.findMany({
+  //   where: { serverName: server },
+  //   select: {
+  //     name: true,
+  //     ip: true,
+  //     publicKey: true,
+  //   }
+  // })
   const peers = await fastify.prisma.client.findMany({
     where: { serverName: server },
     select: {
       name: true,
       ip: true,
       publicKey: true,
+      user: {
+        select: {
+          subnets: {
+            where: { serverName: server },
+            take: 1,
+            select: {
+              network: true
+            }
+          }
+        }
+      }
     }
   })
-  //console.log(peers)
+  
+  // делаем плоскую структуру
+  const flatPeers = peers.map(p => ({
+    name: p.name,
+    ip: p.ip,
+    publicKey: p.publicKey,
+    network: p.user?.subnets?.[0]?.network ?? null
+  }))
+  
+  // console.log(flatPeers)
+  
   const userNetdb = await fastify.prisma.userSubnet.findMany({
     where: { serverName: server },
     select: {
@@ -42,7 +71,7 @@ export default async function syncwg(fastify, server) {
       fastify.log.warn('⚠️ Неизвестный сервер: ' + server)
       return
     }
-    console.log('📡📡📡 Пытаемся отправить:', JSON.stringify({ peers, userNet }, null, 2))
+    console.log('📡📡📡 Пытаемся отправить:', JSON.stringify({ flatPeers, userNet }, null, 2))
     const wgUrl = `http://${serverName[server]}:3003/control`
 
     await fetch(wgUrl, {
@@ -51,7 +80,7 @@ export default async function syncwg(fastify, server) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        peers: peers,
+        peers: flatPeers,
         userNet: userNet
       })
     })
