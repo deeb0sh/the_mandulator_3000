@@ -71,7 +71,7 @@ export default async function syncwg(fastify, server) {
       fastify.log.warn('⚠️ Неизвестный сервер: ' + server)
       return
     }
-    console.log('📡📡📡 Пытаемся отправить:', JSON.stringify({ flatPeers, userNet }, null, 2))
+    //console.log('📡📡📡 Пытаемся отправить:', JSON.stringify({ flatPeers, userNet }, null, 2))
     const wgUrl = `http://${serverName[server]}:3003/control`
 
     await fetch(wgUrl, {
