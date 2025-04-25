@@ -103,29 +103,8 @@ fastify.post('/control', async (request, reply) => {
             console.log(`🧱 MASQUERADE добавлен для ${network}`)
           }
 
-          // 🔓 Разрешаем трафик из сети клиента наружу (NAT)
-          const allowForwardCheck = `iptables -C FORWARD -s ${network} -o eth1 -j ACCEPT`
-          try {
-            await execShell(allowForwardCheck)
-            console.log(`✅ FORWARD разрешение уже есть для ${network} -> eth1`)
-          } 
-          catch {
-            const allowForwardAdd = `iptables -I FORWARD -s ${network} -o eth1 -j ACCEPT`
-            await execShell(allowForwardAdd)
-            console.log(`🚀 FORWARD разрешение добавлено для ${network} -> eth1`)
-          }
-
-          // 🔒 Блокируем доступ за пределы своей подсети
-          const dropCheck = `iptables -C FORWARD -s ${network} ! -d ${network} -j DROP`
-          try {
-            await execShell(dropCheck)
-            console.log(`ℹ️ DROP правило уже есть для ${network}`)
-          } 
-          catch {
-            const dropAdd = `iptables -A FORWARD -s ${network} ! -d ${network} -j DROP`
-            await execShell(dropAdd)
-            console.log(`🔒 Изоляция включена для ${network}`)
-          }
+          
+          
         }
       }
 
