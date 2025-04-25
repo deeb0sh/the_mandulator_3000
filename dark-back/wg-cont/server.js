@@ -29,9 +29,10 @@ PrivateKey = ${data.privatKey}
 Address = ${wgIp}
 MTU = 1420
 ListenPort = ${data.port}
-PostUp = iptables -t nat -A POSTROUTING -s ${data.lan} -o eth1 -j MASQUERADE`.trim()
+`.trim()
+//PostUp = iptables -t nat -A POSTROUTING -s ${data.lan} -o eth1 -j MASQUERADE
 
-console.log(config)
+//console.log(config)
 
 exec(`echo "${config}" > /etc/wireguard/wg0.conf && wg-quick up wg0`, (err, stdout, stderr) => {
   if (err) {
@@ -84,10 +85,34 @@ fastify.post('/control', async (request, reply) => {
       for (const peer of peers) {
         if (!existingPeers.includes(peer.publicKey)) {
           const ip32 = peer.ip.trim().replace(/\/\d+$/, '/32')
-          const cmd = `wg set wg0 peer ${peer.publicKey} allowed-ips ${ip32},${peer.network.replace(/"/g, '').trim()}`
+          const network = peer.network.replace(/"/g, '').trim()
+
+          const cmd = `wg set wg0 peer ${peer.publicKey} allowed-ips ${ip32}`
           console.log(cmd)
           await execShell(cmd)
           console.log(`Добавлен пир ${peer.name} (${peer.publicKey})`)
+
+          // Проверка и добавление MASQUERADE
+          const natCheck = `iptables -t nat -C POSTROUTING -s ${network} -o eth1 -j MASQUERADE`
+          try {
+            await execShell(natCheck)
+            console.log(`ℹ️ MASQUERADE уже существует для ${network}`)
+          } catch {
+            const natAdd = `iptables -t nat -A POSTROUTING -s ${network} -o eth1 -j MASQUERADE`
+            await execShell(natAdd)
+            console.log(`🧱 MASQUERADE добавлен для ${network}`)
+          }
+
+          // Проверка и добавление изоляции
+          const dropCheck = `iptables -C FORWARD -s ${network} ! -d ${network} -j DROP`
+          try {
+            await execShell(dropCheck)
+            console.log(`ℹ️ DROP правило уже есть для ${network}`)
+          } catch {
+            const dropAdd = `iptables -I FORWARD -s ${network} ! -d ${network} -j DROP`
+            await execShell(dropAdd)
+            console.log(`🔒 Изоляция включена для ${network}`)
+          }
         }
       }
 
