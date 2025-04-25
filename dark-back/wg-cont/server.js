@@ -93,7 +93,7 @@ fastify.post('/control', async (request, reply) => {
                 console.log(`[WireGuard] Добавляем пир: ${cmd}`);
                 await execShell(cmd);
                 
-                // 2. Настройка iptables (с проверкой дублирования)
+                // 2. Настройка iptables
                 const rules = [
                     {
                         check: `iptables -t nat -C POSTROUTING -s ${network} -o eth1 -j MASQUERADE`,
@@ -103,17 +103,20 @@ fastify.post('/control', async (request, reply) => {
                     },
                     {
                         check: `iptables -C FORWARD -s ${network} -o eth1 -j ACCEPT`,
-                        add: `iptables -I FORWARD 1 -s ${network} -o eth1 -j ACCEPT`, // В начало цепочки
+                        add: `iptables -I FORWARD 1 -s ${network} -o eth1 -j ACCEPT`,
                         existsMsg: `ℹ️ ACCEPT правило уже существует для ${network}`,
                         addMsg: `🧱 Добавлено ACCEPT для ${network}`
-                    },
-                    {
-                        check: `iptables -C FORWARD -s ${network} -d ${data.lan} ! -d ${network} -j DROP`,
-                        add: `iptables -A FORWARD -s ${network} -d ${data.lan} ! -d ${network} -j DROP`,
-                        existsMsg: `ℹ️ DROP изоляция уже настроена для ${network}`,
-                        addMsg: `🧱 Добавлена DROP изоляция для ${network}`
                     }
                 ];
+    
+                // 3. Правило изоляции (исправленное)
+                const isolationRule = `iptables -A FORWARD -s ${network} ! -d ${network} -j DROP`;
+                rules.push({
+                    check: `iptables -C FORWARD -s ${network} ! -d ${network} -j DROP`,
+                    add: isolationRule,
+                    existsMsg: `ℹ️ DROP изоляция уже настроена для ${network}`,
+                    addMsg: `🧱 Добавлена DROP изоляция для ${network}`
+                });
     
                 for (const rule of rules) {
                     try {
@@ -128,8 +131,7 @@ fastify.post('/control', async (request, reply) => {
                 console.log(`✅ Пир ${peer.name} (${peer.publicKey}) успешно настроен`);
                 
             } catch (error) {
-                console.error(`❌ Ошибка настройки пира ${peer.name}:`, error);
-                // Можно добавить повторную попытку или уведомление
+                console.error(`❌ Ошибка настройки пира ${peer.name}:`, error.message || error);
             }
         }
     }
