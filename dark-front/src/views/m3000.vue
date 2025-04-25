@@ -95,20 +95,29 @@ import { jwtDecode } from 'jwt-decode'
 <style scoped>
     /* * {
         border: #ff00ff solid 1px;
-    } */
+    } * */
     .header-text {
         font-family: HH;
         font-size: 50px;  
         color: #313131; 
     }   
+    
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-y: auto; /* скролл на уровне окна */
+    }   
+
     .main {
         flex: 1 0 auto;
         width: 95%;
         display: flex;
         flex-direction: column;
-        justify-content: top;
-        align-items: center;     
-    }   
+        justify-content: flex-start; /* вместо top, его нет в CSS */
+        align-items: center;
+        padding-bottom: 80px;
+    }
     .header {
         display: flex;
         align-items: flex-start; 
