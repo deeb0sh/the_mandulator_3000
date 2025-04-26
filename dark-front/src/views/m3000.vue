@@ -107,6 +107,7 @@ import { jwtDecode } from 'jwt-decode'
         margin: 0;
         padding: 0;
         overflow-y: auto; /* скролл на уровне окна */
+        min-height: 100vh;
     }   
 
     .main {
