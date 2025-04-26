@@ -29,7 +29,6 @@ PrivateKey = ${data.privatKey}
 Address = ${wgIp}
 MTU = 1420
 ListenPort = ${data.port}
-PostUp = iptables -t nat -A PREROUTING -p tcp --dport 843 -j DNAT --to-destination 10.11.0.17:843; iptables -t nat -A PREROUTING -p tcp --dport 4525 -j DNAT --to-destination 10.11.0.17:4525; iptables -t nat -A PREROUTING -p tcp --dport 4524 -j DNAT --to-destination 10.11.0.17:4524
 `.trim()
 //PostUp = iptables -t nat -A POSTROUTING -s ${data.lan} -o eth1 -j MASQUERADE
 
