@@ -2,14 +2,8 @@
     <div class="main">
         <div class="container">
                 <div class="nav">
-                    <RouterLink to="/"><img src="../img/logozbs.png" width="165"></RouterLink>
-                    <span class="header-text"><i>Anima Amoris</i></span>
-                </div>
-                <div class="nav">
-                    <RouterLink to="/radio"><img src="../img/logo_radio.png" width="70"></RouterLink>
-                    <!-- <RouterLink to="/m3000"><img src="../img/logo_mand.png" width="70"></RouterLink> -->
-                    <a href="#" @click="LoginShow()"><img src="../img/logo_mand.png" width="70"></a>
-                    <!-- <RouterLink to="/pindos"><img src="../img/logo_pindos.png" width="70"></RouterLink>                       -->
+                    <RouterLink to="/"><img src="../img/logozbs.png" width="80"></RouterLink>
+                    <span class="header-text"><i>DarkSurf.ru</i></span>
                 </div>
         </div>
         <div class="radio">
@@ -44,7 +38,7 @@
         </div>
     </div>
     <Player v-bind:Source="url"/>
-    <Footer txt="&copy 2025 ebosh-product"/>
+    
 </template>
 <script>
 
@@ -100,37 +94,42 @@ export default {
 }
 </script>
 <style scoped>
-*z {
+* {
     border: #ffc400 solid 1px;
 }
 
 .main {
-    flex: 1 0 auto;
-    width: 90%;
-    display: flex;
-    flex-direction: column;
-    justify-content: top;
-    align-items:center;
-}
+        flex: 1 0 auto;
+        width: 95%;
+        min-height: 100vh;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start; /* вместо top, его нет в CSS */
+        align-items: center;
+        padding-bottom: 80px;
+    }
 
 .container {
-    margin-top: 20px;
-    margin-bottom: 30px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     width: 100%;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items:flex-start;
 }
 
 .radio {
     display: flex;
-    flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
     width: 100%;
-
 }
 
+.radio > * {
+    flex: 0 1 150px; /* или сколько тебе нужно: ширина одного блока */
+    max-width: 150px;
+}
 .nav {
     display: flex;
     justify-content: center;
@@ -143,39 +142,56 @@ export default {
     font-size: 50px;  
     color: #313131; 
 }
-
-@media (max-width: 940px) {
-    img {
-        width: 70px;
-    }
-    .main {
+@media (max-width:950px ){
+    .header {
+        display: flex;
+        align-items: flex-start; 
+        justify-content: space-between;
+        gap: 10px; 
         width: 100%;
-    }
-    .container {
         margin-top: 5px;
-        margin-bottom: 10px;
-    }
-    .header-text {
-        font-size: 40px; 
+        margin-bottom: 15px;
     }
 }
-@media (max-width: 660px) {
-    .header-text {
-        font-size: 20px;  
-    }
-    img {
-        width: 40px;
-    }
+@media (max-width:878px ) {
     .container {
-        margin-top: 5px;
+        display: flex;
+        flex-direction: column-reverse;  /* Колонка в обратном порядке */
+        flex-wrap: wrap;                 /* Перенос на новую строку */
+        justify-content: center;         /* Центрирование */
+        height: auto;   
     }
 }
-@media (max-width: 370px) {
+@media (max-width:620px ) {
+    .container {
+        display: flex;
+        flex-direction: column-reverse;  /* Колонка в обратном порядке */
+        flex-wrap: wrap;                 /* Перенос на новую строку */
+        justify-content: center;         /* Центрирование */
+        height: auto;
+        width: 100%;   
+    }
     .header-text {
-        font-size: 16px;
+        font-size: 40px;  
+    }
+}
+@media (max-width: 410px) {
+    .logo {
+        width: 60px;
     }
     img {
-        width: 35px;
+        width: 60px;
+    }
+    .header-text {
+        font-size: 35px;  
+    }
+    .header {
+        margin: 10px;
+    }
+}
+@media (max-width: 320px) {
+    .header-text {
+        font-size: 27px;  
     }
 }
 </style>

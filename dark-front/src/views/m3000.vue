@@ -113,6 +113,8 @@ import { jwtDecode } from 'jwt-decode'
     .main {
         flex: 1 0 auto;
         width: 95%;
+        min-height: 100vh;
+        flex-shrink: 0;
         display: flex;
         flex-direction: column;
         justify-content: flex-start; /* вместо top, его нет в CSS */
@@ -134,6 +136,7 @@ import { jwtDecode } from 'jwt-decode'
         flex-wrap: nowrap; /* Позволяет переносить элементы на новую строку */
         align-items: flex-start; /* Выравнивание по верхней границе */
         gap: 10px; 
+        
      }
    
     .nav {
