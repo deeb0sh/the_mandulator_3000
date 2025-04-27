@@ -94,9 +94,9 @@ export default {
 }
 </script>
 <style scoped>
-* {
+/* * {
     border: #ffc400 solid 1px;
-}
+} */
 
 .main {
         flex: 1 0 auto;
@@ -126,10 +126,6 @@ export default {
     width: 100%;
 }
 
-.radio > * {
-    flex: 0 1 150px; /* или сколько тебе нужно: ширина одного блока */
-    max-width: 150px;
-}
 .nav {
     display: flex;
     justify-content: center;
