@@ -34,6 +34,7 @@ import { jwtDecode } from 'jwt-decode'
             }
         },
         async mounted() { // валидация сессии до рендеренга мандулятора
+            document.documentElement.style.overflow = 'auto' // сброс скрытие скрола
             await this.sessionValid()
         },
         methods: {
@@ -113,7 +114,7 @@ import { jwtDecode } from 'jwt-decode'
     .main {
         flex: 1 0 auto;
         width: 95%;
-        min-height: 100vh;
+        min-height: 100%;
         flex-shrink: 0;
         display: flex;
         flex-direction: column;
@@ -159,18 +160,18 @@ import { jwtDecode } from 'jwt-decode'
 @media (max-width:878px ) {
     .container {
         display: flex;
-        flex-direction: column-reverse;  /* Колонка в обратном порядке */
-        flex-wrap: wrap;                 /* Перенос на новую строку */
-        justify-content: center;         /* Центрирование */
+        flex-direction: column-reverse;  
+        flex-wrap: wrap;                 
+        justify-content: center;         
         height: auto;   
     }
 }
 @media (max-width:620px ) {
     .container {
         display: flex;
-        flex-direction: column-reverse;  /* Колонка в обратном порядке */
-        flex-wrap: wrap;                 /* Перенос на новую строку */
-        justify-content: center;         /* Центрирование */
+        flex-direction: column-reverse;  
+        flex-wrap: wrap;                
+        justify-content: center;         
         height: auto;
         width: 100%;   
     }
