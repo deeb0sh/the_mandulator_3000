@@ -1,6 +1,7 @@
 <template>
     <div class="DivPlayer">
         <audio id="player" class="player" v-bind:src="Source" type="audio/aacp" preload="metadata" />
+        <input type="range" min="0" max="1" step="0.01" @input="setVolume" />
     </div>
 </template>
 
@@ -9,6 +10,12 @@ export default {
     props: [
         'Source'
     ],
+    methods: {
+        setVolume(e) {
+            const player = document.getElementById('player')
+            if (player) player.volume = e.target.value
+        }
+}
 }
 </script>
 

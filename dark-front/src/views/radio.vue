@@ -34,10 +34,10 @@
          </div>
         <div>
             <br><br><br>
-            <Logmod ref="modal" />
+            
         </div>
     </div>
-    <Player v-bind:Source="url"/>
+    <Player class="player-fixed" v-bind:Source="url"/>
     
 </template>
 <script>
@@ -105,9 +105,9 @@ export default {
         flex-shrink: 0;
         display: flex;
         flex-direction: column;
-        justify-content: flex-start; /* вместо top, его нет в CSS */
+        justify-content: flex-start; 
         align-items: center;
-        padding-bottom: 80px;
+        padding-bottom: 10px;
     }
 
 .container {
@@ -138,6 +138,7 @@ export default {
     font-size: 50px;  
     color: #313131; 
 }
+
 @media (max-width:950px ){
     .header {
         display: flex;
@@ -183,6 +184,10 @@ export default {
     }
     .header {
         margin: 10px;
+    }
+    .radio {
+        justify-content: space-evenly;
+        gap: 10px;
     }
 }
 @media (max-width: 320px) {

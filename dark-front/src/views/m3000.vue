@@ -76,17 +76,19 @@ import { jwtDecode } from 'jwt-decode'
                     }   
                     else {
                         localStorage.removeItem('jwt');
-                        this.$router.push('/'); // если токен невалидный, перенаправляем на главную
+                        this.$router.replace('/'); // если токен невалидный, перенаправляем на главную
                     }
                 } 
                 catch (e) {
-                    this.$router.push('/'); // ошибка, перенаправляем на главную
+                    this.$router.replace('/'); // ошибка, перенаправляем на главную
                 }
             },
-            logOut() {
+            async logOut() {
                 if (confirm("Вы уверены, что хотите выйти?")) {
-                    localStorage.removeItem('jwt')
-                    this.$router.push('/')
+                    await new Promise(resolve => setTimeout(resolve, 100))
+                    localStorage.clear();
+                    this.$router.replace('/')
+                    await this.$router.replace('/')
                 }
             }
         }

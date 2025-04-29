@@ -57,9 +57,9 @@ export default {
 </script>
 
 <style scoped>
-*z {
+/* * {
     border: #00ff15 solid 1px;
-}
+} */
 
 .main {
     flex: 1 0 auto;
