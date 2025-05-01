@@ -17,7 +17,7 @@ await fastify.register(cors, {
 
 // Проксируем /auth/*
 fastify.all('/auth/*', async (req, reply) => {
-  const targetUrl = `http://localhost:3000${req.raw.url}`
+  const targetUrl = `http://auth:3000${req.raw.url}`
   const response = await fetch(targetUrl, {
     method: req.method,
     headers: { ...req.headers },
@@ -31,7 +31,7 @@ fastify.all('/auth/*', async (req, reply) => {
 
 // Проксируем /wg/*
 fastify.all('/wg/*', async (req, reply) => {
-  const targetUrl = `http://localhost:3001${req.raw.url}`
+  const targetUrl = `http://wg-serv:3001${req.raw.url}`
   const response = await fetch(targetUrl, {
     method: req.method,
     headers: { ...req.headers },
