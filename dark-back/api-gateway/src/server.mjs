@@ -19,14 +19,14 @@ fastify.addHook('onRequest', (request, reply, done) => {
   if (!origin) {
     return reply.status(403)
       .header('Content-Type', 'text/plain')
-      .send('Доступ запрещён. Пожазуйста пройдите нахуй');
+      .send('Доступ запрещён. Пожалуйста пройдите нахуй');
   }
 
   // Проверяем соответствие Origin
   if (origin !== allowedOrigin) {
     return reply.status(403)
       .header('Content-Type', 'text/plain')
-      .send('Доступ запрещён. Пожазуйста пройдите нахуй');
+      .send('Доступ запрещён. Пожалуйста пройдите нахуй');
   }
 
   // Добавляем CORS-заголовки для успешных запросов
