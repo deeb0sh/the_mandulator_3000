@@ -8,20 +8,20 @@ await fastify.register(cors, {
   origin: (origin, cb, req) => {
     const protectedMethods = ['POST', 'PUT', 'DELETE'];
 
-    // Метод запроса доступен как req.method (если CORS настроен правильно)
-    if (protectedMethods.includes(req.method)) {
+    // если метод запроса есть и он в списке защищённых
+    if (req && protectedMethods.includes(req.method)) {
       if (origin === 'https://darksurf.ru') {
         cb(null, true);
       } else {
-        cb(new Error('Доступ запрещён. Пожалуйста пройдите нахуй'), false);
+        cb(new Error('CORS запрещён'), false);
       }
     } else {
-      cb(null, true); // GET, OPTIONS и др. — разрешаем
+      cb(null, true); // Разрешаем GET и другие
     }
   },
-  credentials: true
+  credentials: true,
+  hook: 'preHandler' 
 });
-
 
 
 // Проксируем /auth/*
