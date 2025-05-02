@@ -4,32 +4,35 @@ import cors from '@fastify/cors';
 const fastify = Fastify({ logger: true })
 
 // CORS — только для darksurf.ru
-await fastify.register(cors, {
-  origin: (origin, cb) => {
-    const allowedOrigin = 'https://darksurf.ru';
-    
-    // Получаем метод запроса из контекста выполнения
-    const req = this.request; // Доступ к текущему запросу
-    
-    // 1. Разрешаем все GET-запросы без проверок
-    if (req?.method === 'GET') {
-      return cb(null, true);
-    }
-    
-    // 2. Для POST/DELETE/PUT:
-    // - Если Origin отсутствует (не браузер) - разрешаем
-    // - Если Origin совпадает - разрешаем
-    if (!origin || origin === allowedOrigin) {
-      return cb(null, true);
-    }
-    
-    // 3. Блокируем все остальное
-    cb(new Error('CORS: Доступ разрешен. Пожалуйста пройдите нахуй'), false);
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true
-});
+fastify.addHook('onRequest', (request, reply, done) => {
+  const allowedOrigin = 'https://darksurf.ru';
 
+  // 1. Разрешаем все GET/HEAD/OPTIONS запросы
+  if (['GET', 'HEAD', 'OPTIONS'].includes(request.method)) {
+    return done();
+  }
+
+  // 2. Для POST/DELETE/PUT:
+  const origin = request.headers.origin;
+  
+  // Жёстко блокируем если нет Origin
+  if (!origin) {
+    return reply.status(403)
+      .header('Content-Type', 'text/plain')
+      .send('Доступ запрещён. Пожазуйста пройдите нахуй');
+  }
+
+  // Проверяем соответствие Origin
+  if (origin !== allowedOrigin) {
+    return reply.status(403)
+      .header('Content-Type', 'text/plain')
+      .send('Доступ запрещён. Пожазуйста пройдите нахуй');
+  }
+
+  // Добавляем CORS-заголовки для успешных запросов
+  reply.header('Access-Control-Allow-Origin', origin);
+  done();
+});
 
 // Проксируем /auth/*
 fastify.all('/auth/*', async (req, reply) => {
