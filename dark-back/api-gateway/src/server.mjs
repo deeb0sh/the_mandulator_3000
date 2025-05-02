@@ -5,22 +5,22 @@ const fastify = Fastify({ logger: true })
 
 // CORS — только для darksurf.ru
 await fastify.register(cors, {
-  origin: (origin, cb, req) => {
-    const protectedMethods = ['POST', 'PUT', 'DELETE'];
+  origin: (origin, cb) => {
+    const allowedOrigin = 'https://darksurf.ru';
+    // GET-запросы всегда разрешаем
+    const reqMethod = fastify.initialConfig.request?.method || 'GET';
 
-    // если метод запроса есть и он в списке защищённых
-    if (req && protectedMethods.includes(req.method)) {
-      if (origin === 'https://darksurf.ru') {
-        cb(null, true);
-      } else {
-        cb(new Error('CORS запрещён'), false);
-      }
+    if (!origin) {
+      cb(null, true); // Без Origin — значит, не браузер
+    } else if (reqMethod === 'GET') {
+      cb(null, true);
+    } else if (origin === allowedOrigin) {
+      cb(null, true);
     } else {
-      cb(null, true); // Разрешаем GET и другие
+      cb(new Error('Доступ запрещён. Пожалуйста пройдите нахуй'), false);
     }
   },
-  credentials: true,
-  hook: 'preHandler' 
+  methods: ['GET', 'POST', 'PUT', 'DELETE']
 });
 
 
