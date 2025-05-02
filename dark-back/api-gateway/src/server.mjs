@@ -4,29 +4,24 @@ import cors from '@fastify/cors';
 const fastify = Fastify({ logger: true })
 
 // CORS — только для darksurf.ru
-const allowedOrigins = ['https://darksurf.ru'];
-
 await fastify.register(cors, {
-  origin: (origin, cb) => {
-    // достаем метод
-    const method = fastify.initialConfig.request.method;
-
-    // корс на методах
+  origin: (origin, cb, req) => {
     const protectedMethods = ['POST', 'PUT', 'DELETE'];
 
-    if (protectedMethods.includes(method)) {
-      if (origin && allowedOrigins.includes(origin)) {
+    // Метод запроса доступен как req.method (если CORS настроен правильно)
+    if (protectedMethods.includes(req.method)) {
+      if (origin === 'https://darksurf.ru') {
         cb(null, true);
       } else {
-        cb(new Error('CORS запрещён для этого источника'), false);
+        cb(new Error('Доступ запрещён. Пожалуйста пройдите нахуй'), false);
       }
     } else {
-      // Разрешаем GET, OPTIONS, HEAD и др.
-      cb(null, true);
+      cb(null, true); // GET, OPTIONS и др. — разрешаем
     }
   },
   credentials: true
 });
+
 
 
 // Проксируем /auth/*
