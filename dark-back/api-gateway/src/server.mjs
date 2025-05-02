@@ -7,20 +7,27 @@ const fastify = Fastify({ logger: true })
 await fastify.register(cors, {
   origin: (origin, cb) => {
     const allowedOrigin = 'https://darksurf.ru';
-    // GET-запросы всегда разрешаем
-    const reqMethod = fastify.initialConfig.request?.method || 'GET';
-
-    if (!origin) {
-      cb(null, true); // Без Origin — значит, не браузер
-    } else if (reqMethod === 'GET') {
-      cb(null, true);
-    } else if (origin === allowedOrigin) {
-      cb(null, true);
-    } else {
-      cb(new Error('Доступ запрещён. Пожалуйста пройдите нахуй'), false);
+    
+    // Получаем метод запроса из контекста выполнения
+    const req = this.request; // Доступ к текущему запросу
+    
+    // 1. Разрешаем все GET-запросы без проверок
+    if (req?.method === 'GET') {
+      return cb(null, true);
     }
+    
+    // 2. Для POST/DELETE/PUT:
+    // - Если Origin отсутствует (не браузер) - разрешаем
+    // - Если Origin совпадает - разрешаем
+    if (!origin || origin === allowedOrigin) {
+      return cb(null, true);
+    }
+    
+    // 3. Блокируем все остальное
+    cb(new Error('CORS: Доступ разрешен. Пожалуйста пройдите нахуй'), false);
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true
 });
 
 
