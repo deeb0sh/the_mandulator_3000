@@ -53,7 +53,6 @@ try {
   fastify.log.warn('✅ Стартовый конфиг Wireguard сервера получен и применён.')
 } catch (err) {
   fastify.log.error(`❌ Ошибка при применении конфига WireGuard: ${err}`)
-  return
 }
 
 
