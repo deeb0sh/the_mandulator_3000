@@ -8,8 +8,7 @@ if (!server) {
 
 const fastify = Fastify({ logger: true })
 
-
-//  создаём функцию слип иначе материся watchdog
+//  создаём функцию слип , иначе материся и падает
 async function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
@@ -24,50 +23,7 @@ function execShell(cmd) {
   })
 }
 
-
-// === Получаем стартовый конфиг ===
-const response = await fetch('http://wg-serv:3001/head/start', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ server })
-})
-
-console.log(`Отправляем запрос на статовый конфиг, имя сервера: ${server}`)
-console.log('Ждм ответ от сервера')
-
-const data = await response.json()
-const [serverIp, mask] = data.lan.split('/')
-// получаем ip gw 
-let [oct1, oct2, oct3, oct4] = serverIp.split('.').map(Number)
-oct4++
-const wgIp = `${oct1}.${oct2}.${oct3}.${oct4}/${mask}`
-
-const config = `[Interface]
-PrivateKey = ${data.privatKey}
-Address = ${wgIp}
-MTU = 1420
-ListenPort = ${data.port}
-`.trim()
-
-try {
-  await execShell(`echo "${config}" > /etc/wireguard/wg0.conf && wg-quick up wg0`)
-  console.log('Стартовый конфиг Wireguard сервера получен и применён.')
-} catch (err) {
-  console.log(`Ошибка при применении конфига WireGuard: ${err}`)
-}
-
-
-await sleep(1000)
-// после того как сервер получил стартовый конфиг отправляем ему запрос на получение пиров 
-try {
-  const serverUrl = `http://wg-serv:3001/head/start/${server}`
-  await fetch(serverUrl)
-  console.log('Сообщили серверу, что готовы к дальнейшим настройкам')
-} catch (e) {
-  console.log(`ОШИБКА получения настроек сети , ${e}`)
-}
-
-// сюда получаем инфу о пирах
+// сюда получаем инфу о пирах ( сначало создаем эндпоинт)
 fastify.post('/control', async (request, reply) => {
   const { peers, userNet } = request.body
 
@@ -152,6 +108,54 @@ fastify.post('/control', async (request, reply) => {
     return reply.status(500).send({ error: e.toString() })
   }
 })
+
+// Получаем стартовый конфиг
+try {
+  const response = await fetch('http://wg-serv:3001/head/start', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ server })
+  })
+
+  console.log(`Отправляем запрос на статовый конфиг, имя сервера: ${server}`)
+  console.log('Ждм ответ от сервера')
+} 
+catch (e) {
+  conolse.log(`wg-serv не ответил с head/start/: ${e}`)
+}
+
+
+const data = await response.json()
+const [serverIp, mask] = data.lan.split('/')
+// получаем ip gw 
+let [oct1, oct2, oct3, oct4] = serverIp.split('.').map(Number)
+oct4++
+const wgIp = `${oct1}.${oct2}.${oct3}.${oct4}/${mask}`
+
+const config = `[Interface]
+PrivateKey = ${data.privatKey}
+Address = ${wgIp}
+MTU = 1420
+ListenPort = ${data.port}
+`.trim()
+
+try {
+  await execShell(`echo "${config}" > /etc/wireguard/wg0.conf && wg-quick up wg0`)
+  console.log('Стартовый конфиг Wireguard сервера получен и применён.')
+} catch (err) {
+  console.log(`Ошибка при применении конфига WireGuard: ${err}`)
+}
+
+
+await sleep(100)
+// после того как сервер получил стартовый конфиг отправляем ему запрос на получение пиров 
+try {
+  const serverUrl = `http://wg-serv:3001/head/start/${server}`
+  await fetch(serverUrl)
+  console.log('Сообщили серверу, что готовы к дальнейшим настройкам')
+} catch (e) {
+  console.log(`ОШИБКА получения настроек сети , ${e}`)
+}
 
 
 
