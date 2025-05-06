@@ -116,16 +116,14 @@ try {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ server })
   })
-
   console.log(`Отправляем запрос на статовый конфиг, имя сервера: ${server}`)
-  console.log('Ждм ответ от сервера')
+  const data = await response.json()
+  console.log('(+) Получили настройки')
 } 
-catch (e) {
-  conolse.log(`wg-serv не ответил с head/start/: ${e}`)
+catch {
+  console.log(`(-) ОШИБКА ! запрос на получение настроек сети не ушёл`)
 }
 
-
-const data = await response.json()
 const [serverIp, mask] = data.lan.split('/')
 // получаем ip gw 
 let [oct1, oct2, oct3, oct4] = serverIp.split('.').map(Number)
