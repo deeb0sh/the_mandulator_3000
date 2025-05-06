@@ -1,6 +1,5 @@
 import Fastify from 'fastify'
 import ajvErrors from 'ajv-errors' // еррор-плагин сообщения
-import cors from '@fastify/cors'
 import regApi from './api/reg.js'
 import loginApi from './api/login.js'
 import incodeApi from './api/incode.js'
@@ -18,17 +17,6 @@ const fastify = Fastify({
         plugins: [ajvErrors]
     }
 })
-
-// const allowedOrigins = ['https://darksurf.ru', 'https://dev.darksurf.ru'];
-// await fastify.register(cors, {
-//   origin: (origin, cb) => {
-//     if (origin && allowedOrigins.includes(origin)) {
-//       cb(null, true);
-//     } else {
-//       cb(new Error('ACCES DENIED .i. / доступ запрещён , пожалуйста пройдите нахуй'), false);
-//     }
-//   }
-// });
 
 fastify.register(prismaPlugin) // подключаем плагин призмы чтобы работало для всех роутов
 
