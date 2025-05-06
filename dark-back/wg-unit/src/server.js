@@ -32,11 +32,12 @@ const response = await fetch('http://wg-serv:3001/head/start', {
   body: JSON.stringify({ server })
 })
 
-fastify.log.warn(`Отправляем запрос на статовый конфиг, имя сервера: ${server}`)
-fastify.log.warn('Ждм ответ от сервера')
+console.log(`Отправляем запрос на статовый конфиг, имя сервера: ${server}`)
+console.log('Ждм ответ от сервера')
 
 const data = await response.json()
 const [serverIp, mask] = data.lan.split('/')
+// получаем ip gw 
 let [oct1, oct2, oct3, oct4] = serverIp.split('.').map(Number)
 oct4++
 const wgIp = `${oct1}.${oct2}.${oct3}.${oct4}/${mask}`
@@ -50,29 +51,25 @@ ListenPort = ${data.port}
 
 try {
   await execShell(`echo "${config}" > /etc/wireguard/wg0.conf && wg-quick up wg0`)
-  fastify.log.warn('✅ Стартовый конфиг Wireguard сервера получен и применён.')
+  console.log('Стартовый конфиг Wireguard сервера получен и применён.')
 } catch (err) {
-  fastify.log.error(`❌ Ошибка при применении конфига WireGuard: ${err}`)
+  console.log(`Ошибка при применении конфига WireGuard: ${err}`)
 }
 
 
-await sleep(50)
+await sleep(1000)
 // после того как сервер получил стартовый конфиг отправляем ему запрос на получение пиров 
 try {
   const serverUrl = `http://wg-serv:3001/head/start/${server}`
   await fetch(serverUrl)
-  fastify.log.info('⚠️ Сообщили серверу, что готовы к дальнейшим настройкам')
+  console.log('Сообщили серверу, что готовы к дальнейшим настройкам')
 } catch (e) {
-  fastify.log.error(`❌ ОШИБКА отравки GET , ${e}`)
+  console.log(`ОШИБКА получения настроек сети , ${e}`)
 }
 
-// === Endpoint: /control - сюда плучаем инфу о пирах
+// сюда получаем инфу о пирах
 fastify.post('/control', async (request, reply) => {
   const { peers, userNet } = request.body
-
-  console.log('⚠️ Получены пиры и настройки сети:')
-  console.log('⚠️ Peers:', peers)
-  console.log('⚠️ UserNet:', userNet)
 
   async function updatePeers() {
     try {
@@ -85,7 +82,7 @@ fastify.post('/control', async (request, reply) => {
         if (!newPublicKeys.includes(oldKey)) {
           await execShell(`wg set wg0 peer ${oldKey} remove`)
           console.log(`Удалён старый пир ${oldKey}`)
-          await sleep(50)
+          await sleep(100)
         }
       }
 
@@ -99,41 +96,41 @@ fastify.post('/control', async (request, reply) => {
           console.log(cmd)
           await execShell(cmd)
           console.log(`Добавлен пир ${peer.name} (${peer.publicKey})`)
-          await sleep(50)
+          await sleep(100)
 
           // Проверка и добавление MASQUERADE
           const natCheck = `iptables -t nat -C POSTROUTING -s ${network} -o eth1 -j MASQUERADE`
           try {
             await execShell(natCheck)
-            console.log(`ℹ️ MASQUERADE уже существует для ${network}`)
-            await sleep(50)
+            console.log(` = MASQUERADE уже существует для ${network}`)
+            await sleep(100)
           } catch {
             const natAdd = `iptables -t nat -A POSTROUTING -s ${network} -o eth1 -j MASQUERADE`
             await execShell(natAdd)
-            console.log(`🧱 MASQUERADE добавлен для ${network}`)
-            await sleep(50)
+            console.log(` + MASQUERADE добавлен для ${network}`)
+            await sleep(100)
           }
 
           const forwardAccept = `iptables -C FORWARD -s ${network} -o eth1 -j ACCEPT`
           try {
             await execShell(forwardAccept)
-            await sleep(50)
+            await sleep(100)
           } 
           catch {
             await execShell(`iptables -I FORWARD -s ${network} -o eth1 -j ACCEPT`)
-            await sleep(50)
+            await sleep(100)
           }
 
           const dropIsolationCheck = `iptables -C FORWARD -s ${network} -d ${network} -j ACCEPT`
           try {
             await execShell(dropIsolationCheck)
-            await sleep(50)
+            await sleep(100)
           } 
           catch {
             await execShell(`iptables -I FORWARD -s ${network} -d ${network} -j ACCEPT`)
-            await sleep(50)
+            await sleep(100)
             await execShell(`iptables -A FORWARD -s ${network} -d ${data.lan} -j DROP`)
-            await sleep(50)
+            await sleep(100)
           }
           
         }
