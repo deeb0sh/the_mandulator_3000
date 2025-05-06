@@ -33,11 +33,11 @@ const response = await fetch('http://wg-serv:3001/head/start', {
 })
 
 if (!response.ok) {
-  console.log(`(-) ОШИБКА ! запрос на получение настроек сети не ушёлсс`)
+  console.log(`(-) ОШИБКА ! ответ пустой`)
 }
  
 const data = await response.json()
-console.log('(+) Получили настройки')
+console.log(`(+) Получили настройки \n\n ${data}`)
 
 const [serverIp, mask] = data.lan.split('/')
 // получаем ip gw 
@@ -52,12 +52,13 @@ MTU = 1420
 ListenPort = ${data.port}
 `.trim()
 
-  try {
-    await execShell(`echo "${config}" > /etc/wireguard/wg0.conf && wg-quick up wg0`)
-    console.log('Стартовый конфиг Wireguard сервера получен и применён.')
-  } catch (err) {
-    console.log(`Ошибка при применении конфига WireGuard: ${err}`)
-  }
+try {
+  await execShell(`echo "${config}" > /etc/wireguard/wg0.conf && wg-quick up wg0`)
+  console.log('Стартовый конфиг Wireguard сервера получен и применён.')
+} 
+catch (err) {
+   console.log(`Ошибка при применении конфига WireGuard: ${err}`)
+}
 
   
 // сюда получаем инфу о пирах ( сначало создаем эндпоинт)
