@@ -110,19 +110,20 @@ fastify.post('/control', async (request, reply) => {
 })
 
 // Получаем стартовый конфиг
-try {
-  const response = await fetch('http://wg-serv:3001/head/start', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ server })
-  })
-  console.log(`Отправляем запрос на статовый конфиг, имя сервера: ${server}`)
-  const data = await response.json()
-  console.log('(+) Получили настройки')
-} 
-catch {
+console.log(`Отправляем запрос на статовый конфиг, имя сервера: ${server}`)
+const response = await fetch('http://wg-serv:3001/head/start', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ server })
+})
+
+if (!response.ok) {
   console.log(`(-) ОШИБКА ! запрос на получение настроек сети не ушёл`)
+  process.exit(1) 
 }
+ 
+const data = await response.json()
+console.log('(+) Получили настройки')
 
 const [serverIp, mask] = data.lan.split('/')
 // получаем ip gw 
@@ -137,12 +138,14 @@ MTU = 1420
 ListenPort = ${data.port}
 `.trim()
 
-try {
-  await execShell(`echo "${config}" > /etc/wireguard/wg0.conf && wg-quick up wg0`)
-  console.log('Стартовый конфиг Wireguard сервера получен и применён.')
-} catch (err) {
-  console.log(`Ошибка при применении конфига WireGuard: ${err}`)
-}
+  try {
+    await execShell(`echo "${config}" > /etc/wireguard/wg0.conf && wg-quick up wg0`)
+    console.log('Стартовый конфиг Wireguard сервера получен и применён.')
+  } catch (err) {
+    console.log(`Ошибка при применении конфига WireGuard: ${err}`)
+  }
+
+  
 
 
 await sleep(100)
