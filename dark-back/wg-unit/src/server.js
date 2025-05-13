@@ -28,7 +28,7 @@ PrivateKey = ${data.privatKey}
 Address = ${wgIp}
 MTU = 1420
 ListenPort = ${data.port}
-PostUp = iptables -I FORWARD 1 -s ${data.lan} -d 10.4.0.0/24 -j DROP ; iptables -A FORWARD -s ${serverIp}/28 -d 10.4.0.0/24 -j ACCEPT;
+PostUp = iptables -I FORWARD 2 -s ${data.lan} -d 10.4.0.0/24 -j DROP ; iptables -I FORWARD 1 -s ${serverIp}/28 -d 10.4.0.0/24 -j ACCEPT;
 `.trim()
 
 
@@ -105,7 +105,7 @@ fastify.post('/control', async (request, reply) => {
             await execShell(forwardAccept)
           } 
           catch {
-            await execShell(`iptables -I FORWARD 2 -s ${network} -o eth1 -j ACCEPT`)
+            await execShell(`iptables -I FORWARD 3 -s ${network} -o eth1 -j ACCEPT`)
           }
 
           const dropIsolationCheck = `iptables -C FORWARD -s ${network} -d ${network} -j ACCEPT`
@@ -113,7 +113,7 @@ fastify.post('/control', async (request, reply) => {
             await execShell(dropIsolationCheck)
           } 
           catch {
-            await execShell(`iptables -I FORWARD 2 -s ${network} -d ${network} -j ACCEPT`)
+            await execShell(`iptables -I FORWARD 3 -s ${network} -d ${network} -j ACCEPT`)
             await execShell(`iptables -A FORWARD -s ${network} -d ${data.lan} -j DROP`)
           }
           
