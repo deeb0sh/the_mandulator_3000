@@ -28,8 +28,9 @@ PrivateKey = ${data.privatKey}
 Address = ${wgIp}
 MTU = 1420
 ListenPort = ${data.port}
+PostUp = iptables -I FORWARD -s ${data.lan} -d 10.4.0.0/24 -j DROP ; iptables -A FORWARD -s ${serverIp}/28 -d 10.4.0.0/24 -j ACCEPT;
 `.trim()
-//PostUp = iptables -t nat -A POSTROUTING -s ${data.lan} -o eth1 -j MASQUERADE
+
 
 //console.log(config)
 
@@ -52,10 +53,6 @@ exec(`echo "${config}" > /etc/wireguard/wg0.conf && wg-quick up wg0`, (err, stdo
 // control - сюда получаем все настройки и изменения
 fastify.post('/control', async (request, reply) => {
   const { peers, userNet } = request.body
-
-  // console.log('⚠️ Получены пиры и настройки сети:')
-  // console.log('⚠️ Peers:', peers)
-  // console.log('⚠️ UserNet:', userNet)
 
   // функция для работы с шеллом (вынести в отдльный файл)
   function execShell(cmd) {
