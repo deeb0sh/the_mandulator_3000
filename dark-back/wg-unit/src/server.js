@@ -28,7 +28,7 @@ PrivateKey = ${data.privatKey}
 Address = ${wgIp}
 MTU = 1420
 ListenPort = ${data.port}
-PostUp = iptables -I FORWARD 1 -s ${data.lan} -d 10.4.0.0/24 -j DROP; iptables -I FORWARD 2 -s ${serverIp}/28 -d 10.4.0.0/24 -j ACCEPT;
+PostUp = iptables -I FORWARD 1 -s ${serverIp}/28 -d 10.4.0.0/24 -j ACCEPT; iptables -I FORWARD 2 -s ${data.lan} -d 10.4.0.0/24 -j DROP; 
 `.trim()
 
 //запрещаем ходить пользователям по внутрнним сетям , но не всем
