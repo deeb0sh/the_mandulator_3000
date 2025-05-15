@@ -6,6 +6,16 @@ if (!server) {
   console.log('(-) переменная SERVERNAME пустаня')
 }
 
+// === функция для работы с шеллом (вынести в отдльный файл нахуй)
+function execShell(cmd) {
+  return new Promise((resolve, reject) => {
+    exec(cmd, (err, stdout, stderr) => {
+    if (err) return reject(stderr)
+      resolve(stdout.trim())
+    })
+  })
+}
+
 const fastify = Fastify({ logger: true })
 
 // === Получаем стартовый конфиг ===
@@ -14,8 +24,8 @@ const response = await fetch('http://wg-serv:3001/head/start', {
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ server })
 })
-fastify.log.warn(`(+) Отправляем запрос на статовый конфиг, имя сервера: ${server}`)
-fastify.log.warn('(+) Ждм ответ от сервера')
+console.log(`(+) Отправляем запрос на статовый конфиг, имя сервера: ${server}`)
+console.log('(+) Ждм ответ от сервера')
 
 const data = await response.json()
 const [serverIp, mask] = data.lan.split('/')
@@ -31,10 +41,8 @@ ListenPort = ${data.port}
 PostUp = iptables -I FORWARD 1 -s ${serverIp}/28 -d 10.4.0.0/24 -j ACCEPT; iptables -I FORWARD 2 -s ${data.lan} -d 10.4.0.0/24 -j DROP; 
 `.trim()
 
-//запрещаем ходить пользователям по внутрнним сетям , но не всем
-
+// === запрещаем ходить пользователям по внутрнним сетям , но не всем
 //console.log(config)
-
 exec(`echo "${config}" > /etc/wireguard/wg0.conf && wg-quick up wg0`, (err, stdout, stderr) => {
   if (err) {
     console.log(`(-) Ошибка при записи wg.conf : ${stderr}`)
@@ -51,20 +59,16 @@ exec(`echo "${config}" > /etc/wireguard/wg0.conf && wg-quick up wg0`, (err, stdo
   }
 })
 
-// control - сюда получаем все настройки и изменения
+// === wgdump - отправляем статиcтику
+fastify.get('/wgdump', async (request, reply) => {
+  const wgDump = await execShell('wg show')
+  return reply.send(wgDump) 
+})
+
+
+// === control - сюда получаем все настройки и изменения
 fastify.post('/control', async (request, reply) => {
   const { peers, userNet } = request.body
-
-  // функция для работы с шеллом (вынести в отдльный файл)
-  function execShell(cmd) {
-    return new Promise((resolve, reject) => {
-      exec(cmd, (err, stdout, stderr) => {
-        if (err) return reject(stderr)
-        resolve(stdout.trim())
-      })
-    })
-  }
-
   async function updatePeers() {
     try {
       const existingRaw = await execShell('wg show wg0 peers') // получаем список действущих пиров
@@ -123,7 +127,7 @@ fastify.post('/control', async (request, reply) => {
 
       console.log('(+) Актуализация пиров завершена')
     } catch (err) {
-      console.error('(-) Ошибка обновления пиров:', err)
+      console.log('(-) Ошибка обновления пиров:', err)
     }
   }
 
