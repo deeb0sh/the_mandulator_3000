@@ -17,20 +17,20 @@ function execShell(cmd) {
 }
 
 // === парсер 
-function parseWgDump(dump) {
-  return dump
-    .split('\n')
-    .slice(1) // Игнорируем первую строку 
-    .map(line => {
-      const [, publicKey, , , , , lastHandshake, txBytes, rxBytes] = line.split('\t');
-      return {
-        publicKey,
-        lastHandshake: parseInt(lastHandshake) || 0, // В секундах 
-        tx: parseInt(txBytes) || 0, // Передано 
-        rx: parseInt(rxBytes) || 0, // Получено 
-      };
-    });
-  }
+// function parseWgDump(dump) {
+//   return dump
+//     .split('\n')
+//     .slice(1) // Игнорируем первую строку 
+//     .map(line => {
+//       const [, publicKey, , , , , lastHandshake, txBytes, rxBytes] = line.split('\t');
+//       return {
+//         publicKey,
+//         lastHandshake: parseInt(lastHandshake) || 0, // В секундах 
+//         tx: parseInt(txBytes) || 0, // Передано 
+//         rx: parseInt(rxBytes) || 0, // Получено 
+//       };
+//     });
+//   }
 
 const fastify = Fastify({ logger: true })
 
@@ -75,12 +75,12 @@ exec(`echo "${config}" > /etc/wireguard/wg0.conf && wg-quick up wg0`, (err, stdo
   }
 })
 
-// === wgdump - отправляем статиcтику
-fastify.get('/wgstats', async (request, reply) => {
-  const dump = await execShell('wg show all dump')
-  const peers = parseWgDump(dump)
-  return reply.send({ peers })
-})
+// === wgstats - отправляем статиcтику
+// fastify.get('/wgstats', async (request, reply) => {
+//   const dump = await execShell('wg show all dump')
+//   const peers = parseWgDump(dump)
+//   return reply.send({ peers })
+// })
 
 
 
