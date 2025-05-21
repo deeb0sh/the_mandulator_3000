@@ -1,8 +1,7 @@
 {
   "name": "wg-cont",
   "version": "1.0.0",
-  "main": "server.js",
-  "type": "module",
+  "main": "server.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
