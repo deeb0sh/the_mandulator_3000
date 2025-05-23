@@ -6,7 +6,7 @@ const fastify = Fastify({ logger: true })
 // CORS — только для darksurf.ru
 fastify.addHook('onRequest', (request, reply, done) => {
   const allowedOrigin = 'https://darksurf.ru';
-
+  //const allowedOrigin = 'http://localhost';
   // 1. Разрешаем все GET/HEAD/OPTIONS запросы
   if (['GET', 'HEAD', 'OPTIONS'].includes(request.method)) {
     return done();

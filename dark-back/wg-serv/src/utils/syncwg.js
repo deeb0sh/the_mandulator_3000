@@ -1,12 +1,4 @@
 export default async function syncwg(fastify, server) {
-  // const peers = await fastify.prisma.client.findMany({
-  //   where: { serverName: server },
-  //   select: {
-  //     name: true,
-  //     ip: true,
-  //     publicKey: true,
-  //   }
-  // })
   const peers = await fastify.prisma.client.findMany({
     where: { serverName: server },
     select: {
