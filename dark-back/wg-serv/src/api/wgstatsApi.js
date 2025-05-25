@@ -10,7 +10,7 @@ export default async function wgstatsApi(fastify) {
     secret: process.env.JWT_SECRET
   })
 
-  const cache = new NodeCache({ stdTTL: 0 }) // создаём кеш для хранние данных 0 сек ( хранимтся пока не перезапишется)
+  const cache = new NodeCache({ stdTTL: 36000, checkperiod: 600 }) // создаём кеш для хранние данных на час ( хранимтся пока не перезапишется)
 
   const servers = {
     RU: 'http://wgru:3003/wgstats',
@@ -23,11 +23,21 @@ export default async function wgstatsApi(fastify) {
     try{
       const response = await fetch(servers[server], { timeout: 3000 }) 
       const stats = await response.json()
-      cache.set(server, { status: 'online', date: new Date() }, stats) // записываем данные кеш и статус сервера
+      // --- записываем данные кеш и статус сервера
+      cache.set(server, {
+        status: 'online',
+        data: stats,       // Основные данные статистики
+        lastUpdated: new Date()
+      })
     } 
     catch (e) {
-      cache.set(server,{ status: 'offline', date: new Date() })
-      console.log(`${new Date()} - Сервер не отвечает - ${server}: ${e}`)
+      cache.set(server, {
+        status: 'offline',
+        error: e.message,  // Сохраняем текст ошибки
+        lastChecked: new Date(),
+        retryCount: (cache.get(server)?.retryCount || 0) + 1
+      })
+      console.log(`[WGSTATS] Сервер не отвечает - ${server}: ${e}`)
     }
   }
 
@@ -45,7 +55,7 @@ export default async function wgstatsApi(fastify) {
       try {
         const decod = await request.jwtVerify()
         const user = decod.user
-        const { server } = require.params
+        const { server } = request.params
         const stats = cache.get(server)
         return reply.send(stats || { message: 'Нет данных для сервера ' + server })
       } 
