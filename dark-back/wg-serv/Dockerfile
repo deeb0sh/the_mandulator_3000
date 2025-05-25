@@ -6,7 +6,9 @@ WORKDIR /app
 
 COPY package*.json ./
 
-COPY src/ ./src
+COPY src ./src
+
+COPY prisma ./prisma
 
 ENV http_proxy=http://10.4.0.2:3128
 
