@@ -72,7 +72,7 @@ export default async function wgstatsApi(fastify) {
         const stats = cache.get(server) // извлекаешь кеш с сервера
         console.log(userPublicKeys)
         console.log('------------')
-        console.log(stats)
+        console.log(JSON.stringify(stats, null, 2))
         // ======================================================
         // const peers = stats.data.map(peer => peer.publicKey) // пересобираем массив со всем publicKey
         // ====================================================== 
