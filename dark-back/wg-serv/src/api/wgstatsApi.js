@@ -69,8 +69,10 @@ export default async function wgstatsApi(fastify) {
           }
         });
         const stats = cache.get(server) // извлекаешь кеш с сервера
+        console.log(userPeers)
+        
         // ======================================================
-        const peers = stats.data.map(peer => peer.publicKey) // пересобираем массив со всем publicKey
+        // const peers = stats.data.map(peer => peer.publicKey) // пересобираем массив со всем publicKey
         // ====================================================== 
         return reply.send(stats || { message: 'Нет данных для сервера ' + server })
       } 
