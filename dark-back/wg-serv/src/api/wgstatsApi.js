@@ -56,7 +56,22 @@ export default async function wgstatsApi(fastify) {
         const decod = await request.jwtVerify()
         const user = decod.user
         const { server } = request.params
-        const stats = cache.get(server)
+        // --- получаем все публичные ключи пользователя из базы 
+        const userPeers = await fastify.prisma.client.findMany({
+          where: {
+            user: {
+              login: user
+            },
+            serverName: server
+          },
+          select: {
+            publicKey: true
+          }
+        });
+        const stats = cache.get(server) // извлекаешь кеш с сервера
+        // ======================================================
+        const peers = stats.data.map(peer => peer.publicKey) // пересобираем массив со всем publicKey
+        // ====================================================== 
         return reply.send(stats || { message: 'Нет данных для сервера ' + server })
       } 
       catch(e) {
