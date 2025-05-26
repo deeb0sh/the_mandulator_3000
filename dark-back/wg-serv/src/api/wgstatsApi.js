@@ -37,7 +37,7 @@ export default async function wgstatsApi(fastify) {
         lastChecked: new Date(),
         retryCount: (cache.get(server)?.retryCount || 0) + 1
       })
-      errDate = new Date()
+      const errDate = new Date()
       console.log(`${errDate}, [WGSTATS] Сервер не отвечает - ${server}: ${e}`)
     }
   }
@@ -71,6 +71,9 @@ export default async function wgstatsApi(fastify) {
         });
         const userPublicKeys = userPeers.map(pkey => pkey.publicKey) // оставляем в массиве userPeers только значения publicKey       
         const stats = cache.get(server) // извлекаешь кеш с сервера
+        if (stats.status === 'offline') {
+          return reply.send(stats)
+        }
         const userStats = stats.data.peers.filter(peer => userPublicKeys.includes(peer.publicKey)) // выпиливаем из массива stats.data.peers всё лишнее кароче
         //stats.data.peers = userPeers
         const normalStats = {
@@ -80,15 +83,8 @@ export default async function wgstatsApi(fastify) {
             peers: userStats
           }
         }
-        // console.log(userPublicKeys)
-        // console.log('------------')
-        // console.log(JSON.stringify(userStats, null, 2))
-        // console.log('------------')
-        console.log(JSON.stringify(stats, null, 2))
-        // ======================================================
-        // const peers = stats.data.map(peer => peer.publicKey) // пересобираем массив со всем publicKey
-        // ====================================================== 
-        return reply.send(normalStats || { message: 'Нет данных для сервера ' + server })
+        //console.log(JSON.stringify(stats, null, 2))
+        return reply.send(normalStats)
       } 
       catch(e) {
         return reply.send({ message: "invalid", onErr: e})    
