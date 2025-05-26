@@ -23,27 +23,37 @@ export default async function wgstatsApi(fastify) {
 
   // === функция для опроса серверов и запили ответа в кеш
   async function wgStats(server) {
-    await lock.acquire(server, async () => {
-      try {
-        const response = await fetch(servers[server], { timeout: 3000 })  // 3000 мс
-        const stats = await response.json()
-        // --- записываем данные кеш и статус сервера
-        cache.set(server, {
-          status: 'online',
-          data: stats,       // Основные данные статистики
-          lastUpdated: new Date()
-        })
-      } 
-      catch (e) {
-        cache.set(server, {
-          status: 'offline',
-          data: { peers: [], error: e.message },  // Сохраняем текст ошибки сохраняя структуру объекта
-          lastUpdated: new Date()
-        })
-        const errDate = new Date().toLocaleString()
-        console.log(`[${errDate}] [WGSTATS] Сервер не отвечает - ${server}: ${e}`)
-      }
-    })
+    try {
+      await lock.acquire(server, async () => {
+        try {
+          const response = await fetch(servers[server], { timeout: 3000 })  // 3000 мс
+          const stats = await response.json()
+          // --- записываем данные кеш и статус сервера
+          cache.set(server, {
+            status: 'online',
+            data: stats,       // Основные данные статистики
+            lastUpdated: new Date()
+          })
+        } 
+        catch (e) {
+          cache.set(server, {
+            status: 'offline',
+            data: { peers: [], error: e.message },  // Сохраняем текст ошибки сохраняя структуру объекта
+            lastUpdated: new Date()
+          })
+          const errDate = new Date().toLocaleString()
+          console.log(`[${errDate}] [WGSTATS] Сервер не отвечает - ${server}: ${e}`)
+        }
+      })
+    } 
+    catch (err) {
+      console.log(`[WGSTATS] Ошибка блокировки для сервера ${server}:`, err)
+      cache.set(server, {
+        status: 'offline',
+        data: { peers: [], error: 'Internal server error (lock failed)' },
+        lastUpdated: new Date()
+      })
+    }
   }
   // === опрашиваем серверы каждые 5 секунд
   cron.schedule('*/5 * * * * *', async () => {
@@ -93,5 +103,5 @@ export default async function wgstatsApi(fastify) {
         return reply.send({ message: "invalid", onErr: e})    
       }
   })
-
+  
 }
