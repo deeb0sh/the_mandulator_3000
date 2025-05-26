@@ -11,7 +11,7 @@ export default async function wgstatsApi(fastify) {
     secret: process.env.JWT_SECRET
   })
 
-  const lock = AsyncLock()
+  const lock = new AsyncLock()
 
   const cache = new NodeCache({ stdTTL: 36000, checkperiod: 600 }) // создаём кеш для хранние данных на час ( хранимтся пока не перезапишется)
 
