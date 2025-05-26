@@ -3,12 +3,15 @@ import { headersJwtValid } from '../schemas/headersJWTvalid.js'
 import { paramReqValid } from '../schemas/paramReqValid.js'
 import cron from 'node-cron'
 import NodeCache from 'node-cache'
+import AsyncLock from 'async-lock'
 export default async function wgstatsApi(fastify) {
   
   // === регистрируем (ОПЯТЬ) плагин
   fastify.register(jwt, {
     secret: process.env.JWT_SECRET
   })
+
+  const lock = AsyncLock()
 
   const cache = new NodeCache({ stdTTL: 36000, checkperiod: 600 }) // создаём кеш для хранние данных на час ( хранимтся пока не перезапишется)
 
@@ -20,28 +23,28 @@ export default async function wgstatsApi(fastify) {
 
   // === функция для опроса серверов и запили ответа в кеш
   async function wgStats(server) {
-    try{
-      const response = await fetch(servers[server], { timeout: 1000 }) 
-      const stats = await response.json()
-      // --- записываем данные кеш и статус сервера
-      cache.set(server, {
-        status: 'online',
-        data: stats,       // Основные данные статистики
-        lastUpdated: new Date()
-      })
-    } 
-    catch (e) {
-      cache.set(server, {
-        status: 'offline',
-        error: e.message,  // Сохраняем текст ошибки
-        lastChecked: new Date(),
-        retryCount: (cache.get(server)?.retryCount || 0) + 1
-      })
-      const errDate = new Date()
-      console.log(`${errDate}, [WGSTATS] Сервер не отвечает - ${server}: ${e}`)
-    }
+    await lock.acquire(server, async () => {
+      try {
+        const response = await fetch(servers[server], { timeout: 3000 })  // 3000 мс
+        const stats = await response.json()
+        // --- записываем данные кеш и статус сервера
+        cache.set(server, {
+          status: 'online',
+          data: stats,       // Основные данные статистики
+          lastUpdated: new Date()
+        })
+      } 
+      catch (e) {
+        cache.set(server, {
+          status: 'offline',
+          data: { peers: [], error: e.message },  // Сохраняем текст ошибки сохраняя структуру объекта
+          lastUpdated: new Date()
+        })
+        const errDate = new Date().toLocaleString()
+        console.log(`[${errDate}] [WGSTATS] Сервер не отвечает - ${server}: ${e}`)
+      }
+    })
   }
-
   // === опрашиваем серверы каждые 5 секунд
   cron.schedule('*/5 * * * * *', async () => {
     await Promise.all(Object.keys(servers).map(wgStats));
