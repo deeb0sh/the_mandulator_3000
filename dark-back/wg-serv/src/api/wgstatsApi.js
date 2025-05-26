@@ -21,7 +21,7 @@ export default async function wgstatsApi(fastify) {
   // === функция для опроса серверов и запили ответа в кеш
   async function wgStats(server) {
     try{
-      const response = await fetch(servers[server], { timeout: 3000 }) 
+      const response = await fetch(servers[server], { timeout: 1000 }) 
       const stats = await response.json()
       // --- записываем данные кеш и статус сервера
       cache.set(server, {
@@ -37,7 +37,8 @@ export default async function wgstatsApi(fastify) {
         lastChecked: new Date(),
         retryCount: (cache.get(server)?.retryCount || 0) + 1
       })
-      console.log(`[WGSTATS] Сервер не отвечает - ${server}: ${e}`)
+      errDate = new Date()
+      console.log(`${errDate}, [WGSTATS] Сервер не отвечает - ${server}: ${e}`)
     }
   }
 
@@ -68,19 +69,26 @@ export default async function wgstatsApi(fastify) {
             publicKey: true
           }
         });
-        const userPublicKeys = userPeers.map(pkey => pkey.publicKey)        
+        const userPublicKeys = userPeers.map(pkey => pkey.publicKey) // оставляем в массиве userPeers только значения publicKey       
         const stats = cache.get(server) // извлекаешь кеш с сервера
-        const userStats = stats.data.peers.filter(peer => userPublicKeys.includes(peer.publicKey))
-        
-        console.log(userPublicKeys)
-        console.log('------------')
-        console.log(JSON.stringify(userStats, null, 2))
-        console.log('------------')
+        const userStats = stats.data.peers.filter(peer => userPublicKeys.includes(peer.publicKey)) // выпиливаем из массива stats.data.peers всё лишнее кароче
+        //stats.data.peers = userPeers
+        const normalStats = {
+          status: stats.status,
+          lastUpdated: stats.lastUpdated,
+          data: {
+            peers: userStats
+          }
+        }
+        // console.log(userPublicKeys)
+        // console.log('------------')
+        // console.log(JSON.stringify(userStats, null, 2))
+        // console.log('------------')
         console.log(JSON.stringify(stats, null, 2))
         // ======================================================
         // const peers = stats.data.map(peer => peer.publicKey) // пересобираем массив со всем publicKey
         // ====================================================== 
-        return reply.send(stats || { message: 'Нет данных для сервера ' + server })
+        return reply.send(normalStats || { message: 'Нет данных для сервера ' + server })
       } 
       catch(e) {
         return reply.send({ message: "invalid", onErr: e})    
