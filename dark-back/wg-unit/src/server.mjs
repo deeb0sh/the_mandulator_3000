@@ -65,7 +65,7 @@ exec(`echo "${config}" > /etc/wireguard/wg0.conf && wg-quick up wg0`, (err, stdo
     return
   }
 
-  console.log(`[${new Date().toLocaleString()}](+)[WG-UNiT] Стартовый конфиг WG запущен`)
+  console.log(`[${new Date().toLocaleString()}][WG-UNiT] Стартовый конфиг WG запущен`)
   try {
     const serverUrl = `http://wg-serv:3001/head/start/${server}`
     fetch(serverUrl)
@@ -143,9 +143,9 @@ fastify.post('/control', async (request, reply) => {
         }
       }
 
-      console.log(`[${new Date().toLocaleString()}] [WG-UNiT] Актуализация пиров завершена`)
+      console.log(`[${new Date().toLocaleString()}][WG-UNiT] Актуализация пиров завершена`)
     } catch (err) {
-      console.log(`[${new Date().toLocaleString()}] [WG-UNiT] Ошибка обновления пиров: ${err}`)
+      console.log(`[${new Date().toLocaleString()}][WG-UNiT] Ошибка обновления пиров: ${err}`)
     }
   }
 
@@ -165,5 +165,5 @@ fastify.listen({ port: 3003, host: '0.0.0.0' }, (err, address) => {
     fastify.log.error(err)
     process.exit(1)
   }
-  console.log(`(+) Сервер запущен на ${address}`)
+  console.log(`[${new Date().toLocaleString()}][WG-UNiT] Сервер запущен на ${address}`)
 })
