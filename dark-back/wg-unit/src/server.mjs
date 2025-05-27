@@ -3,8 +3,10 @@ import { exec } from 'child_process'
 
 const server = process.env.SERVERNAME
 if (!server) {
-  console.log('(-) переменная SERVERNAME пустаня')
+  console.log(`[${new Date().toLocaleString()}] переменная SERVERNAME пустая`)
 }
+
+const fastify = Fastify({ logger: false })
 
 // === функция для работы с шеллом (вынести в отдльный файл нахуй)
 function execShell(cmd) {
@@ -32,16 +34,14 @@ function parseWgDump(dump) {
     });
   }
 
-const fastify = Fastify({ logger: true })
-
 // === Получаем стартовый конфиг ===
 const response = await fetch('http://wg-serv:3001/head/start', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ server })
 })
-console.log(`(+) Отправляем запрос на статовый конфиг, имя сервера: ${server}`)
-console.log('(+) Ждм ответ от сервера')
+console.log(`[${new Date().toLocaleString()}][WG-UNiT] Отправляем запрос на статовый конфиг, имя сервера: ${server}`)
+console.log(`[${new Date().toLocaleString()}][WG-UNiT] Ждм ответ от сервера`)
 
 const data = await response.json()
 const [serverIp, mask] = data.lan.split('/')
@@ -61,17 +61,17 @@ PostUp = iptables -I FORWARD 1 -s ${serverIp}/28 -d 10.4.0.0/24 -j ACCEPT; iptab
 //console.log(config)
 exec(`echo "${config}" > /etc/wireguard/wg0.conf && wg-quick up wg0`, (err, stdout, stderr) => {
   if (err) {
-    console.log(`(-) Ошибка при записи wg.conf : ${stderr}`)
+    console.log(`[${new Date().toLocaleString()}][WG-UNiT] Ошибка при записи wg.conf : ${stderr}`)
     return
   }
 
-  console.log('(+) Стартовый конфиг WG запущен')
+  console.log(`[${new Date().toLocaleString()}](+)[WG-UNiT] Стартовый конфиг WG запущен`)
   try {
     const serverUrl = `http://wg-serv:3001/head/start/${server}`
     fetch(serverUrl)
-    console.log('(+) Сообщили серверу, что готовы к дальнейшим настройкам')
+    console.log(`[${new Date().toLocaleString()}][WG-UNiT] Сообщили серверу, что готовы к дальнейшим настройкам`)
   } catch (e) {
-    fastify.log.error(`(-) ОШИБКА отравки GET /head/start : ${e}`)
+    fastify.log.error(`[${new Date().toLocaleString()}][WG-UNiT] ОШИБКА отравки GET /head/start : ${e}`)
   }
 })
 
@@ -97,7 +97,7 @@ fastify.post('/control', async (request, reply) => {
       for (const oldKey of existingPeers) {
         if (!newPublicKeys.includes(oldKey)) {
           await execShell(`wg set wg0 peer ${oldKey} remove`)
-          console.log(`(+) Удалён старый пир ${oldKey}`)
+          console.log(`[${new Date().toLocaleString()}][WG-UNiT] Удалён старый пир ${oldKey}`)
         }
       }
 
@@ -110,17 +110,17 @@ fastify.post('/control', async (request, reply) => {
           const cmd = `wg set wg0 peer ${peer.publicKey} allowed-ips ${ip32}`
           console.log(cmd)
           await execShell(cmd)
-          console.log(`(+) Добавлен пир ${peer.name} (${peer.publicKey})`)
+          console.log(`[${new Date().toLocaleString()}][WG-UNiT] Добавлен пир ${peer.name} (${peer.publicKey})`)
 
           // Проверка и добавление MASQUERADE
           const natCheck = `iptables -t nat -C POSTROUTING -s ${network} -o eth1 -j MASQUERADE`
           try {
             await execShell(natCheck)
-            console.log(`(+) MASQUERADE уже существует для ${network}`)
+            console.log(`[${new Date().toLocaleString()}][WG-UNiT] MASQUERADE уже существует для ${network}`)
           } catch {
             const natAdd = `iptables -t nat -A POSTROUTING -s ${network} -o eth1 -j MASQUERADE`
             await execShell(natAdd)
-            console.log(`(+) MASQUERADE добавлен для ${network}`)
+            console.log(`[${new Date().toLocaleString()}][WG-UNiT] MASQUERADE добавлен для ${network}`)
           }
 
           const forwardAccept = `iptables -C FORWARD -s ${network} -o eth1 -j ACCEPT`
@@ -143,9 +143,9 @@ fastify.post('/control', async (request, reply) => {
         }
       }
 
-      console.log('(+) Актуализация пиров завершена')
+      console.log(`[${new Date().toLocaleString()}] [WG-UNiT] Актуализация пиров завершена`)
     } catch (err) {
-      console.log('(-) Ошибка обновления пиров:', err)
+      console.log(`[${new Date().toLocaleString()}] [WG-UNiT] Ошибка обновления пиров: ${err}`)
     }
   }
 
