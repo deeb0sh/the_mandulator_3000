@@ -10,7 +10,7 @@ export default async function wgstatsApi(fastify) {
     secret: process.env.JWT_SECRET
   })
 
-  const cache = new NodeCache({ stdTTL: 36000, checkperiod: 600 }) // создаём кеш для хранние данных на час ( хранимтся пока не перезапишется)
+  const cache = new NodeCache({ stdTTL: 0 }) // создаём кеш для хранние данных на всегда ( хранимтся пока не перезапишется)
 
   const servers = {
     RU: 'http://wgru:3003/wgstats',
@@ -23,7 +23,7 @@ export default async function wgstatsApi(fastify) {
       // try-catch для fetch
       try {
         const response = await fetch(servers[server],{
-          signal: AbortSignal.timeout(1000) // 1cсек ждём ответ если больше то AbortError или TimeoutError
+          signal: AbortSignal.timeout(3000) // 3 сек ждём ответ если больше то AbortError или TimeoutError
         })  // 3000 мс
         const stats = await response.json()
         // --- записываем данные кеш и статус сервера
@@ -34,17 +34,11 @@ export default async function wgstatsApi(fastify) {
         })
       } 
       catch (e) {
-        try {
-          cache.set(server, {
-            status: 'offline',
-            data: { peers: [] },  // Сохраняем текст ошибки сохраняя структуру объекта 
-            lastUpdated: new Date().toLocaleString()
-          })
-          console.log(`[${new Date().toLocaleString()}][CACHE] записан оффлайн в кеш`)
-        } 
-        catch (ErrCache) {
-          console.log(`[${new Date().toLocaleString()}][CACHE] Х У Й --- ${ErrCache}`)
-        }
+        cache.set(server, {
+          status: 'offline',
+          data: e,  // Сохраняем текст ошибки
+          lastUpdated: new Date().toLocaleString()
+        })
         console.log(`[${new Date().toLocaleString()}][WGSTATS] Сервер не отвечает - ${server}: ${e}`)
       }
     }
