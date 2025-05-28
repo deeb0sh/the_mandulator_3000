@@ -4,10 +4,8 @@ RUN apk update && apk add --no-cache \
     wireguard-tools \
     tzdata
 
-RUN cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime && \
-    echo "Europe/Moscow" > /etc/timezone && \
-    apk del tzdata && \
-    rm -rf /usr/share/zoneinfo/*
+RUN ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime && \
+    echo "Europe/Moscow" > /etc/timezone
 
 ENV TZ=Europe/Moscow \
     LANG=ru_RU.UTF-8 \
