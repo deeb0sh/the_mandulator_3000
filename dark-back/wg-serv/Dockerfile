@@ -1,31 +1,21 @@
 FROM node:20-alpine
 
-RUN apk update && apk add --no-cache wireguard-tools tzdata musl-locales musl-locales-lang lang-russian
+RUN apk update && apk add --no-cache \
+    wireguard-tools \
+    tzdata \
+    musl-locales \
+    musl-locales-lang \
+    --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
 
-RUN cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime
+RUN cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime && \
+    echo "Europe/Moscow" > /etc/timezone
 
-RUN rm -r /usr/share/zoneinfo/Africa && \
-    rm -r /usr/share/zoneinfo/Antarctica && \
-    rm -r /usr/share/zoneinfo/Arctic && \
-    rm -r /usr/share/zoneinfo/Asia && \
-    rm -r /usr/share/zoneinfo/Atlantic && \
-    rm -r /usr/share/zoneinfo/Australia && \
-    rm -r /usr/share/zoneinfo/America  && \
-    rm -r /usr/share/zoneinfo/Indian && \
-    rm -r /usr/share/zoneinfo/Mexico && \
-    rm -r /usr/share/zoneinfo/Pacific && \
-    rm -r /usr/share/zoneinfo/Chile && \
-    rm -r /usr/share/zoneinfo/Canada
+RUN rm -rf /usr/share/zoneinfo/{Africa,Antarctica,Arctic,Asia,Atlantic,Australia,America,Indian,Mexico,Pacific,Chile,Canada}
 
-RUN echo "Europe/Moscow" >  /etc/timezone
-
-ENV TZ Europe/Moscow
-
-ENV LANG ru_RU.UTF-8
-
-ENV LANGUAGE ru_RU.UTF-8
-
-ENV LC_ALL ru_RU.UTF-8
+ENV LANG=ru_RU.UTF-8 \
+    LANGUAGE=ru_RU.UTF-8 \
+    LC_ALL=ru_RU.UTF-8 \
+    TZ=Europe/Moscow
 
 RUN echo "ru_RU.UTF-8 UTF-8" > /etc/locale.gen && locale-gen
 
