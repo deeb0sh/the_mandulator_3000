@@ -2,22 +2,16 @@ FROM node:20-alpine
 
 RUN apk update && apk add --no-cache \
     wireguard-tools \
-    tzdata \
-    musl-locales \
-    musl-locales-lang \
-    --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
+    tzdata
 
 RUN cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime && \
-    echo "Europe/Moscow" > /etc/timezone
+    echo "Europe/Moscow" > /etc/timezone && \
+    apk del tzdata && \
+    rm -rf /usr/share/zoneinfo/*
 
-RUN rm -rf /usr/share/zoneinfo/{Africa,Antarctica,Arctic,Asia,Atlantic,Australia,America,Indian,Mexico,Pacific,Chile,Canada}
-
-ENV LANG=ru_RU.UTF-8 \
-    LANGUAGE=ru_RU.UTF-8 \
-    LC_ALL=ru_RU.UTF-8 \
-    TZ=Europe/Moscow
-
-RUN echo "ru_RU.UTF-8 UTF-8" > /etc/locale.gen && locale-gen
+ENV TZ=Europe/Moscow \
+    LANG=ru_RU.UTF-8 \
+    LC_ALL=ru_RU.UTF-8
 
 WORKDIR /app
 
