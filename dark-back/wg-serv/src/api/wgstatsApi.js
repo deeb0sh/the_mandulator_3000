@@ -36,7 +36,6 @@ export default async function wgstatsApi(fastify) {
       catch (e) {
         cache.set(server, {
           status: 'offline',
-          data: e,  // Сохраняем текст ошибки
           lastUpdated: new Date().toLocaleString()
         })
         console.log(`[${new Date().toLocaleString()}][WGSTATS] Сервер не отвечает - ${server}: ${e}`)
