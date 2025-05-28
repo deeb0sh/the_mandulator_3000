@@ -12,14 +12,16 @@ ENV TZ=Europe/Moscow \
 
 WORKDIR /app
 
+ENV http_proxy=http://10.4.0.2:3128
+
+ENV https_proxy=http://10.4.0.2:3128
+
 COPY package*.json ./
 
 RUN npm install && npm cache clean --force
 
-COPY . .
+COPY src/ ./src
 
-RUN npx prisma generate && npx prisma migrate dev --name init
+EXPOSE 2999
 
-EXPOSE 3000
-
-CMD [ "node", "server.js" ]
+CMD ["node", "src/server.mjs"]
