@@ -6,7 +6,7 @@ const fastify = Fastify({ logger: true });
 // Регистрация плагина CORS
 fastify.register(cors, {
   origin: (origin, callback) => {
-    const allowedOrigins = ['https://darksurf.ru', 'https://dev.darksurf.ru'];
+    const allowedOrigins = ['https://darksurf.ru', 'https://www.darksurf.ru'];
     // Разрешаем запросы с указанных доменов или без Origin для всех методов
     callback(null, allowedOrigins.includes(origin) ? origin : '*');
   },
