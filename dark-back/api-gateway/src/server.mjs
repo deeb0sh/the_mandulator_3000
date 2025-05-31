@@ -3,36 +3,39 @@ import cors from '@fastify/cors';
 
 const fastify = Fastify({ logger: true });
 
-// Регистрация плагина CORS с жёсткой фильтрацией по Origin
+// Регистрация плагина CORS
 fastify.register(cors, {
   origin: (origin, callback) => {
     const allowedOrigins = ['https://darksurf.ru', 'https://dev.darksurf.ru'];
-    // Разрешаем запросы только с указанных доменов
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      // Блокируем запросы с неподходящих доменов или без Origin
-      callback(new Error('Доступ запрещён. Пожалуйста, пройдите нахуй'), false);
-    }
+    // Разрешаем запросы с указанных доменов или без Origin для всех методов
+    callback(null, allowedOrigins.includes(origin) ? origin : '*');
   },
   methods: ['GET', 'HEAD', 'OPTIONS', 'POST', 'DELETE', 'PUT'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-  // Обрабатываем ошибку CORS
   hideOptionsRoute: false,
   strictPreflight: true
 });
 
-// Обработка ошибок CORS
-fastify.setErrorHandler((error, request, reply) => {
-  if (error.message.includes('Origin')) {
-    reply
+// Хук для проверки Origin, игнорирующий GET
+fastify.addHook('onRequest', (request, reply, done) => {
+  const allowedOrigins = ['https://darksurf.ru', 'https://dev.darksurf.ru'];
+  const origin = request.headers.origin;
+
+  // Пропускаем GET-запросы без проверки Origin
+  if (request.method === 'GET') {
+    return done();
+  }
+
+  // Для остальных методов проверяем Origin
+  if (!origin || !allowedOrigins.includes(origin)) {
+    return reply
       .status(403)
       .header('Content-Type', 'text/plain')
       .send('Доступ запрещён. Пожалуйста, пройдите нахуй');
-  } else {
-    reply.send(error);
   }
+
+  done();
 });
 
 // Проксирование /auth/*
@@ -61,6 +64,11 @@ fastify.all('/wg/*', async (req, reply) => {
   reply.status(response.status);
   const data = await response.text();
   return reply.send(data);
+});
+
+// Обработка ошибок
+fastify.setErrorHandler((error, request, reply) => {
+  reply.send(error);
 });
 
 // Запуск сервера
