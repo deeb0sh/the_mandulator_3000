@@ -87,7 +87,7 @@ export default {
         
         if (resp.ok) {
           const config = await resp.text();
-          // Сохраняем конфиг в файл
+          // отправляем конфиг на лету
           const blob = new Blob([config], { type: 'application/octet-stream' });
           const link = document.createElement('a');
           link.href = URL.createObjectURL(blob);

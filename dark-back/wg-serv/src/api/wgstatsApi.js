@@ -71,12 +71,24 @@ export default async function wgstatsApi(fastify) {
             serverName: server
           },
           select: {
+            id: true,
             publicKey: true
           }
-        });
-        const userPublicKeys = userPeers.map(pkey => pkey.publicKey) // оставляем в массиве userPeers только значения publicKey       
-        const userStats = stats.data.peers.filter(peer => userPublicKeys.includes(peer.publicKey)) // выпиливаем из массива stats.data.peers всё лишнее кароче
-        //stats.data.peers = userPeers
+        })
+        const publicKeyToId = Object.fromEntries(
+          userPeers.map(({ id, publicKey }) => [publicKey, id]) // для поскае id по publicKey
+        )
+        //const userPublicKeys = userPeers.map(pkey => pkey.publicKey) // оставляем в массиве userPeers только значения publicKey       
+        
+        const userStats = stats.data.peers
+          .filter(peer => publicKeyToId.hasOwnProperty(peer.publicKey)) // оставляем только свои peers
+          .map(({ publicKey, ...rest }) => ({
+            ...rest,
+            id: publicKeyToId[publicKey] // заменяем publicKey на id
+        }))
+
+        // const userStats = stats.data.peers.filter(peer => userPublicKeys.includes(peer.publicKey)) // выпиливаем из массива stats.data.peers всё лишнее кароче
+        // //stats.data.peers = userPeers
         const normalStats = {
           status: stats.status,
           lastUpdated: stats.lastUpdated,

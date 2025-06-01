@@ -30,7 +30,7 @@
        
         <div  v-if="v$.form.wguser.$error || v$.location.$error || onErr" class="errorMsg">
             <span v-if="v$.form.wguser.$error" class="user-error">
-                Только: a-z, A-Z, 0-9 и максимум 15 символов
+                Только: a-z, A-Z, 0-9 и 4 - 15 символов
             </span>
             <span v-if="v$.location.$error" class="location-error">
                 Выбери локацию
@@ -150,6 +150,17 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
             },
             setLocaltion(x) {
                 this.location = x
+            },
+            async getWgStats(server) {
+                const token = localStorage.getItem('jwt')
+                const req = await fetch(`/wg/stats/:${server}`,{
+                    method: 'GET',
+                    headers: {
+                        'Content-type': 'application/json', 
+                        'Authorization': `Bearer ${token}`, // токен на проверку
+                    }
+                })
+                const data = await req.json() // ждём ответ от сервера
             }
         }
     }
