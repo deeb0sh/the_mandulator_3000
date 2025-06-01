@@ -150,17 +150,6 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
             },
             setLocaltion(x) {
                 this.location = x
-            },
-            async getWgStats(server) {
-                const token = localStorage.getItem('jwt')
-                const req = await fetch(`/wg/stats/:${server}`,{
-                    method: 'GET',
-                    headers: {
-                        'Content-type': 'application/json', 
-                        'Authorization': `Bearer ${token}`, // токен на проверку
-                    }
-                })
-                const data = await req.json() // ждём ответ от сервера
             }
         }
     }

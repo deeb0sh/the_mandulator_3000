@@ -1,5 +1,5 @@
 <template>
-    <div v-if="clients && clients.length" class="main">
+    <div v-if="clients && clients.length" class="main" :class="{ offline: wgStats?.status === 'offline' }">
         <div v-if="location==='RU'" class="head">
             <img src="../img/rus1.png" width="25" class="pad" /> <b>Москва</b>
         </div>
@@ -7,14 +7,26 @@
             <img src="../img/ger1.png" width="25"  class="pad" /> <b>Франкфурт</b>
         </div>
         <div v-if="location==='FI'" class="head">
-            <img src="../img/fin1.png" width="25" class="pad" /> <b>Хельсинки</b>
+            <img src="../img/fin1.png" width="25" class="pad" /> <b>Хельсинки</b> 
         </div>
-    
         <div v-for="(client, index) in clients" :key="index" class="body">
-            <div class="name" :title=client.ip>
-                <img src="../img/conn2.png" width="13" class="pad" /> 
+            <div class="name" :title="`IP: ${client.ip}\nПоследнее подключение: ${getPeerStats(client.id) ? formatTimestamp(getPeerStats(client.id).lastHandshake) : 'N/A'}`">
+                <img src="../img/conn2.png" width="13" class="pad conn" :class="{ 'active': isActive(client.id) }"/> 
                 {{ client.name }} 
             </div>
+            <div class="stats">
+                <span v-if="getPeerStats(client.id)">
+                  <div>    
+                    rx: {{ formatBytes(getPeerStats(client.id).rx) }}
+                  </div>
+                  <div>
+                    tx: {{ formatBytes(getPeerStats(client.id).tx) }}
+                  </div>
+                </span>
+                <span v-else>
+                  N/A
+                </span>
+            </div>          
             <div class="control">
                 <img src="../img/qr.png" width="18" @click="qrcode(client.id)" title="QR-Код"/>
                 <img src="../img/down.png" width="18" @click="downConf(client.id, client.name)" title="Скачать"/>
@@ -49,7 +61,20 @@ export default {
   ],
   data() {
     return {
-      showQR: false
+      showQR: false,
+      wgStats: null,
+      statsInterval: null
+    }
+  },
+  mounted() {
+    this.getWgStats(this.location),
+    this.statsInterval = setInterval(() => {
+      this.getWgStats(this.location);
+    }, 5000) // каждые 5 сек
+  },
+  beforeUnmount() {
+    if (this.statsInterval) {
+      clearInterval(this.statsInterval); // Очистка интервала при уничтожении компонента
     }
   },
   methods: {
@@ -118,7 +143,59 @@ export default {
       },
       closeQR() {
         this.showQR = false
+      },
+      async getWgStats(server) {
+        const token = localStorage.getItem('jwt')
+        const req = await fetch(`/wg/stats/${server}`,{
+          method: 'GET',
+          headers: {
+            'Content-type': 'application/json', 
+            'Authorization': `Bearer ${token}`, // токен на проверку
+          }
+        })
+        const data = await req.json() // ждём ответ от сервера
+        this.wgStats = data
+      },
+    // получаем статистику пира по client.id
+    getPeerStats(clientId) {
+      if (this.wgStats?.data?.peers) {
+        return this.wgStats.data.peers.find(peer => peer.id === clientId);
       }
+      return null;
+    },
+    // переводим время в человечкский вид
+    formatTimestamp(timestamp) {
+      if (!timestamp) return 'N/A';
+      const date = new Date(timestamp * 1000);
+      return date.toLocaleString('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+    },
+    // Форматирование байтов в читаемые единицы (КБ, МБ, ГБ)
+    formatBytes(bytes) {
+      if (!bytes) return '0 B';
+      const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+      let value = bytes;
+      let unitIndex = 0;
+      while (value >= 1024 && unitIndex < units.length - 1) {
+        value /= 1024;
+        unitIndex++;
+      }
+      return `${value.toFixed(2)} ${units[unitIndex]}`;
+    }    ,
+    // проверяем онлайн если lastHandshake больше 2 мин тогда peer оффлайн
+    isActive(clientId) {
+      const peer = this.getPeerStats(clientId);
+      if (!peer || !peer.lastHandshake) return false;
+      const now = Math.floor(Date.now() / 1000); // Текущее время в секундах
+      const twoMinutes = 2 * 60; // 2 минуты в секундах
+      return (now - peer.lastHandshake) <= twoMinutes;
+    }
   }
 }
 </script>
@@ -131,7 +208,12 @@ export default {
   width: 100%;
   margin-bottom: 15px;
 }
+.main.offline {
+  background-color: #ff000013; /* Красный фон с прозрачностью */
+  border-radius: 8px;
+}
 .name {
+  width: 350px;
   display: flex;
   justify-content: flex-start;     /* по горизонтали */
   align-items: center;         /* по вертикали */
@@ -156,6 +238,25 @@ export default {
   padding-bottom: 10px;
   border-bottom: 1px solid #ffffff;
 }
+
+.stats {
+  font-size: 9px;
+  color: #969696;
+  display: flex;
+  justify-content: flex-start; /* Align tx and rx to the right */
+  gap: 10px;
+  width: 70px;
+  margin-right: 10px; /* Optional: Add margin to fine-tune distance from .control */
+}
+
+.conn {
+  transition: filter 0.3s ease; /* Плавный переход для эффекта */
+}
+
+.conn.active {
+  filter: drop-shadow(0 0 5px #00ff00) drop-shadow(0 0 10px #00ff00); /* Ярко-зеленое свечение */
+}
+
 .body {
   display: flex;
   justify-content: space-between;     /* по горизонтали */
@@ -189,5 +290,22 @@ export default {
     top: 35%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+@media (max-width: 580px) {
+  .name {
+    width: 280px;
+  }
+}
+
+@media (max-width: 490px) {
+  .name {
+    width: 200px;
+  }
+}
+@media (max-width: 400px) {
+  .name {
+    width: 150px;
+  }
 }
 </style>
