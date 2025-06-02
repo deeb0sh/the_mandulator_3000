@@ -254,7 +254,7 @@ export default {
 }
 
 .conn.active {
-  filter: drop-shadow(0 0 5px #00ff00) drop-shadow(0 0 10px #00ff00); /* Ярко-зеленое свечение */
+  filter: drop-shadow(0 0 1px #00ff00) drop-shadow(0 0 10px #00ff00);
 }
 
 .body {
