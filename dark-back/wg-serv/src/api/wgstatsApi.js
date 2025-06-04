@@ -11,8 +11,8 @@ export default async function wgstatsApi(fastify) {
   })
 
   const cache = new NodeCache({ 
-    stdTTL: 360,
-    checkperiod: 180 
+    stdTTL: 180,
+    checkperiod: 60 
   }) // создаём кеш для хранние данных на всегда ( хранимтся пока не перезапишется)
 
   const servers = {
