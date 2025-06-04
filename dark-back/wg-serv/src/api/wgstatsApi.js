@@ -10,7 +10,10 @@ export default async function wgstatsApi(fastify) {
     secret: process.env.JWT_SECRET
   })
 
-  const cache = new NodeCache({ stdTTL: 0 }) // создаём кеш для хранние данных на всегда ( хранимтся пока не перезапишется)
+  const cache = new NodeCache({ 
+    stdTTL: 360,
+    checkperiod: 180 
+  }) // создаём кеш для хранние данных на всегда ( хранимтся пока не перезапишется)
 
   const servers = {
     RU: 'http://wgru:3003/wgstats',
