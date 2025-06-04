@@ -63,7 +63,7 @@
 
 <style scoped>
 .aria {
-    background: #2a7449a1;
+    background: #cacaca71;
     border-radius: 8px;   
     border: 0px solid #ffffff;
     padding: 10px;
@@ -75,9 +75,11 @@
 }
 
 .invite {
-    color:#ffffff;
-    font-size: 31px;
+    color:#313131;
+    font-size: 23px;
+    font-family: HH;
     text-align: center;
+    margin-bottom: 5px;
 }
 
 .button {
