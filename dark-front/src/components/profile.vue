@@ -4,8 +4,8 @@
     <div class="invite" >
       {{ username }}
       <img src="../img/oko.png" width="120" v-if="roleID === 3 || roleID === 2"/>
-      <img src="../img/diamond1.png" width="160" v-else-if="roleID ===1"/>
-      <img src="../img/diamond2.png" width="160" v-else />
+      <img src="../img/diamond2.png" width="160" v-else-if="roleID ===1"/>
+      <img src="../img/diamond1.png" width="160" v-else />
     </div>
 </div>
 </template>
