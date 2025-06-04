@@ -12,7 +12,6 @@
   "dependencies": {
     "@fastify/jwt": "^9.1.0",
     "@prisma/client": "^6.6.0",
-    "async-lock": "^1.4.1",
     "dotenv": "^16.4.7",
     "fastify": "^5.2.1",
     "fastify-plugin": "^5.0.1",
