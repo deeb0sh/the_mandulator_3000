@@ -3,6 +3,9 @@
    профиль:
     <div class="invite" >
       {{ username }}
+      <img src="../img/oko.png" width="120" v-if="roleID === 3 || roleID === 2"/>
+      <img src="../img/diamond1.png" width="160" v-else-if="roleID ===1"/>
+      <img src="../img/diamond2.png" width="160" v-else />
     </div>
 </div>
 </template>
@@ -30,8 +33,8 @@ import { jwtDecode } from 'jwt-decode'
 </script>
 <style scoped>
 /* * {
-    border: #8c00ff solid 1px;
-} */
+    border: #8c00ff solid 1px;  
+}  */
 .aria {
     
     background: #cacaca71;
@@ -45,6 +48,7 @@ import { jwtDecode } from 'jwt-decode'
     color: #313131;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
+
 .invite {
     color:#313131;
     padding: 10px;
@@ -55,6 +59,7 @@ import { jwtDecode } from 'jwt-decode'
     flex-direction: column;
     gap: 5px; 
     justify-content: center; 
+    align-items: center;
 }
 .info {
     font-size:  31px;
