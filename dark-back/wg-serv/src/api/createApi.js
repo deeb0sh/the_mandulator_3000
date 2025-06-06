@@ -1,6 +1,7 @@
 import jwt from '@fastify/jwt'
 import { headersJwtValid } from '../schemas/headersJWTvalid.js'
 import { wgNameValid } from '../schemas/wgNameValid.js'
+import { wgIdName } from '../schemas/wgidname.js'
 import { wgid } from '../schemas/wgid.js'
 import syncwg from '../utils/syncwg.js'
 import defIp from '../utils/defaultIp.js'
@@ -10,7 +11,7 @@ export default async function wgCreateApi(fastify) {
     fastify.register(jwt, {
         secret: process.env.JWT_SECRET
     })
-
+    // === Создаём новый пир POST
     fastify.post('/wg/create', {
         schema: {
             headers: headersJwtValid,
@@ -128,7 +129,7 @@ export default async function wgCreateApi(fastify) {
             })
         }
     })
-
+    // === удаляем пир DELETE
     fastify.delete('/wg/create', {
         schema: {
             headers: headersJwtValid,
@@ -183,4 +184,51 @@ export default async function wgCreateApi(fastify) {
             return reply.send({ message: "invalid", e })
         }
     })
+    // === переименование пира PUT
+    fastify.put('/wg/create', {
+      schema: {
+        headers: headersJwtValid,
+        body: wgIdName
+      }},
+      async (request, reply) => {
+        try {
+          const decod = await request.jwtVerify() // верификация jwt (берёт из headres auth....)
+          const user = decod.user // извлекаем login из токена
+          fastify.log.info(`Запрос на переименование WG клиента пользователем: ${user}`)
+          const { id, wgname } = request.body // извлекаем id, wgname из тела запроса
+          // --- узнаём id пользователя в базе
+          const login = await fastify.prisma.users.findFirst({
+            where: { login: user },
+            select: { id: true }
+          })
+          const loginId = login.id
+          // --- проверяем на пренадлежнсть клиента пользователю
+          const checkClient = await fastify.prisma.client.findFirst({
+            where: {
+              userId: Number(loginId),
+              id: Number(id)
+            },
+            select: { name: true }
+          })
+          if (!checkClient) {
+            fastify.log.warn(`Попытка переименовать чужого клиента: ${id} пользователем: ${user}`)
+            return reply.send({ message: "invalid", onErr: "запрещено, Клиент не пренадлежит пользователю" })
+          }
+          // --- обновляем поле name таблицы clients
+          await fastify.prisma.client.update({
+            where: {
+                id: id
+            },
+            data: {
+              name: wgname
+            }
+          })
+          return reply.send({ message: "valid" })
+        }
+        catch (e) {
+          fastify.log.error(`Ошибка при переименование WG клиента: ${e}`)
+          return reply.send({ message: "invalid", e })
+        }
+      }
+    )
 }
