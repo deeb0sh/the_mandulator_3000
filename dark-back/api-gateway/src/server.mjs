@@ -1,13 +1,12 @@
 import Fastify from "fastify";
 import cors from '@fastify/cors';
+import formbody from '@fastify/formbody'; // Импортируем @fastify/formbody
 
 // Инициализация Fastify с логами
 const fastify = Fastify({ logger: true });
 
-// 1. Регистрация парсера тела для JSON
-fastify.register(require('@fastify/body'), {
-  parse: true
-});
+// 1. Регистрация парсера для x-www-form-urlencoded
+fastify.register(formbody);
 
 // 2. Регистрация плагина CORS
 fastify.register(cors, {
