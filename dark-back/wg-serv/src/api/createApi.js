@@ -192,17 +192,30 @@ export default async function wgCreateApi(fastify) {
       }},
       async (request, reply) => {
         try {
-          const decod = await request.jwtVerify() // верификация jwt (берёт из headres auth....)
-          const user = decod.user // извлекаем login из токена
-          console.log(`[createApi] Запрос на переименование WG клиента пользователем: ${user}`)
-          const { id, wgname } = request.body // извлекаем id, wgname из тела запроса
-          // --- узнаём id пользователя в базе
+          const decod = await request.jwtVerify()
+          const user = decod.user
+          fastify.log.info(`Запрос на переименование WG клиента пользователем: ${user}`)
+      
+          const { id, wgname } = request.body
+          fastify.log.info(`Параметры запроса: id=${id}, новое имя=${wgname}`)
+
+          // --- проверяем существование пользователя
           const login = await fastify.prisma.users.findFirst({
             where: { login: user },
             select: { id: true }
           })
+      
+          if (!login) {
+            fastify.log.warn(`Пользователь не найден: ${user}`)
+            return reply.code(404).send({ 
+              message: "invalid", 
+              onErr: "Пользователь не найден" 
+            })
+          }
+
           const loginId = login.id
-          // --- проверяем на пренадлежнсть клиента пользователю
+      
+          // --- проверяем принадлежность клиента пользователю
           const checkClient = await fastify.prisma.client.findFirst({
             where: {
               userId: Number(loginId),
@@ -210,26 +223,36 @@ export default async function wgCreateApi(fastify) {
             },
             select: { name: true }
           })
+
           if (!checkClient) {
-            console.log(`[createApi] Попытка переименовать чужого клиента: ${id} пользователем: ${user}`)
-            return reply.send({ message: "invalid", onErr: "запрещено, Клиент не пренадлежит пользователю" })
+            fastify.log.warn(`Попытка переименовать чужого клиента: ${id} пользователем: ${user}`)
+            return reply.code(403).send({ 
+              message: "invalid", 
+              onErr: "Запрещено: Клиент не принадлежит пользователю" 
+            })
           }
-          // --- обновляем поле name таблицы clients
+
+          // --- обновляем имя клиента
           await fastify.prisma.client.update({
             where: {
-                id: Number(id)
+              id: Number(id)
             },
             data: {
               name: wgname
-            }
+           } 
           })
-          console.logs('[createApi] Имя обновлено !!!!')
+
+          fastify.log.info(`Имя клиента успешно обновлено: id=${id}, новое имя=${wgname}`)
           return reply.send({ message: "valid" })
         }
         catch (e) {
-          console.log(`[createApi] Ошибка при переименование WG клиента: ${e}`)
-          return reply.send({ message: "invalid", e })
-        }
-      }
-    )
+         fastify.log.error(`Ошибка при переименовании WG клиента: ${e.stack || e}`)
+         return reply.code(500).send({ 
+           message: "invalid", 
+           onErr: "Внутренняя ошибка сервера",
+           details: e.message 
+         })
+        } 
+    }
+  )
 }
