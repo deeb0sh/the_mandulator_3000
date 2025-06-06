@@ -1,9 +1,15 @@
 import Fastify from "fastify";
 import cors from '@fastify/cors';
 
+// Инициализация Fastify с логами
 const fastify = Fastify({ logger: true });
 
-// Регистрация плагина CORS
+// 1. Регистрация парсера тела для JSON
+fastify.register(require('@fastify/body'), {
+  parse: true
+});
+
+// 2. Регистрация плагина CORS
 fastify.register(cors, {
   origin: (origin, callback) => {
     const allowedOrigins = ['https://darksurf.ru', 'https://www.darksurf.ru'];
@@ -17,7 +23,7 @@ fastify.register(cors, {
   strictPreflight: true
 });
 
-// Хук для проверки Origin, игнорирующий GET
+// 3. Хук для проверки Origin, игнорирующий GET
 fastify.addHook('onRequest', (request, reply, done) => {
   const allowedOrigins = ['https://darksurf.ru', 'https://dev.darksurf.ru'];
   const origin = request.headers.origin;
@@ -38,40 +44,82 @@ fastify.addHook('onRequest', (request, reply, done) => {
   done();
 });
 
-// Проксирование /auth/*
+// 4. Проксирование /auth/*
 fastify.all('/auth/*', async (req, reply) => {
-  const targetUrl = `http://auth:3000${req.raw.url}`;
-  const response = await fetch(targetUrl, {
-    method: req.method,
-    headers: { ...req.headers },
-    body: req.method !== 'GET' ? JSON.stringify(req.body) : undefined
-  });
-
-  reply.status(response.status);
-  const data = await response.text();
-  return reply.send(data);
+  try {
+    const targetUrl = `http://auth:3000${req.raw.url}`;
+    fastify.log.info(`Проксирование к: ${targetUrl}`);
+    const headers = { ...req.headers };
+    delete headers['content-length']; // Удаляем, чтобы fetch пересчитал
+    const body = req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined;
+    fastify.log.info(`Отправляем: method=${req.method}, headers=${JSON.stringify(headers)}, body=${body}`);
+    const response = await fetch(targetUrl, {
+      method: req.method,
+      headers,
+      body
+    });
+    const contentType = response.headers.get('content-type');
+    const data = contentType && contentType.includes('application/json') ? await response.json() : await response.text();
+    fastify.log.info(`Ответ от auth: status=${response.status}, data=${JSON.stringify(data)}`);
+    reply.status(response.status);
+    return reply.send(data);
+  } catch (e) {
+    fastify.log.error(`Ошибка проксирования /auth: ${e.stack || e}`);
+    return reply.status(500).send({
+      statusCode: 500,
+      error: 'Internal Server Error',
+      message: 'Проксирование не удалось',
+      details: e.message
+    });
+  }
 });
 
-// Проксирование /wg/*
+// 5. Проксирование /wg/*
 fastify.all('/wg/*', async (req, reply) => {
-  const targetUrl = `http://wg-serv:3001${req.raw.url}`;
-  const response = await fetch(targetUrl, {
-    method: req.method,
-    headers: { ...req.headers },
-    body: req.method !== 'GET' ? JSON.stringify(req.body) : undefined
-  });
-
-  reply.status(response.status);
-  const data = await response.text();
-  return reply.send(data);
+  try {
+    const targetUrl = `http://wg-serv:3001${req.raw.url}`;
+    fastify.log.info(`Проксирование к: ${targetUrl}`);
+    const headers = { ...req.headers };
+    delete headers['content-length']; // Удаляем, чтобы fetch пересчитал
+    const body = req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined;
+    fastify.log.info(`Отправляем: method=${req.method}, headers=${JSON.stringify(headers)}, body=${body}`);
+    const response = await fetch(targetUrl, {
+      method: req.method,
+      headers,
+      body
+    });
+    const contentType = response.headers.get('content-type');
+    const data = contentType && contentType.includes('application/json') ? await response.json() : await response.text();
+    fastify.log.info(`Ответ от wg-serv: status=${response.status}, data=${JSON.stringify(data)}`);
+    reply.status(response.status);
+    return reply.send(data);
+  } catch (e) {
+    fastify.log.error(`Ошибка проксирования /wg: ${e.stack || e}`);
+    return reply.status(500).send({
+      statusCode: 500,
+      error: 'Internal Server Error',
+      message: 'Проксирование не удалось',
+      details: e.message
+    });
+  }
 });
 
-// Обработка ошибок
+// 6. Улучшенная обработка ошибок
 fastify.setErrorHandler((error, request, reply) => {
-  reply.send(error);
+  fastify.log.error(`Глобальная ошибка: ${error.stack || error}`);
+  return reply.status(error.statusCode || 500).send({
+    statusCode: error.statusCode || 500,
+    error: error.name || 'Internal Server Error',
+    message: error.message || 'Произошла ошибка',
+    details: error.stack || 'Нет дополнительной информации'
+  });
 });
 
-// Запуск сервера
-fastify.listen({ port: 2999, host: '0.0.0.0' }, () => {
+// 7. Запуск сервера
+fastify.listen({ port: 2999, host: '0.0.0.0' }, (err) => {
+  if (err) {
+    fastify.log.error(`Ошибка запуска сервера: ${err}`);
+    process.exit(1);
+  }
   console.log('BFF запущен на порту 2999');
 });
