@@ -9,11 +9,29 @@
         <div v-if="location==='FI'" class="head">
             <img src="../img/fin1.png" width="25" class="pad" /> <b>Хельсинки</b> 
         </div>
+        
+        <div v-if="editShow" class="edit-overlay" @click="nameClose"></div> <!--  оверленый слой для отслеживания клика при активном редактирование имения -->
+        
         <div v-for="(client, index) in clients" :key="index" class="body">
             <div class="name" :title="`IP: ${client.ip}\nПоследнее подключение: ${getPeerStats(client.id) ? formatTimestamp(getPeerStats(client.id).lastHandshake) : 'N/A'}`">
                 <img src="../img/conn2.png" width="13" class="pad conn" :class="{ 'active': isActive(client.id) }"/> 
-                {{ client.name }} 
-            </div>
+                <span v-if="!editShow || editId !== client.id " @click="nameEdit(client.id)" > {{ client.name }} </span>
+                
+                <span v-else class="edit-form"> 
+            
+                  <form @submit.prevent="renameWGuser(client.id, client.name)" :title="`Только латинские символы и цифры\nБез пробелов и спец символов`">
+            
+                    <input :ref="'newName-' + client.id" class="txt" :class="{ 'error-border': validationError }" type="text" placeholder="Новое имя" v-model.trim="form.wgname"> 
+            
+                    <img class="gap" src="../img/yes.png" width="14" @click="renameWGuser(client.id, client.name)" :title="применить"/>
+            
+                    <!-- <img class="gap"src="../img/no.png" width="14" @click="nameClose()" :title="закрыть"/> -->
+                  </form>
+            
+                </span>
+  
+             </div>
+    
             <div class="stats">
                 <span v-if="getPeerStats(client.id)">
                   <div>    
@@ -42,6 +60,10 @@
 </template>
 <script>
 import QRCode from 'qrcode';
+import { useVuelidate } from '@vuelidate/core'
+import { required, maxLength} from '@vuelidate/validators'
+
+const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
 
 export default {
   props: {
@@ -61,10 +83,26 @@ export default {
   ],
   data() {
     return {
+      editShow: false,
+      editId: null,
+      form: { 
+        wgname: null
+      },
       showQR: false,
       wgStats: null,
-      statsInterval: null
+      statsInterval: null,
+      v$: useVuelidate(), // подрубаем валидатор vuelidate
+      validationError: false
     }
+  },
+  validations: {
+    form: {
+      wgname: { 
+        required, // поле не должно быть пусты
+        maxLength: maxLength(15),  // максмум 15 символов
+        regexValid
+      }
+    },
   },
   mounted() {
     this.getWgStats(this.location),
@@ -195,6 +233,60 @@ export default {
       const now = Math.floor(Date.now() / 1000); // Текущее время в секундах
       const twoMinutes = 2 * 60; // 2 минуты в секундах
       return (now - peer.lastHandshake) <= twoMinutes;
+    },
+    nameEdit(id) {
+      this.editId = id
+      this.editShow = true
+      this.form.wgname = ''
+      this.validationError = false
+      this.$nextTick(() => {
+        const refName = 'newName-' + id;
+          if (this.$refs[refName] && this.$refs[refName][0]) {
+            this.$refs[refName][0].focus();
+          }
+      });
+    },
+    nameClose() {
+      this.editShow = false
+      this.form.wgname = ''
+      this.validationError = false
+    },
+    async renameWGuser(id, cname) {
+      this.validationError = false // сбрасываем старую ошибку валидации если она есть
+      this.v$.$touch() // хуякс
+      const idClient = id;
+      const currentName = cname;
+      const editName = this.form.wgname;
+      if ( this.v$.$invalid || currentName === editName ) {
+        this.validationError = true
+        return // если срабатывает ничего не делаем 
+      }
+      try {
+        const token = localStorage.getItem('jwt')
+        const response = await fetch('/wg/create',{
+                        method: 'PUT',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                          id: Number(idClient),
+                          wgname: editName
+                        })
+                   })
+        const data = await response.json();
+        if (data.message === "valid") {
+          this.$emit('user-check'); // Обновляем список
+          this.nameClose(); // Закрываем форму
+        } 
+        else {
+          this.onErr = data.onErr || 'Ошибка сервера';
+        }
+      } 
+      catch (error) {
+        this.onErr = 'Ошибка сети';
+      }
+      this.editShow = false;
     }
   }
 }
@@ -247,6 +339,11 @@ export default {
   gap: 10px;
   width: 70px;
   margin-right: 10px; /* Optional: Add margin to fine-tune distance from .control */
+
+  /* @media (max-width: 402px) {
+    display: none; 
+  } */
+
 }
 
 .conn {
@@ -291,6 +388,48 @@ export default {
     left: 50%;
     transform: translate(-50%, -50%);
 }
+.txt {
+    display: inline-block;
+    width: 100px;
+    height: 10px;
+    padding: 0.375rem 0.75rem;
+    font-family: sber;
+    font-size: 14px;
+    font-weight: 10;
+    line-height: 1;
+    color: #212529;
+    background-color: #ffffff;
+    background-clip: padding-box;
+    border: 0px solid #bdbdbd;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.txt::placeholder {
+    color: #212529;
+    opacity: 0.4;
+}
+.gap {
+  padding-left: 5px;
+}
+
+.error-border {
+  /* border: 0.5px solid #ff4444 !important; */
+  /* box-shadow: 0 0 0 2px rgba(255, 68, 68, 0.2); */
+  background-color: #ff00001a;
+  transition: background-color 0.3s ease;
+}
+.edit-form {
+  z-index: 20;
+}
+.edit-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0);
+  z-index: 10;
+}
 
 @media (max-width: 580px) {
   .name {
@@ -306,6 +445,15 @@ export default {
 @media (max-width: 400px) {
   .name {
     width: 150px;
+  }
+}
+@media (max-width: 402px) {
+  .txt {
+    width: 80px; 
+    padding: 0.25rem 0.5rem; /* Уменьшаем отступы */
+  }
+  .gap {
+    padding-left: 3px;
   }
 }
 </style>

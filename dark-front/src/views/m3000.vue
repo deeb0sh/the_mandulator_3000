@@ -10,11 +10,11 @@
             </div>
         </div>
         <div class="container">
-            <div>
+            <div class="tanya">
                 <profile />
                 <invite v-if="checkRole3(roleID) || checkRole2(roleID)" />   <!-- инваты создают только роли 2 и 3 -->
             </div>
-            <div>
+            <div class="tanya">
                 <WG />
             </div>
         </div>
@@ -151,6 +151,10 @@ import { jwtDecode } from 'jwt-decode'
         display: flex;
         justify-content: center;
         align-items: center;       
+    }
+
+    .tanya {
+        width: 100%;
     }
 
 @media (max-width:950px ){

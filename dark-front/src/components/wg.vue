@@ -16,13 +16,13 @@
         <div v-else class="wgadd">
             <form @submit.prevent="createWGuser()">
                 <div class="nav">
-                    <input ref="WGname" class="txt" type="text" placeholder="Имя пользователя" v-model.trim="form.wguser" />
+                    <input ref="WGname" class="txt" :class="{ 'error-border': validationError }" type="text" placeholder="Имя пользователя" v-model.trim="form.wguser" @input="validationError = false" />
                 </div>
                 <div class="nav">
                     <img src="../img/rus1.png" width="30" :class="{ selected: location === 'RU' }" @click="setLocaltion('RU')" />
                     <img src="../img/fin1.png" width="30" :class="{ selected: location === 'FI' }" @click="setLocaltion('FI')" />
                     <img src="../img/ger1.png" width="30" :class="{ selected: location === 'DE' }" @click="setLocaltion('DE')" />     
-                    <button class="btn" @click="">Создать</button>
+                    <button class="btn" type="submit">Создать</button>
                     <button class="btn" @click="closeWgAdd()">Отмена</button>
                 </div>
             </form>
@@ -30,7 +30,7 @@
        
         <div  v-if="v$.form.wguser.$error || v$.location.$error || onErr" class="errorMsg">
             <span v-if="v$.form.wguser.$error" class="user-error">
-                Только: a-z, A-Z, 0-9 и 4 - 15 символов
+                Только: a-z, A-Z, 0-9 и 1 - 15 символов
             </span>
             <span v-if="v$.location.$error" class="location-error">
                 Выбери локацию
@@ -62,7 +62,8 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
                 form: {
                     wguser: ''
                 },
-                v$: useVuelidate() // подрубаем валидатор vuelidate
+                v$: useVuelidate(), // подрубаем валидатор vuelidate
+                validationError: false // для подкрашивания инпут
             }
         },
         created() {
@@ -113,10 +114,17 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
                 }
             },
             async createWGuser() { // метод создание впн-полтьзователя
+                //this.v$.$invalid = false
                 this.v$.$touch()
-                if ( this.v$.$invalid ) {
-                     return // если срабатывает ничего не делаем 
+                                 
+                // if (this.v$.$invalid) return // если сработал валидаор то всё
+                
+                if (this.v$.form.wguser.required.$invalid || this.v$.form.wguser.regexValid.$invalid || this.v$.location.required.$invalid) {
+                    this.validationError = true
+                    //console.log(this.v$.$errors)
+                    return
                 }
+                
                 const token = localStorage.getItem('jwt') // 
                 const req = await fetch('/wg/create',{
                     method: 'POST',
@@ -133,6 +141,7 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
                 this.onErr = data.onErr
                 if (!this.onErr) {
                     this.userCheck()
+                    this.showAddMenu = false 
                 } 
             },
             showWgAdd() { // показать меню добавления пользователя
@@ -146,7 +155,8 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
                 this.form.wguser = ''
                 this.location = null,
                 this.onErr = '',
-                this.v$.$reset()
+                this.v$.$reset(),
+                this.validationError = false
             },
             setLocaltion(x) {
                 this.location = x
@@ -157,7 +167,7 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
 
 <style scoped>
 /* * {
-    border: #9e0e0e solid 1px;
+    border: #1f9e0e solid 1px;
 }  */
 .aria {
     display: flex;
@@ -270,12 +280,19 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
     gap: 5px; 
     padding-top: 10px;
 }
+.error-border {
+    /* border: 0.5px solid #ff4444 !important; */
+    /* box-shadow: 0 0 0 2px rgba(255, 68, 68, 0.2); */
+    background-color: #ff00001a;
+    transition: background-color 0.3s ease;
+}
 @media (max-width: 620px) {
     .aria {
         border-radius: 8px;   
         border: 0px solid #ffffff;
         padding: 0px;
         width: 100%;
+        
         padding-bottom: 10px;
     }
     .wgadd form {
