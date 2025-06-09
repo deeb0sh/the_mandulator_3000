@@ -43,7 +43,7 @@ import { jwtDecode } from 'jwt-decode'
     padding: 10px;
     margin-bottom: 10px;
     min-width: 230px;
-    max-width: 230px;
+    max-width: 100%;
     /* transform: translate(-50%, -50%); */
     color: #313131;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
@@ -61,11 +61,5 @@ import { jwtDecode } from 'jwt-decode'
     justify-content: center; 
     align-items: center;
 }
-.info {
-    font-size:  31px;
-    width: 140px;
-    display: flex;
-    font-family: HH;
-    justify-content:flex-start
-}
+
 </style>

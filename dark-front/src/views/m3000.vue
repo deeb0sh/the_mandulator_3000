@@ -10,11 +10,11 @@
             </div>
         </div>
         <div class="container">
-            <div class="tanya">
+            <div class="wg">
                 <profile />
                 <invite v-if="checkRole3(roleID) || checkRole2(roleID)" />   <!-- инваты создают только роли 2 и 3 -->
             </div>
-            <div class="tanya">
+            <div class="wg">
                 <WG />
             </div>
         </div>
@@ -114,7 +114,7 @@ import { jwtDecode } from 'jwt-decode'
         height: 100%;
         margin: 0;
         padding: 0;
-        overflow-y: auto; /* скролл на уровне окна */
+        overflow-y: auto; 
         min-height: 100vh;
     }   
 
@@ -125,7 +125,7 @@ import { jwtDecode } from 'jwt-decode'
         flex-shrink: 0;
         display: flex;
         flex-direction: column;
-        justify-content: flex-start; /* вместо top, его нет в CSS */
+        justify-content: flex-start; 
         align-items: center;
         padding-bottom: 80px;
     }
@@ -141,8 +141,8 @@ import { jwtDecode } from 'jwt-decode'
 
     .container {
         display: flex;
-        flex-wrap: nowrap; /* Позволяет переносить элементы на новую строку */
-        align-items: flex-start; /* Выравнивание по верхней границе */
+        flex-wrap: nowrap; 
+        align-items: flex-start; 
         gap: 10px; 
         
      }
@@ -153,7 +153,7 @@ import { jwtDecode } from 'jwt-decode'
         align-items: center;       
     }
 
-    .tanya {
+    .wg {
         width: 100%;
     }
 

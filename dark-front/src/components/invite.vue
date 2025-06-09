@@ -62,13 +62,17 @@
 </script>
 
 <style scoped>
+/* * {
+    border: #313131 1px solid;
+} */
 .aria {
     background: #cacaca71;
     border-radius: 8px;   
     border: 0px solid #ffffff;
     padding: 10px;
+    margin-bottom: 10px;
     min-width: 230px;
-    max-width: 230px;
+    max-width: 100%;
     /* transform: translate(-50%, -50%); */
     color: #313131;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
@@ -78,6 +82,7 @@
     color:#313131;
     font-size: 23px;
     font-family: HH;
+    gap: 5px;
     text-align: center;
     margin-bottom: 5px;
 }
@@ -107,14 +112,6 @@
 button:disabled {
     opacity: 0.5;
 }
-@media (max-width: 620px) {
-    .aria {
-        border-radius: 8px;   
-        border: 0px solid #ffffff;
-        padding: 10px;
-        width: 100%;
-        
-    }
-}
+
 </style>
   

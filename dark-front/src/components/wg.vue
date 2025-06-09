@@ -32,12 +32,14 @@
             <span v-if="v$.form.wguser.$error" class="user-error">
                 Только: a-z, A-Z, 0-9 и 1 - 15 символов
             </span>
+            <div>
             <span v-if="v$.location.$error" class="location-error">
                 Выбери локацию
             </span>
             <span v-if="onErr" class="limit-error">
                 {{ onErr }}
             </span>
+            </div>
         </div>
     </div>
 </template>
@@ -196,7 +198,8 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
     position: relative;
     padding-top: 5px;
     width: 490px;
-    color: #313131;
+    color: #ff0000a1;
+    /* color: #313131; */
     font-size: 10px;
     text-align: left;
 }
@@ -318,6 +321,10 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
         position: relative;
     }
     .location-error {
+        position: relative;
+        left: 0px;
+    }
+    .limit-error {
         position: relative;
         left: 0px;
     }
