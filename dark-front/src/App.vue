@@ -1,8 +1,9 @@
 <template>
     <div class="wrapper">
         <RouterView /> 
-        <Footer txt="&copy 2025 ebosh-product"/>  
+         
     </div>
+    <Footer txt="&copy 2025 ebosh-product"/>
 </template>
 
 <script>
@@ -39,7 +40,7 @@ export default {
 	display: flex;
     flex-direction: column;
 	align-items: center;
-    min-height: 100vh;
+    min-height: 97vh;
     width: 100%;
 }
 
