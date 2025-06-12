@@ -30,7 +30,7 @@ export default async function newpassApi(fastify) {
         return reply.send({ message: "valid"})
       } 
       catch (err) {
-        return reply.send({ message: "invalid" })
+        return reply.send({ message: "invalid", error: err })
       }      
     })
     
