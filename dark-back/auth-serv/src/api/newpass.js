@@ -26,7 +26,7 @@ export default async function newpassApi(fastify) {
               salt: salt
           }
         })
-        console.log(`[newpass] Пользователь ${user} обновио пароль`)
+        console.log(`[newpass] Пользователь ${login} обновио пароль`)
         return reply.send({ message: "valid"})            
       }
       catch (err) {
