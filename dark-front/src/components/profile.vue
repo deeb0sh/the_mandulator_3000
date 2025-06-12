@@ -9,13 +9,13 @@
         <img src="../img/diamond1.png" width="160" v-else />
       </div>
       <div class="block padd-top" v-if="!show">
-            <button class="btn" @click="showForm()" >Сменить пароль</button>
+            <button class="btn" @click="showForm()" :disabled="disabledButton">{{ buttonValue }}</button>
       </div>
       <div class="block padd-top" v-else :title="`Требования к паролю:\nТолько латинские символы\nЦифры и - _`">
       <form @submit.prevent="newPassword()">
         <div class="input">
-            <input ref="pass" autofocus class="txt" :class="{ 'error-border': validationError }" type="text" v-model.trim="form.password" placeholder="Новый пароль" @input="validationError = false; errorMsg = ''" >
-            <input class="txt" :class="{ 'error-border': validationError }" type="text" v-model.trim="form.confirmPassword" placeholder="Подтверждение" @input="validationError = false; errorMsg = ''" >
+            <input ref="pass" autofocus class="txt" :class="{ 'error-border': validationError }" type="password" v-model.trim="form.password" placeholder="Новый пароль" @input="validationError = false; errorMsg = ''" >
+            <input class="txt" :class="{ 'error-border': validationError }" type="password" v-model.trim="form.confirmPassword" placeholder="Подтверждение" @input="validationError = false; errorMsg = ''" >
         </div>
         <div class="error-message" v-if="validationError">
             {{ errorMsg }}
@@ -35,7 +35,7 @@
 <script>
 import { jwtDecode } from 'jwt-decode'
 import { useVuelidate } from '@vuelidate/core'
-import { required, maxLength} from '@vuelidate/validators'
+import { required, maxLength, minLength } from '@vuelidate/validators'
 
 const regexValid = (value) => /^[a-zA-Z0-9_-]+$/.test(value)
 
@@ -44,6 +44,8 @@ const regexValid = (value) => /^[a-zA-Z0-9_-]+$/.test(value)
         return {
             roleID: null,
             username: null,
+            disabledButton: false,
+            buttonValue: 'Сменить пароль',
             show: false,
             v$: useVuelidate(),
             validationError: false, // переменная для подсветки инпута
@@ -61,6 +63,7 @@ const regexValid = (value) => /^[a-zA-Z0-9_-]+$/.test(value)
         form: {
             password: { 
                 required, // поле не должно быть пусты
+                minLength: minLength(4), // минимум 4
                 maxLength: maxLength(15),  // максмум 15 символов
                 regexValid
             },
@@ -86,7 +89,14 @@ const regexValid = (value) => /^[a-zA-Z0-9_-]+$/.test(value)
         },
         async newPassword() {
              this.v$.$touch()
-
+             
+             if (this.v$.form.password.minLength.$invalid) {
+                this.validationError = true
+                this.errorMsg = 'минимум 4 символа'
+                return
+             }
+             
+             
              if (this.v$.form.password.required.$invalid || this.v$.form.confirmPassword.required.$invalid) {
                 this.validationError = true
                 this.errorMsg = 'Поля не должны быть пустыми'
@@ -124,7 +134,9 @@ const regexValid = (value) => /^[a-zA-Z0-9_-]+$/.test(value)
                 this.errorMsg = 'ошибка на сервере'
                 return
             }
-        
+            this.buttonValue = 'Пароль изменн'
+            this.disabledButton = true
+            this.closeForm() // закрываем форму
         },
         closeForm() {
             this.show = false
