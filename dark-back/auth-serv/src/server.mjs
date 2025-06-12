@@ -1,6 +1,7 @@
 import Fastify from 'fastify'
 import ajvErrors from 'ajv-errors' // еррор-плагин сообщения
 import regApi from './api/reg.js'
+import newpassApi from './api/newpass.js'
 import loginApi from './api/login.js'
 import incodeApi from './api/incode.js'
 import prismaPlugin from './plugins/prisma.js'
@@ -22,6 +23,7 @@ fastify.register(prismaPlugin) // подключаем плагин призмы
 
 cronDeleteToken(fastify) // запуск cron.js
 
+fastify.register(newpassApi) // ==> auth/newpass (api/newpass.js)
 fastify.register(loginApi) // ==> auth/login (api/login.js)
 fastify.register(regApi) // ==> auth/reg (api/reg.js)
 fastify.register(incodeApi) // ==> auth/incode (api/incode.js)

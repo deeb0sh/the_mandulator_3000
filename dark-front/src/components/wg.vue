@@ -108,8 +108,7 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
                         else {
                                 this.allClient = [] // или обработка ошибки
                         }
-                    }
-                          
+                    }       
                 }
                 catch (e) {
                     this.onErr = `Oшибка! WG-сервер не отвечает ${e}`

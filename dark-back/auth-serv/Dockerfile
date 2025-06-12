@@ -14,12 +14,21 @@ WORKDIR /app
 
 COPY package*.json ./
 
+COPY src ./src
+
+COPY prisma ./prisma
+
+ENV http_proxy=http://10.4.0.2:3128
+
+ENV https_proxy=http://10.4.0.2:3128
+
 RUN npm install && npm cache clean --force
 
-COPY . .
+RUN npx prisma generate
 
-RUN npx prisma generate && npx prisma migrate dev --name init
+
+#RUN npx prisma generate && npx prisma migrate dev --name init
 
 EXPOSE 3000
 
-CMD [ "node", "server.js" ]
+CMD [ "node", "src/server.mjs" ]

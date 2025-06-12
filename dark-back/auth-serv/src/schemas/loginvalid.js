@@ -12,7 +12,7 @@ export const loginValid = {
         },
         password: {
             type: 'string',
-            pattern: '^[a-zA-Z0-9_]+$',
+            pattern: '^[a-zA-Z0-9_-]+$',
             errorMessage: {
                 type: 'только строка',
                 pattern: 'Недопустимые сиволы'

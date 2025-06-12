@@ -1,7 +1,6 @@
 <template>
     <div class="wrapper">
-        <RouterView /> 
-         
+        <RouterView />      
     </div>
     <Footer txt="&copy 2025 ebosh-product"/>
 </template>

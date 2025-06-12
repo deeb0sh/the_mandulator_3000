@@ -8,7 +8,7 @@ export default async function regApi(fastify) {
             }
         }, 
         async (request, reply) => {
-            const { user, password, confirmPassword, inCode } = request.body
+            const { user, password, inCode } = request.body
     
             request.log.info(`Попытка регистрации: login=${user}, inviteCode=${inCode}`) // фиксируем попытку регистрации
 
@@ -25,7 +25,12 @@ export default async function regApi(fastify) {
                 request.log.warn(`Неверный инвайт-код: ${inCode} (мб брут)`) // фиксация неудачного инвайта
                 return reply.send({ message: "инвайт-код устарел или его не существует" })
             }
-    
+            // Валидация на валидаторе regValid
+            // if (password != confirmPassword) {
+            //     request.log.warn(`пароли ${user} не совпадают`) 
+            //     return reply.send({ message: "Пароли не совпадают" })
+            // }
+            
             const checkLogin = await fastify.prisma.users.findFirst({
                 where: {
                     login: {
@@ -52,7 +57,7 @@ export default async function regApi(fastify) {
                    }
                 })
             
-                request.log.info(`Пользователь ${user} зарегистрирован, инвайт-код ${inCode} использован`)
+                fastify.log.info(`Пользователь ${user} зарегистрирован, инвайт-код ${inCode} использован`)
 
                 const inv = await fastify.prisma.inviteList.findFirst({
                     where: {
