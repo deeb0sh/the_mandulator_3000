@@ -15,6 +15,11 @@ export default async function newpassApi(fastify) {
       try {
         const decod = await request.jwtVerify() // извлекаем токен из хедера и валидируем
         const login = decod.user
+      }
+      catch (e) {
+        return reply.send({ message: "invalid", error: "ошибка JWT" })
+      }
+
         const { password } = request.body // извлекаем password из тела , если пароля не воспадут то валидатор не пропустит newpassValid
         const { hash, salt } = await hashPasswd(password) // получаем hash и salt (соль и спайс)
         await fastify.prisma.users.update({
@@ -27,11 +32,7 @@ export default async function newpassApi(fastify) {
           }
         })
         fastify.log.info(`Пользователь ${user} обновио пароль`)
-        return reply.send({ message: "valid"})
-      } 
-      catch (err) {
-        return reply.send({ message: "invalid", error: err })
-      }      
+        return reply.send({ message: "valid"})            
     })
     
 }

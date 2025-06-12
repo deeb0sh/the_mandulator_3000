@@ -119,8 +119,10 @@ const regexValid = (value) => /^[a-zA-Z0-9_-]+$/.test(value)
              })
             
             const data = await response.json()
-            if (data.message === 'invalid') {
+            if (data.message === "invalid") {
+                this.validationError = true
                 this.errorMsg = 'ошибка на сервере'
+                return
             }
         
         },
