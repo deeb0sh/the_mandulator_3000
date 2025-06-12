@@ -17,7 +17,7 @@ export default async function newpassApi(fastify) {
         const login = decod.user
       }
       catch (e) {
-        return reply.send({ message: "invalid", error: "ошибка JWT" })
+        return reply.send({ message: "invalid" })
       }
 
         const { password } = request.body // извлекаем password из тела , если пароля не воспадут то валидатор не пропустит newpassValid
