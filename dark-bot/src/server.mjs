@@ -12,6 +12,8 @@ const fastify = Fastify({
   logger: false
 });
 
+bot.api.sendMessage(gid, 'Я Мандулятор');
+
 fastify.post('/bot/msg', async (request, reply) => {
     try {
         const { message } = request.body; 
@@ -24,10 +26,10 @@ fastify.post('/bot/msg', async (request, reply) => {
 
 const start = async () => {
     try {
-      await bot.start();
-      console.log('[BOT] bot стартовал')
       await fastify.listen({ port: 3333, host: '0.0.0.0' });
       console.log('[BOT] fastify стартовал')
+      console.log('[BOT] bot стартовал')
+      await bot.start();
     } 
     catch (err) {
       console.log(`[BOT] Ошибка - ${err}`);
