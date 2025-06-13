@@ -53,7 +53,7 @@ export default async function wgstatsApi(fastify) {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    message: `✅ сервер ${flag[server]} поднялся !`
+                    message: `✅ Cервер ${flag[server]} поднялся !`
                 })
             });
           } 
@@ -80,7 +80,7 @@ export default async function wgstatsApi(fastify) {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    message: `❌ Сервер ${flag[server]} упал!`
+                    message: `❌ Сервер ${flag[server]} упал !`
                 })
             });
             antiFlood.add(server)
