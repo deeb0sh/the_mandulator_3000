@@ -21,6 +21,13 @@ export default async function wgstatsApi(fastify) {
     FI: 'http://wgfi:3003/wgstats'
   }
 
+  const antiFlood = new Set(); // глобальная для предотвращения флуда
+  const flag = {
+              "RU": "🇷🇺",
+              "DE": "🇩🇪",
+              "FI": "🇫🇮" 
+            };
+
   // === функция для опроса серверов и запили ответа в кеш
   async function wgStats(server) {
       // try-catch для fetch
@@ -35,6 +42,26 @@ export default async function wgstatsApi(fastify) {
           data: stats,       // Основные данные статистики
           lastUpdated: new Date().toLocaleString()
         })
+        // отправляем в телегу если сервер онлайн
+        if (antiFlood.has(server)) {
+          antiFlood.delete(server)
+          // Отправляем в тлегу
+          try {
+            await fetch('http://bot:3333/bot/msg', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: `✅ сервер ${flag[server]} поднялся !`
+                })
+            });
+          } 
+          catch (err) {
+            console.error(`[WGSTATS] Ошибка при отправке уведомления в Telegram: ${err}`);
+          }
+        }
+
       } 
       catch (e) {
         cache.set(server, {
@@ -43,21 +70,25 @@ export default async function wgstatsApi(fastify) {
         })
         
         console.log(`[${new Date().toLocaleString()}][WGSTATS] Сервер не отвечает - ${server}: ${e}`)
-      
-        // Отправляем в тлегу
-        try {
-          await fetch('http://bot:3333/bot/msg', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                  message: `🚨 Сервер ${server} упал!`
-              })
-          });
-        } 
-        catch (err) {
-          console.error(`[WGSTATS] Ошибка при отправке уведомления в Telegram: ${err}`);
+        
+        if (!antiFlood.has(server)) {
+          // Отправляем в тлегу
+          try {
+            await fetch('http://bot:3333/bot/msg', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: `❌ Сервер ${flag[server]} упал!`
+                })
+            });
+            antiFlood.add(server)
+          } 
+          catch (err) {
+            console.error(`[WGSTATS] Ошибка при отправке уведомления в Telegram: ${err}`);
+          }
+          
         }
       }
     }
