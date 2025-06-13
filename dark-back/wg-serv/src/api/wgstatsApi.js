@@ -41,7 +41,24 @@ export default async function wgstatsApi(fastify) {
           status: 'offline',
           lastUpdated: new Date().toLocaleString()
         })
+        
         console.log(`[${new Date().toLocaleString()}][WGSTATS] Сервер не отвечает - ${server}: ${e}`)
+      
+        // Отправляем в тлегу
+        try {
+          await fetch('http://bot:3333/bot/msg', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                  message: `🚨 Сервер ${server} упал!`
+              })
+          });
+        } 
+        catch (err) {
+          console.error(`[WGSTATS] Ошибка при отправке уведомления в Telegram: ${err}`);
+        }
       }
     }
   
