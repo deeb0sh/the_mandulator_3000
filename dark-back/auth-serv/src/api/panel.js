@@ -15,8 +15,9 @@ export default async function panelApi(fastify) {
         const decod = await request.jwtVerify() // извлекаем токен из хедера и валидируем
         const login = decod.user
         const roleID = decod.roleID
+        console.log(`[PANEL] Пользователь - ${login}, Роль - ${roleID}`)
         // --- только для роли 3
-        if (roleID !== 3) {
+        if (roleID != 3) {
             console.log(`[PANEL] у пользователя ${login} нет прав для получаения списка`)
             return reply.send({ message: 'invalid' })
         }
