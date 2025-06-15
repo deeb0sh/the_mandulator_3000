@@ -9,6 +9,7 @@ import invite from './components/invite.vue'
 import profile from './components/profile.vue'
 import WG from './components/wg.vue'
 import clientList from './components/clientList.vue'
+import authAdmin from './components/authAdmin.vue'
 import router from './router'
 
 
@@ -23,6 +24,7 @@ app.component('invite', invite)
 app.component('profile', profile)
 app.component('clientList', clientList)
 app.component('WG', WG)
+app.component('authAdmin', authAdmin)
 app.mount('#app')
 
 

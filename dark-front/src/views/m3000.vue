@@ -16,6 +16,7 @@
             </div>
             <div class="wg">
                 <WG />
+                <authAdmin v-if="checkRole3(roleID) "/> <!-- панель управления auth только 3-->
             </div>
         </div>
         <div>
