@@ -25,10 +25,10 @@ export default async function panelApi(fastify) {
                 id: true,
                 login: true,
                 roleID: true,
-                lastLlastLoginAt: true
+                lastLoginAt: true
             }
         })
-        return reply.send({ message: "valid", authUsers: authUsers})            
+        return reply.send({ message: "valid", users: authUsers})            
       }
       catch (err) {
         console.log(`[PANEL] Ошибка - ${err}`)
