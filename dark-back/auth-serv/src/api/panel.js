@@ -1,5 +1,5 @@
 import jwt from '@fastify/jwt'
-import { headersJwtValid } from '../schemas/headersJWTvalid'
+import { headersJwtValid } from '../schemas/headersJWTvalid.js'
 
 export default async function panelApi(fastify) {
   fastify.register(jwt, {
