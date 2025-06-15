@@ -17,7 +17,7 @@ export default async function panelApi(fastify) {
         const roleID = decod.roleID
         // --- только для роли 3
         if (roleID !== 3) {
-            conolse.log(`[PANEL] у пользователя ${login} нет прав для получаения списка`)
+            console.log(`[PANEL] у пользователя ${login} нет прав для получаения списка`)
             return reply.send({ message: 'invalid' })
         }
         const authUsers = await fastify.prisma.users.findMany({
