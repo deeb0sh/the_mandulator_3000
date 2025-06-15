@@ -6,7 +6,7 @@
         {{ authUsers }}
     </div>
     <div class="aria" v-else>
-        <button class="btn" @click="showAuth">Открыть Панель authAdmin</button>
+        <button class="btn" @click="getAuthDB()">Открыть Панель authAdmin</button>
     </div>
 </template>
 <script>
@@ -32,6 +32,7 @@ export default {
             })
             const data = await response.json()
             this.authUsers = data
+            showAuth()
         }
     }
 }

@@ -31,7 +31,7 @@ export default async function panelApi(fastify) {
         return reply.send({ message: "valid", authUsers: authUsers})            
       }
       catch (err) {
-        console.log(`[newpass-] Ошибка - ${err}`)
+        console.log(`[PANEL] Ошибка - ${err}`)
         return reply.send({ message: "invalid" })
       }
     })
