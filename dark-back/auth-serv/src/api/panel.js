@@ -8,7 +8,7 @@ export default async function panelApi(fastify) {
   // === GET /auth/panel
   fastify.get('/auth/panel', {
     schema: {
-      body: headersJwtValid // схема валидации только хедер с токеном
+      headers: headersJwtValid // схема валидации только хедер с токеном
     }},
     async (request, reply) => {
       try {
