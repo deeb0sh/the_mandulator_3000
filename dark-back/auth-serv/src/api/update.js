@@ -2,7 +2,7 @@ import jwt from '@fastify/jwt'
 import { headersJwtValid } from '../schemas/headersJWTvalid.js'
 import { authPassValid } from '../schemas/authPassValid.js'
 import { hashPasswd } from '../utils/hashPasswd.js' 
-import { authRoleValid } from '../schemas/authRoleValid.js'
+//import { authRoleValid } from '../schemas/authRoleValid.js'
 
 export default async function updateApi(fastify) {
   fastify.register(jwt, {
@@ -74,5 +74,6 @@ export default async function updateApi(fastify) {
       }
     }
   )
-  // === PUT (обновляем роль)  
+  // === PUT (обновляем роль)
+
 }

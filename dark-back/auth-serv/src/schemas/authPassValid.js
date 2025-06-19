@@ -4,8 +4,8 @@ export const authPassValid = {
     properties: {
         id: {
             type: 'string',
-            minLength: 10,
-            maxLength: 30,
+            minLength: 30,
+            maxLength: 40,
             pattern: '^[a-zA-Z0-9-]+$'
         },
         password: {
