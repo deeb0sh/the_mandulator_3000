@@ -98,9 +98,24 @@ export default {
                 alert('пользовтаель удалён '. userId)
             }
         },
-        newRole(user) {
+        async newRole(user) {
             if (confirm('обновить роль ?')) {
-                alert(`выбрана роль = ${user.roleID}, id = ${user.id}`)
+                const response = await fetch('/auth/update', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+                        },
+                        body: JSON.stringify({
+                            id: user.id, // uuid
+                            newrole: user.roleID
+                        })
+                    })
+                    const data = await response.json()
+                    if (data.message === 'invalid') {
+                       alert(data.error)
+                    }
+                    await getAuthDB()
             }
         }
     }

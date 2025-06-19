@@ -1,6 +1,6 @@
 export const authRoleValid = {
     type: 'object',
-    required: ['id', 'password'],
+    required: ['id', 'newrole'],
     properties: {
         id: {
             type: 'string',
@@ -8,7 +8,7 @@ export const authRoleValid = {
             maxLength: 40,
             pattern: '^[a-zA-Z0-9-]+$'
         },
-        role: {
+        newrole: {
             type: 'string',
             minLength: 1,
             maxLength: 1,

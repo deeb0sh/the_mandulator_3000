@@ -2,7 +2,7 @@ import jwt from '@fastify/jwt'
 import { headersJwtValid } from '../schemas/headersJWTvalid.js'
 import { authPassValid } from '../schemas/authPassValid.js'
 import { hashPasswd } from '../utils/hashPasswd.js' 
-//import { authRoleValid } from '../schemas/authRoleValid.js'
+import { authRoleValid } from '../schemas/authRoleValid.js'
 
 export default async function updateApi(fastify) {
   fastify.register(jwt, {
@@ -70,10 +70,44 @@ export default async function updateApi(fastify) {
         return reply.send({ message: "valid" })
       }
       catch (err) {
+        console.log(`[UPDATE] ОШИБКА --- ${err}`)
         return reply.send({ message: "invalid", error: err})
       }
     }
   )
+  
   // === PUT (обновляем роль)
+  fastify.put('/auth/update',{
+    schema: {
+      headers: headersJwtValid, // схема валидации только хедер с токеном
+      body: authRoleValid // валидация id роли и id пользователя (uuid)
+    }},
+    async (request, reply) => {
+      try {
+        const decod = await request.jwtVerify() // извлекаем токен из хедера и валидируем
+        const login = decod.user
+        const role = decod.role
+        if (role != 3) {
+          console.log(`[UPDATE] у пользователя ${login} нет прав для получаения списка`)
+          return reply.send({ message: 'invalid' })
+        }
+        const { id, newrole } = request.body
+        await fastify.prisma.users.update({
+          where: {
+              id: id
+          },
+          data: {
+              roleID: newrole
+          }
+        })
+        console.log(`[UPDATE] роль пользователя обновлена`)
+        return reply.send({ message: "valid" })
+      }
+      catch (err) {
+        console.log(`[UPDATE] ОШИБКА --- ${err}`)
+        return reply.send({ message: "invalid", error: err})
+      }
+    }
+  )
 
 }
