@@ -64,7 +64,7 @@ export default {
         closePanel() {
             this.showAuthPanel = false
         },
-        genPass(userId) {
+        async genPass(userId) {
             if (confirm('Обновить пароль ?')) {
                 let newPass = ''
                 const symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
@@ -74,7 +74,22 @@ export default {
                 const user = this.authUsers.users.find(u => u.id === userId) // хуякс
                 if (user) {
                     user.password = newPass
-                    alert(`отправляем новый пасс ${userId} - ${newPass}`)
+                    const response = await fetch('/auth/update', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+                        },
+                        body: JSON.stringify({
+                            id: userId, // uuid
+                            password: newPass
+                        })
+                    })
+                    const data = await response.json()
+                    if (data.message === 'invalid') {
+                       alert(data.error)
+                    }
+                    await getAuthDB()
                 }
             }
         },
