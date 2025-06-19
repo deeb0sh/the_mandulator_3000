@@ -1,8 +1,8 @@
 import Fastify from 'fastify'
 import ajvErrors from 'ajv-errors' // еррор-плагин сообщения
 import regApi from './api/reg.js'
-import newpassApi from './api/newpass.js'
-import panelApi from './api/panel.js'
+import newpassApi from './api/newpass.js' // удалить
+import updateApi from './api/update.js'
 import loginApi from './api/login.js'
 import incodeApi from './api/incode.js'
 import prismaPlugin from './plugins/prisma.js'
@@ -29,6 +29,7 @@ fastify.register(loginApi) // ==> auth/login (api/login.js)
 fastify.register(regApi) // ==> auth/reg (api/reg.js)
 fastify.register(incodeApi) // ==> auth/incode (api/incode.js)
 fastify.register(panelApi) // ==> auth/panek (api/panel.js)
+
 
 // fastify.get('/', async (request, reply) => {
 //     return { message: '8===D~~' };
