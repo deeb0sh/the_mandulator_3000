@@ -113,7 +113,7 @@ export default {
                     })
                     const data = await response.json()
                     if (data.message === 'invalid') {
-                       alert(data.error)
+                        alert(data.error)
                     }
                     await getAuthDB()
             }
