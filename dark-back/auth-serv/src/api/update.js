@@ -97,7 +97,7 @@ export default async function updateApi(fastify) {
               id: id
           },
           data: {
-              roleID: newrole
+              roleID: Number(newrole)
           }
         })
         console.log(`[UPDATE] роль пользователя обновлена`)
