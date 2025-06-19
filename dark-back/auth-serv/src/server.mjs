@@ -28,7 +28,7 @@ fastify.register(newpassApi) // ==> auth/newpass (api/newpass.js)
 fastify.register(loginApi) // ==> auth/login (api/login.js)
 fastify.register(regApi) // ==> auth/reg (api/reg.js)
 fastify.register(incodeApi) // ==> auth/incode (api/incode.js)
-fastify.register(panelApi) // ==> auth/panek (api/panel.js)
+fastify.register(updateApi) // ==> auth/panek (api/panel.js)
 
 
 // fastify.get('/', async (request, reply) => {
