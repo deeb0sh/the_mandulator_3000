@@ -110,14 +110,14 @@ export default {
                     alert(data.error)
                 }
                 const rmLogin = data.rmLogin.login
-                const resp = await fetch('/wg/chech', {
+                const resp = await fetch('/wg/check', {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${localStorage.getItem('jwt')}`
                         },
                         body: JSON.stringify({
-                            login: rmLogin, // uuid
+                            login: rmLogin, // логин
                         })
                     })
                 const xz = resp.json()

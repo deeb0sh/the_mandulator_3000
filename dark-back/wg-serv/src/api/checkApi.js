@@ -158,7 +158,7 @@ export default async function wgCheckApi(fastify) {
                 const { login } = request.body
                 const userID = await fastify.prisma.users.findFirst({
                     where: {
-                        name: login
+                        login: login
                     },
                     select: {
                         id: true
@@ -176,11 +176,11 @@ export default async function wgCheckApi(fastify) {
                 await fastify.prisma.users.deleteMany({
                     where: { id: Number(userID) }
                 })
-                console.log(`[CHECH] УДАЛЕНО - ${login} !!!`)
+                console.log(`[CHECK] УДАЛЕНО - ${login} !!!`)
                 return reply.send({ message: "valid" })
             } 
             catch (err) {
-                console.log(`[CHECH] ОШИБКА --- ${err} !!!`)
+                console.log(`[CHECK] ОШИБКА --- ${err} !!!`)
                 return reply.send({ message: "invalid", error: err })
             }
         }
