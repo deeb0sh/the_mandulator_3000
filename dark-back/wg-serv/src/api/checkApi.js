@@ -156,26 +156,38 @@ export default async function wgCheckApi(fastify) {
                     return reply.send({ message: 'invalid' })
                 }
                 const { login } = request.body
-                const userID = await fastify.prisma.users.findFirst({
-                    where: {
-                        login: login
-                    },
-                    select: {
-                        id: true
+                const user = await fastify.prisma.users.findFirst({
+                    where: { login },
+                    select: { id: true }
+                })
+            
+                if (!user) {
+                    return reply.send({ message: "invalid", error: "Пользователь не найден" })
+                }
+            
+                // Удаляем связанные записи
+                await fastify.prisma.client.deleteMany({
+                    where: { 
+                        userId: { 
+                            equals: user.id 
+                        } 
                     }
                 })
                 
-                await fastify.prisma.Client.deleteMany({
-                    where: { userId: Number(userID) }
+                await fastify.prisma.userSubnet.deleteMany({
+                    where: { 
+                        userId: { 
+                            equals: user.id 
+                        } 
+                    }
+                })
+            
+                await fastify.prisma.users.delete({
+                    where: { 
+                        id: user.id 
+                    }
                 })
 
-                await fastify.prisma.UserSubnet.deleteMany({
-                    where: { userId: Number(userID) }
-                })
-
-                await fastify.prisma.users.deleteMany({
-                    where: { id: Number(userID) }
-                })
                 console.log(`[CHECK] УДАЛЕНО - ${login} !!!`)
                 return reply.send({ message: "valid" })
             } 
