@@ -93,9 +93,23 @@ export default {
                 }
             }
         },
-        delUser(userId) {
+        async delUser(userId) {
             if (confirm('Удалить пользователя ? ')) {
-                alert('пользовтаель удалён '. userId)
+                const response = await fetch('/auth/update', {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+                        },
+                        body: JSON.stringify({
+                            id: userId, // uuid
+                        })
+                    })
+                    const data = await response.json()
+                    if (data.message === 'invalid') {
+                        alert(data.error)
+                    }
+                    await getAuthDB()
             }
         },
         async newRole(user) {

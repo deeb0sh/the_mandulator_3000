@@ -115,7 +115,7 @@ export default async function updateApi(fastify) {
   fastify.delete('/auth/update',{
     schema: {
       headers: headersJwtValid, // схема валидации только хедер с токеном
-      body: authIdValid // валидация id роли и id пользователя (uuid)
+      body: authIdValid // валидация id пользователя (uuid)
     }},
     async (request, reply) => {
       try {
@@ -140,7 +140,7 @@ export default async function updateApi(fastify) {
         await fastify.prisma.inviteList.deleteMany({
           where: { authorID: id }
         })
-
+        
         await fastify.prisma.session.deleteMany({
           where: { ownerID: id }
         })
@@ -150,7 +150,7 @@ export default async function updateApi(fastify) {
         })
 
         console.log(`[UPDATE] удалён ${rmLogin} из AuthDB`)
-        return reply.send({ message: "valid", login: rmLogin })
+        return reply.send({ message: "valid", rmLogin })
       }
       catch (err) {
         console.log(`[UPDATE] ОШИБКА --- ${err}`)
