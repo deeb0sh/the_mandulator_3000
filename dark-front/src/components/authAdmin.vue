@@ -89,7 +89,7 @@ export default {
                     if (data.message === 'invalid') {
                        alert(data.error)
                     }
-                    await getAuthDB()
+                    
                 }
             }
         },
@@ -105,11 +105,26 @@ export default {
                             id: userId, // uuid
                         })
                     })
-                    const data = await response.json()
-                    if (data.message === 'invalid') {
-                        alert(data.error)
+                const data = await response.json()
+                if (data.message === 'invalid') {
+                    alert(data.error)
+                }
+                const rmLogin = data.rmLogin.login
+                const resp = await fetch('/wg/chech', {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+                        },
+                        body: JSON.stringify({
+                            login: rmLogin, // uuid
+                        })
+                    })
+                const xz = resp.json()
+                if (xz.message === 'invalid') {
+                       alert(xz.error)
                     }
-                    await getAuthDB()
+                await this.getAuthDB()
             }
         },
         async newRole(user) {
@@ -129,7 +144,7 @@ export default {
                     if (data.message === 'invalid') {
                         alert(data.error)
                     }
-                    await getAuthDB()
+                    await this.getAuthDB()
             }
         }
     }

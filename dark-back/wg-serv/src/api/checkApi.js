@@ -1,5 +1,6 @@
 import jwt from '@fastify/jwt'
 import { headersJwtValid } from '../schemas/headersJWTvalid.js'
+import { loginDelValid } from '../schemas/loginDelValid.js'
 import getNetwork from '../utils/getNetwork.js' // генерируем все сети для пользователя
 import getUserNetwork from '../utils/getUserNetwork.js' // смотри все сети занетый пользователями
 import syncwg from '../utils/syncwg.js'
@@ -136,6 +137,51 @@ export default async function wgCheckApi(fastify) {
                 //return reply.redirect('/')
                 fastify.log.error('🔥 ОШИБКА при обработке запроса /wg/check', err);
                 return reply.send({ message: "invalid", onErr: "Ошибка на сервера 1", e: err })
+            }
+        }
+    )
+
+    fastify.delete('/wg/check',{
+        schema: {
+            headers: headersJwtValid, // валидация хедеров один JWT
+            body: loginDelValid // валидация login
+        }},
+        async (request, reply) => {
+            try {
+                const decod = await request.jwtVerify() // извлекаем токен из хедера и валидируем
+                const name = decod.user
+                const role = decod.role
+                if (role != 3) {
+                    console.log(`[CHECK] у пользователя ${name} нет прав для удаления`)
+                    return reply.send({ message: 'invalid' })
+                }
+                const { login } = request.body
+                const userID = await fastify.prisma.users.findFirst({
+                    where: {
+                        name: login
+                    },
+                    select: {
+                        id: true
+                    }
+                })
+                
+                await fastify.prisma.Client.deleteMany({
+                    where: { userId: Number(userID) }
+                })
+
+                await fastify.prisma.UserSubnet.deleteMany({
+                    where: { userId: Number(userID) }
+                })
+
+                await fastify.prisma.users.deleteMany({
+                    where: { id: Number(userID) }
+                })
+                console.log(`[CHECH] УДАЛЕНО - ${login} !!!`)
+                return reply.send({ message: "valid" })
+            } 
+            catch (err) {
+                console.log(`[CHECH] ОШИБКА --- ${err} !!!`)
+                return reply.send({ message: "invalid", error: err })
             }
         }
     )
