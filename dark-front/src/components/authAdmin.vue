@@ -31,7 +31,9 @@
             </div>
     </div>
     <div class="aria" v-else>
-        <button class="btn" @click="getAuthDB()">Открыть Панель authAdmin</button>
+       
+            <button class="btn" @click="getAuthDB()">authAdmin</button>
+        
     </div>
 </template>
 <script>
@@ -151,7 +153,7 @@ export default {
 }
 </script>
 <style scoped>
- /* * {
+/* * {
     border: #1f9e0e solid 1px;
 }   */
 .aria {
@@ -229,4 +231,19 @@ export default {
 .pass {
     width: 100px;
 }
+
+
+@media (max-width: 620px) {
+    .aria {
+        /* margin-right: 10px; */
+        padding: 0px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        width: 100%;
+    }
+    .login {
+        width: 160px;
+    }
+}
+
 </style>
