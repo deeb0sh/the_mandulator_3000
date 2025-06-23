@@ -6,7 +6,7 @@
         </div>
             <div class="client" v-for="(user, index) in authUsers.users" :key="index">
                 <div class="users">
-                    <div class="login">{{ user.login }}</div>
+                    <div class="login" :title="normalDate(user.lastLoginAt)" @click="showStats(user.id)">{{ user.login }}</div>
                     <div>
                         <select name="select" @change="newRole(user)" v-model="user.roleID" size="1" >
                             <option value="0">0</option>
@@ -24,6 +24,9 @@
                     <div>
                         <img src="../img/del.png" width="18" @click="delUser(user.id)" title="Удалить"/>
                     </div>
+                </div>
+                <div class="stats" v-show="selectedUserId === user.id">
+                    логин -  <b>{{ user.login }}</b> <br> последний вход на мандулятор - <b>{{ normalDate(user.lastLoginAt) }}</b>
                 </div>
             </div>
             <div class="gaps">
@@ -44,7 +47,8 @@ export default {
             showAuthPanel: false,
             authUsers: {
                 users: []
-            }
+            },
+            selectedUserId: null
         }
     },
     methods: {
@@ -148,6 +152,17 @@ export default {
                     }
                     await this.getAuthDB()
             }
+        },
+        normalDate(isoDate) {
+            const date = new Date(isoDate);
+            return date.toLocaleDateString("ru-RU");
+        },
+        showStats(userId) {
+            if (this.selectedUserId === userId) {
+                this.selectedUserId = null
+            } else {
+                this.selectedUserId = userId
+            }
         }
     }
 }
@@ -226,10 +241,13 @@ export default {
     /* padding: 1px */
 }
 .login {
-    width: 280px;
+    width: 150px;
 }
 .pass {
     width: 100px;
+}
+.stats {
+    font-size: 12px;
 }
 
 
