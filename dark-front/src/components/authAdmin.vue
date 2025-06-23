@@ -6,7 +6,7 @@
         </div>
             <div class="client" v-for="(user, index) in authUsers.users" :key="index">
                 <div class="users">
-                    <div class="login" :title="normalDate(user.lastLoginAt)" @click="showStats(user.id)">{{ user.login }}</div>
+                    <div class="login" :title="normalDate(user.lastLoginAt)" @click="getPeersStats(user.login); showStats(user.id)">{{ user.login }}</div>
                     <div>
                         <select name="select" @change="newRole(user)" v-model="user.roleID" size="1" >
                             <option value="0">0</option>
@@ -28,7 +28,7 @@
                 <div class="stats" v-if="selectedUserId === user.id">
                     логин -  <b>{{ user.login }}</b> <br> 
                     последний вход на мандулятор - <b>{{ normalDate(user.lastLoginAt) }}</b> <br>
-                    {{ getPeersStats(user.login) }}
+                    {{ test || '...'}}
                 </div>
             </div>
             <div class="gaps">
@@ -50,7 +50,8 @@ export default {
             authUsers: {
                 users: []
             },
-            selectedUserId: null
+            selectedUserId: null,
+            test: ''
         }
     },
     methods: {
@@ -159,12 +160,13 @@ export default {
             const date = new Date(isoDate);
             return date.toLocaleDateString("ru-RU");
         },
-        showStats(userId) {
+        async showStats(userId) {
             if (this.selectedUserId === userId) {
                 this.selectedUserId = null
             } else {
                 this.selectedUserId = userId
             }
+            
         },
         // --- метод для получаение статистики пользователя
         async getPeersStats(name) {
@@ -177,7 +179,7 @@ export default {
                 }
             })
             const data = await req.json() // ждём ответ от сервера
-            return data
+            this.test = data.login
         }
     }
 }

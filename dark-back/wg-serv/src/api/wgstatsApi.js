@@ -174,9 +174,25 @@ export default async function wgstatsApi(fastify) {
           })        
         }
         const { login } = request.params
+        // --- получаем из бд все публичные ключи пиров и их имена
+        const allPeers = await fastify.prisma.client.findMany({
+            where: {
+              user: {
+                login: login
+              }
+            },
+            select: {
+              name: true,
+              publicKey: true,
+              serverName: true,
+              ip: true
+            }
+        })
+
+        
         return reply.send({  
           message: "valid",  
-          login: login 
+          login: allPeers 
         })               
       }
       catch (e) {
