@@ -179,7 +179,7 @@ export default {
                 }
             })
             const data = await req.json() // ждём ответ от сервера
-            this.test = data.login
+            this.test = data.data
         }
     }
 }
