@@ -197,7 +197,7 @@ export default async function wgstatsApi(fastify) {
         
         return reply.send({  
           message: "valid",  
-          data: clients 
+          data: result 
         })               
       }
       catch (e) {
