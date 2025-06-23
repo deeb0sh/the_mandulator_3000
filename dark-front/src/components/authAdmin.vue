@@ -26,7 +26,9 @@
                     </div>
                 </div>
                 <div class="stats" v-show="selectedUserId === user.id">
-                    логин -  <b>{{ user.login }}</b> <br> последний вход на мандулятор - <b>{{ normalDate(user.lastLoginAt) }}</b>
+                    логин -  <b>{{ user.login }}</b> <br> 
+                    последний вход на мандулятор - <b>{{ normalDate(user.lastLoginAt) }}</b> <br>
+                    {{ getStats(user.login) }}
                 </div>
             </div>
             <div class="gaps">
@@ -163,6 +165,17 @@ export default {
             } else {
                 this.selectedUserId = userId
             }
+        },
+        async getStats(login) {
+            const response = await fetch(`/wg/stats/user/${login}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+                }
+            })
+            const data = await response.json()
+            return data
         }
     }
 }

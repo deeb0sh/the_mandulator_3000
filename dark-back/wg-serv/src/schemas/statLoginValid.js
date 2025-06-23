@@ -4,7 +4,7 @@ export const statLoginValid = {
   properties: {
     login: { 
       type: 'string',
-      pattern: '^[a-zA-Z0-9]+$',
+      pattern: '^[a-zA-Z0-9_-]+$',
     }
   }
 };
