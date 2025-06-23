@@ -158,69 +158,35 @@ export default async function wgstatsApi(fastify) {
 
   // === Енд-поинт для роли 3 (администратора) статистика активности пиров пользователей
   // для выявления неиспольхуемых аккаунтов
-  fastify.get('/wg/stats/user/:login',{
-    schema: {
-      headers: headersJwtValid,
-      params: statLoginValid
-    }},
-    async (request,reply) => {
+  fastify.get('/wg/stats/user/:login', { 
+    schema:{ 
+      headers: headersJwtValid, // валидация хедера
+      params: statLoginValid // валидация :server
+    }}, 
+    async (request, reply) => {
       try {
         const decod = await request.jwtVerify()
-        const roleID = decod.role
-        if (roleID != 3) {
-          return reply.send({ message: "invalid", error: "нет прав" })
+        const role = decod.role
+        if ( role != 3 ) {
+          return reply.send({
+            message: "invalid",
+            error: "нет прав"
+          })        
         }
         const { login } = request.params
-        // --- все пиры пользователя
-        const userClients = await fastify.prisma.client.findMany({
-          where: {
-            user: {
-              login: login
-            }
-          },
-          select: {
-            name: true,       // имя пира
-            ip: true,         // IP адрес
-            publicKey: true,
-            serverName: true  // сервер (RU/DE/FI)
-        }})
-        // --- всем статитику из кеша в соостветсвии с publicKey и ключе кеша serverName
-        const userStats = []
-        for (const client of userClients) {  
-          const serverStats = cache.get(client.serverName) 
-          const peerStats = serverStats.data.peers.find(peer => peer.publicKey === client.publicKey)
-          // Если пир найден в статистике
-          if (peerStats) {
-            userStats.push({
-              name: client.name,
-              ip: client.ip,
-              server: client.serverName,
-              lastHandshake: peerStats.lastHandshake,
-              transferRx: peerStats.rx,
-              transferTx: peerStats.tx,
-            })
-          } 
-          else {
-            // Если пир не найден (но сервер онлайн)
-            userStats.push({
-              name: client.name,
-              ip: client.ip,
-              server: client.serverName,
-              lastHandshake: 'N/A',
-              transferRx: 'N/A',
-              transferTx: 'N/A',
-            })
-          }
-          return reply.send({
-            user: login,
-            peers: userStats
-          }) 
-        }
+        return reply.send({  
+          message: "valid",  
+          login: login 
+        })               
       }
       catch (e) {
-        
+        console.log(`[WGSTAT] Ошибка: - ${e}`)
+        return reply.send({
+          message: "invalid",
+          error: e
+        })
       }
     }
-  )
+  )  
 
 }

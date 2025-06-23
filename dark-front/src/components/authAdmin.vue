@@ -25,10 +25,10 @@
                         <img src="../img/del.png" width="18" @click="delUser(user.id)" title="Удалить"/>
                     </div>
                 </div>
-                <div class="stats" v-show="selectedUserId === user.id">
+                <div class="stats" v-if="selectedUserId === user.id">
                     логин -  <b>{{ user.login }}</b> <br> 
                     последний вход на мандулятор - <b>{{ normalDate(user.lastLoginAt) }}</b> <br>
-                    {{ getStats(user.login) }}
+                    {{ getPeersStats(user.login) }}
                 </div>
             </div>
             <div class="gaps">
@@ -166,15 +166,17 @@ export default {
                 this.selectedUserId = userId
             }
         },
-        async getStats(login) {
-            const response = await fetch(`/wg/stats/user/${login}`, {
+        // --- метод для получаение статистики пользователя
+        async getPeersStats(name) {
+            const token = localStorage.getItem('jwt')
+            const req = await fetch(`/wg/stats/user/${name}`,{
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+                    'Content-type': 'application/json', 
+                    'Authorization': `Bearer ${token}`, // токен на проверку
                 }
             })
-            const data = await response.json()
+            const data = await req.json() // ждём ответ от сервера
             return data
         }
     }
