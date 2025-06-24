@@ -6,7 +6,7 @@
         </div>
             <div class="client" v-for="(user, index) in authUsers.users" :key="index">
                 <div class="users">
-                    <div class="login" :title="normalDate(user.lastLoginAt)" @click="getPeersStats(user.login); showStats(user.id)">{{ user.login }}</div>
+                    <div class="login" :title="normalDate(user.lastLoginAt)" @click="getPeersStats(user.login); showStats(user.id)"><b>{{ user.login }}</b></div>
                     <div>
                         <select name="select" @change="newRole(user)" v-model="user.roleID" size="1" >
                             <option value="0">0</option>
@@ -26,9 +26,17 @@
                     </div>
                 </div>
                 <div class="stats" v-if="selectedUserId === user.id">
-                    логин -  <b>{{ user.login }}</b> <br> 
-                    последний вход на мандулятор - <b>{{ normalDate(user.lastLoginAt) }}</b> <br>
-                    {{ test || '...'}}
+                    
+                        <div class="date">вход на мандулятор: <b>{{ normalDate(user.lastLoginAt) }}</b></div>
+                        <div class="userPeers" v-for="(stat, index) in stats" :key="index">
+                            <div class="name">{{ stat.name }}</div>
+                            <div class="location">{{ stat.serverName }}</div>
+                            <div>{{ formatTimestamp(stat.stats.lastHandshake) }}</div>
+                            <div>{{ formatBytes(stat.stats.rx) }}</div>
+                            <div>{{ formatBytes(stat.stats.tx) }}</div>
+                        </div>
+                  
+                    <!-- {{ stats || '...'}} -->
                 </div>
             </div>
             <div class="gaps">
@@ -51,7 +59,7 @@ export default {
                 users: []
             },
             selectedUserId: null,
-            test: ''
+            stats: ''
         }
     },
     methods: {
@@ -166,7 +174,6 @@ export default {
             } else {
                 this.selectedUserId = userId
             }
-            
         },
         // --- метод для получаение статистики пользователя
         async getPeersStats(name) {
@@ -179,15 +186,40 @@ export default {
                 }
             })
             const data = await req.json() // ждём ответ от сервера
-            this.test = data.data
+            this.stats = data.data
+        },
+        // переводим время в человечкский вид
+        formatTimestamp(timestamp) {
+            if (!timestamp) return 'N/A';
+            const date = new Date(timestamp * 1000);
+            return date.toLocaleDateString('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            // hour: '2-digit',
+            // minute: '2-digit',
+            // second: '2-digit'
+        })
+        },
+        // Форматирование байтов в читаемые единицы (КБ, МБ, ГБ)
+        formatBytes(bytes) {
+            if (!bytes) return '0 B';
+            const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+            let value = bytes;
+            let unitIndex = 0;
+            while (value >= 1024 && unitIndex < units.length - 1) {
+                value /= 1024;
+                unitIndex++;
+            }
+            return `${value.toFixed(2)} ${units[unitIndex]}`;
         }
     }
 }
 </script>
 <style scoped>
 /* * {
-    border: #1f9e0e solid 1px;
-}   */
+    border: #ff06de solid 1px;
+}    */
 .aria {
     display: flex;
     align-items: center;
@@ -246,13 +278,13 @@ export default {
     justify-content: center;
     flex-direction: column;
     width: 85%;
-    padding: 10px
+    /* padding: 10px */
 }
 .users {
     display: flex;
-    align-items:flex-start;
+    /* align-items:flex-start; */
     justify-content: space-between;
-    gap: 5px;
+    gap: 1px;
     flex-direction: row;
     width: 100%;
     /* padding: 1px */
@@ -264,10 +296,50 @@ export default {
     width: 100px;
 }
 .stats {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+    flex-direction: column;
+    width: 100%;
     font-size: 12px;
 }
+.userPeers {
+    display: flex;
+    align-items:flex-start;
+    justify-content: space-between;
+    gap: 5px;
+    font-size: 11px;
+    flex-direction: row;
+    width: 100%;
+    padding-bottom: 5px;
+    border: 0px solid #313131;
+}
 
+.date {
+    padding: 5px;
+}
+.userPeers .name {
+    width: 65px; /* Ширина для имени */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Если текст длинный - обрезаем с "..." */
+    white-space: nowrap;
+}
 
+.userPeers .location {
+    width: 30px; 
+    text-align: left; 
+}
+
+.userPeers div:not(.name):not(.location) {
+    width: 80px; 
+    text-align: left; 
+    /* font-family: monospace; */
+    /* font-size: 10px; */
+}
+.userPeers:hover {
+    background-color: #f5f5f5;
+}
 @media (max-width: 620px) {
     .aria {
         /* margin-right: 10px; */
