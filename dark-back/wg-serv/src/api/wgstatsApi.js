@@ -189,12 +189,18 @@ export default async function wgstatsApi(fastify) {
             }
         })
 
-        const result = clients.map(client => ({
+        // const result = clients.map(client => ({
+        //   ...client,
+        //   stats: cache.get(client.serverName)?.data.peers
+        //   .find(p => p.publicKey === client.publicKey) || null
+        // }));
+        
+        const result = clients.map(({ publicKey, ...client }) => ({
           ...client,
           stats: cache.get(client.serverName)?.data.peers
-          .find(p => p.publicKey === client.publicKey) || null
+          .find(p => p.publicKey === publicKey) || null
         }));
-        
+
         return reply.send({  
           message: "valid",  
           data: result 
