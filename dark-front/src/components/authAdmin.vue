@@ -331,6 +331,10 @@ export default {
     text-align: left; 
 }
 
+.userPeers:last-child {
+    margin-bottom: 15px; /* Отступ после последнего элемента */
+}
+
 .userPeers div:not(.name):not(.location) {
     width: 80px; 
     text-align: left; 
