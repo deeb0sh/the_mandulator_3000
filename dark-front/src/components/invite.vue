@@ -108,7 +108,14 @@
     user-select: none;
     appearance: none;
 }
-
+.btn:active {
+  transform: scale(0.96);
+  transition: transform 0.1s;
+}
+.btn:active {
+  transform: scale(0.96);
+  transition: transform 0.1s;
+}
 button:disabled {
     opacity: 0.5;
 }

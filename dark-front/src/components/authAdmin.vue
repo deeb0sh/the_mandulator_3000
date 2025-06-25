@@ -253,6 +253,10 @@ export default {
     user-select: none;
     appearance: none;
 }
+.btn:active {
+  transform: scale(0.96);
+  transition: transform 0.1s;
+}
 .gaps {
     display: flex;
     justify-content: center;

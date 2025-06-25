@@ -179,6 +179,7 @@ const regexValid = (value) => /^[a-zA-Z0-9_-]+$/.test(value)
 .block {
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 .padd-top {
     display: flex;
@@ -203,6 +204,10 @@ const regexValid = (value) => /^[a-zA-Z0-9_-]+$/.test(value)
 }
 button:disabled {
     opacity: 0.5;
+}
+.btn:active {
+  transform: scale(0.96);
+  transition: transform 0.1s;
 }
 .txt {
     display: block;

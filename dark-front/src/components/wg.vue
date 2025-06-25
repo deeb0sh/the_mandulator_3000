@@ -247,6 +247,10 @@ const regexValid = (value) => /^[a-zA-Z0-9]+$/.test(value)
     user-select: none;
     appearance: none;
 }
+.btn:active {
+  transform: scale(0.96);
+  transition: transform 0.1s;
+}
 .txt {
     display: block;
     width: 260px;

@@ -225,7 +225,7 @@ export default {
         unitIndex++;
       }
       return `${value.toFixed(2)} ${units[unitIndex]}`;
-    }    ,
+    },
     // проверяем онлайн если lastHandshake больше 2 мин тогда peer оффлайн
     isActive(clientId) {
       const peer = this.getPeerStats(clientId);
@@ -361,6 +361,11 @@ export default {
   vertical-align: middle;
   margin: 12px;
 }
+.body:hover {
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    box-shadow: 0 0 10px 10px rgba(245, 245, 245, 0.6); /* Свечение того же цвета */
+}
 
 .modal-login {
   position: fixed;
@@ -373,7 +378,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Убедитесь, что модальное окно поверх других элементов */
+ 
 }
 .modal {
     background: #d8d8d8c7;
