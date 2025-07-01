@@ -1,12 +1,15 @@
 <template> 
     <div class="main">
-        <div class="container">
-                <div class="nav">
-                    <RouterLink to="/"><img src="../img/logozbs.png" width="80"></RouterLink>
-                    <span class="header-text"><i>DarkSurf.ru</i></span>
-                </div>
+        <div class="header">
+            <div class="nav">
+                <RouterLink to="/"><img class="logo" src="../img/logozbs.png" width="80"></RouterLink>
+                <span class="header-text"><i> DarkSurf.ru </i></span>
+            </div>
+            <div class="nav">
+                <RouterLink to="/"><a href="/"><img src="../img/exit2.png" ></a></RouterLink>
+            </div>
         </div>
-        <div class="radio">
+        <div class="container">
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Minimal Deep Techno" Style="minimal" v-on:click="SetStream('minimal')"/>
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Drum and Bass" Style="dnb" v-on:click="SetStream('dnb')"/>
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Techno" Style="techno" v-on:click="SetStream('techno')"/>
@@ -101,29 +104,41 @@ export default {
 .main {
         flex: 1 0 auto;
         width: 95%;
-        min-height: 100vh;
+        min-height: 100%;
         flex-shrink: 0;
         display: flex;
         flex-direction: column;
         justify-content: flex-start; 
         align-items: center;
-        padding-bottom: 10px;
+        padding-bottom: 80px;
+    }
+
+    .header {
+        display: flex;
+        align-items: flex-start; 
+        justify-content: space-between;
+        gap: 10px; 
+        width: 950px;
+        margin-top: 20px;
+        margin-bottom: 30px;
     }
 
 .container {
-    margin-top: 5px;
-    margin-bottom: 5px;
-    width: 100%;
     display: flex;
-    justify-content: space-between;
-    align-items:flex-start;
+    flex-wrap: wrap;
+    justify-content: space-evenly; /* Равномерное распределение */
+    width: 100%;                  /* Занимает всю ширину */
+    max-width: 920px;             /* Максимальная ширина */
+    margin: 0 auto;               /* Центрирование */
+             
 }
+
 
 .radio {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    width: 100%;
+    width: 920px;
 }
 
 .nav {
@@ -150,24 +165,17 @@ export default {
         margin-bottom: 15px;
     }
 }
-@media (max-width:878px ) {
+@media (max-width:910px ) {
     .container {
         display: flex;
-        flex-direction: column-reverse;  /* Колонка в обратном порядке */
+        flex-direction: row-reverse;  /* Колонка в обратном порядке */
         flex-wrap: wrap;                 /* Перенос на новую строку */
         justify-content: center;         /* Центрирование */
         height: auto;   
     }
 }
 @media (max-width:620px ) {
-    .container {
-        display: flex;
-        flex-direction: column-reverse;  /* Колонка в обратном порядке */
-        flex-wrap: wrap;                 /* Перенос на новую строку */
-        justify-content: center;         /* Центрирование */
-        height: auto;
-        width: 100%;   
-    }
+    
     .header-text {
         font-size: 40px;  
     }
@@ -177,17 +185,13 @@ export default {
         width: 60px;
     }
     img {
-        width: 60px;
+        width: 30px;
     }
     .header-text {
         font-size: 35px;  
     }
     .header {
         margin: 10px;
-    }
-    .radio {
-        justify-content: space-evenly;
-        gap: 10px;
     }
 }
 @media (max-width: 320px) {

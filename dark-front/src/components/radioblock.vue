@@ -73,7 +73,7 @@
 <style scoped>
 /* * {
     border: #8c00ff solid 1px;
-} */
+}  */
 
 .style {
     font-size: 20px;
@@ -113,6 +113,10 @@
 .info {
     text-align: center;
     padding: 5px 20px 15px 20px;
+    height: 40px;
+    white-space: wrap;    /* перенос строк */
+    overflow: hidden;       /* Скрываем текст, выходящий за границы */
+    text-overflow: ellipsis; /* Добавляем троеточие */
 }
 
 .block {
@@ -126,7 +130,7 @@
     text-align: center;
 }
 
-@media (max-width: 914px) {
+/* @media (max-width: 914px) {
     .block {
         width: 160px;
     }
@@ -150,7 +154,8 @@
 @media (max-width: 407px) {
     .block {
         width: 133px;
-    }
-}
+    } 
+   }   */
+
 </style>
   
