@@ -17,7 +17,7 @@
                 <div class="ip">
                    <b> {{ userIp }}</b>
                 </div>
-                <div class="ip">
+                <div class="ip ip6">
                    <b> {{ userIpv6 }}</b>
                 </div>
             </div>
@@ -67,8 +67,18 @@ export default {
             catch (error) {
                 this.userIpv6 = "IPv6 не поределён"
             }
+        },
+        formatIPv6(ip) {
+            if (!ip || ip === "IPv6 отсутствует" || ip === "IPv6 не поределён") {
+                return ip;
+            }
+            // Оставляем первые 4 группы и последние 4 группы, между ними троеточие
+            const parts = ip.split(':');
+            if (parts.length > 8) {
+                return `${parts.slice(0, 2).join(':')}...${parts.slice(-2).join(':')}`;
+            }
+            return ip;
         }
-        
     }
 }
 </script>
@@ -122,6 +132,10 @@ export default {
     border-radius: 8px;   
     border: 1px solid #ffffff;
     padding: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
 }
 .map {
     display: flex;
@@ -173,7 +187,7 @@ export default {
     .logo {
         width: 60px;
     }
-    .logo img {
+    .nav img {
         width: 30px;
     }
     .header-text {
@@ -181,6 +195,9 @@ export default {
     }
     .header {
         margin: 10px;
+    }
+    .ip {
+        font-size: 14px;
     }
 }
 @media (max-width: 320px) {
