@@ -1,7 +1,7 @@
 <template> 
     <div class="main">
         <div class="header">
-            <div class="nav">
+            <div class="nav1">
                 <RouterLink to="/"><img class="logo" src="../img/logozbs.png" width="80"></RouterLink>
                 <span class="header-text"><i> DarkSurf.ru </i></span>
             </div>
@@ -118,6 +118,11 @@ export default {
     height: auto;    
 }
 .nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;  
+}
+.nav1 {
     display: flex;
     justify-content: center;
     align-items: center;  
