@@ -26,4 +26,4 @@ fastify.get('/ping', { websocket: true }, (connection, req) => {
     }
 )
 
-await fastify.listen({ port: 3000 })
+await fastify.listen({ port: 4000 })
