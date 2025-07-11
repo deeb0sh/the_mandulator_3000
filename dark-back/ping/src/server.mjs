@@ -5,7 +5,7 @@ const fastify = Fastify({ logger: false })
 
 await fastify.register(fastifyWebsocket)
 
-fastify.get('/ping', { websocket: true }, (connection, req) => {
+fastify.get('/', { websocket: true }, (connection, req) => {
     //console.log(`[PING] есть подключение`)    
     
     connection.on('message', (message) => {
