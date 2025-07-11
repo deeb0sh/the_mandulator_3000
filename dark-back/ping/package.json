@@ -1,0 +1,16 @@
+{
+  "name": "ping",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "./src/server.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@fastify/websocket": "^11.1.0",
+    "fastify": "^5.4.0"
+  }
+}
