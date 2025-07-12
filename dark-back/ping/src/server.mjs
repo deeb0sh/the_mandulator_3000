@@ -6,8 +6,8 @@ const fastify = Fastify({
     logger: true,
     https: {
       allowHTTP1: true,
-      key: fs.readFileSync('./ssl/key.pem'),
-      cert: fs.readFileSync('.ssl/cert.pem')
+      key: fs.readFileSync('/app/src/ssl/key.pem'),
+      cert: fs.readFileSync('/app/src/ssl/cert.pem')
     }
  })
 
