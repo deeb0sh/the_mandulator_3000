@@ -15,6 +15,6 @@ export default defineConfig({
     },
   },
   server: {  // <-- Добавляем эту секцию
-    allowedHosts: ['my.darksurf.ru']  // Разрешаем только этот хост
-  }
+    allowedHosts: ['my.darksurf.ru'], // Разрешаем только этот хост
+  }  
 })

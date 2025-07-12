@@ -75,7 +75,7 @@ export default {
             }
         },
         async socketConnect() {
-            const ws = new WebSocket('ws://de.darksurf.ru:5554/')
+            const ws = new WebSocket('wss://darksurf.ru:5554/')
 
             await new Promise((resolve) => {
                 ws.open = resolve
