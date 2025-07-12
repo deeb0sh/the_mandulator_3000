@@ -20,6 +20,9 @@
                 <div class="ip ip6">
                    <b> {{ userIpv6 }}</b>
                 </div>
+                <div class="ip ip6">
+                   <b> {{ response }}</b>
+                </div>
             </div>
         </div>
         <div>
@@ -36,12 +39,15 @@ export default {
     data(){
             return {
                 userIp: "Определение IPv4 ...",
-                userIpv6: "Определение IPv6 ..."
+                userIpv6: "Определение IPv6 ...",
+                response: null,
+                latency: null
             }
     },
     async mounted() {
         this.getIpv4()  
         this.getIpv6()
+        this.socketConnect()
     },
     methods: {
         async getIpv4() {
@@ -68,17 +74,27 @@ export default {
                 this.userIpv6 = "IPv6 не поределён"
             }
         },
-        formatIPv6(ip) {
-            if (!ip || ip === "IPv6 отсутствует" || ip === "IPv6 не поределён") {
-                return ip;
-            }
-            // Оставляем первые 4 группы и последние 4 группы, между ними троеточие
-            const parts = ip.split(':');
-            if (parts.length > 8) {
-                return `${parts.slice(0, 2).join(':')}...${parts.slice(-2).join(':')}`;
-            }
-            return ip;
+        async socketConnect() {
+            const ws = new WebSocket('ws://de.darksurf.ru:5554/')
+
+            await new Promise((resolve) => {
+                ws.open = resolve
+            })
+
+            const start = performance.now()
+            ws.send('ping')
+
+            const result = await new Promise((resolve) => {
+                ws.onmessage = (e) => {
+                    resolve(JSON.parse(e.data))
+                }
+            })
+
+            ws.close()
+
+            this.response = result
         }
+        
     }
 }
 </script>

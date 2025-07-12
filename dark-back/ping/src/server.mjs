@@ -1,7 +1,15 @@
+import fs from "fs"
 import Fastify from "fastify"
 import fastifyWebsocket from "@fastify/websocket"
 
-const fastify = Fastify({ logger: false })
+const fastify = Fastify({ 
+    logger: true,
+    https: {
+      allowHTTP1: true,
+      key: fs.readFileSync('./ssl/key.pem'),
+      cert: fs.readFileSync('.ssl/cert.pem')
+    }
+ })
 
 await fastify.register(fastifyWebsocket)
 
