@@ -86,6 +86,11 @@ export default {
         async monitor(wss, ping) {
             const ws = new WebSocket(wss)
             let pingStart = 0
+            let calibration = {
+                'pingFI': 9,
+                'pingDE': 0,
+                'pingRU': 0
+            }
             ws.onopen = () => {
                 pingStart = performance.now()
                 ws.send('ping')
@@ -93,7 +98,8 @@ export default {
             ws.onmessage = (response) => {
                 const clientReceiveTime = performance.now()
                 const sockPong = JSON.parse(response.data)
-                const rtt = ((clientReceiveTime - pingStart) - sockPong.sTime - 4).toFixed(1)
+                
+                const rtt = ((clientReceiveTime - pingStart) - calibration[ping] - sockPong.sTime  ).toFixed(1)
                 this[ping] = rtt 
                 setTimeout(() => { 
                     pingStart = performance.now()
