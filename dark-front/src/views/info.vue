@@ -21,7 +21,13 @@
                    <b> {{ userIpv6 }}</b>
                 </div>
                 <div class="ip ip6">
-                   <b> {{ response }}</b>
+                   <b>Fi - {{ pingFI }} ms</b>
+                </div>
+                <div class="ip ip6">
+                   <b>De - {{ pingDE }} ms</b>
+                </div>
+                <div class="ip ip6">
+                   <b>Ru - {{ pingRU }} ms</b>
                 </div>
             </div>
         </div>
@@ -37,17 +43,20 @@
 
 export default {
     data(){
-            return {
-                userIp: "Определение IPv4 ...",
-                userIpv6: "Определение IPv6 ...",
-                response: null,
-                latency: null
-            }
+        return {
+            userIp: "Определение IPv4 ...",
+            userIpv6: "Определение IPv6 ...",
+            pingFI: null, 
+            pingDE: null,
+            pingRU: null
+        }
     },
     async mounted() {
         this.getIpv4()  
         this.getIpv6()
-        this.socketConnect()
+        this.monitor('wss://fi.darksurf.ru:5554/', 'pingFI')
+        this.monitor('wss://de.darksurf.ru:5554/', 'pingDE')
+        this.monitor('wss://ru.darksurf.ru:5554/', 'pingRU')
     },
     methods: {
         async getIpv4() {
@@ -74,27 +83,24 @@ export default {
                 this.userIpv6 = "IPv6 не поределён"
             }
         },
-        async socketConnect() {
-            const ws = new WebSocket('wss://darksurf.ru:5554/')
-
-            await new Promise((resolve) => {
-                ws.open = resolve
-            })
-
-            const start = performance.now()
-            ws.send('ping')
-
-            const result = await new Promise((resolve) => {
-                ws.onmessage = (e) => {
-                    resolve(JSON.parse(e.data))
+        async monitor(wss, ping) {
+            const ws = new WebSocket(wss)
+            let pingStart = 0
+            ws.onopen = () => {
+                pingStart = performance.now()
+                ws.send('ping')
+            }
+            ws.onmessage = (response) => {
+                const clientReceiveTime = performance.now()
+                const sockPong = JSON.parse(response.data)
+                const rtt = ((clientReceiveTime - pingStart) - sockPong.sTime - 4).toFixed(1)
+                this[ping] = rtt 
+                setTimeout(() => { 
+                    pingStart = performance.now()
+                    ws.send('ping')                   
+                    }, 1000)
                 }
-            })
-
-            ws.close()
-
-            this.response = result
-        }
-        
+        },
     }
 }
 </script>
