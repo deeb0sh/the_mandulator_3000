@@ -15,19 +15,19 @@
             </div>
             <div class="info">
                 <div class="ip">
-                   <b> {{ userIp }}</b>
+                  <b> {{ userIp }}</b>
                 </div>
                 <div class="ip ip6">
                    <b> {{ userIpv6 }}</b>
                 </div>
-                <div class="ip ip6">
-                   <b>Fi - {{ pingFI }} ms</b>
+                <div class="ip">
+                   <img src="../img/fin1.png" width="30"> <b>&nbsp;-&nbsp;{{ pingFI }} ms</b>
                 </div>
-                <div class="ip ip6">
-                   <b>De - {{ pingDE }} ms</b>
+                <div class="ip">
+                   <img src="../img/ger1.png" width="30"> <b>&nbsp;-&nbsp;{{ pingDE }} ms</b>
                 </div>
-                <div class="ip ip6">
-                   <b>Ru - {{ pingRU }} ms</b>
+                <div class="ip">
+                   <img src="../img/rus1.png" width="30"> <b>&nbsp;-&nbsp;{{ pingRU }} ms</b>
                 </div>
             </div>
         </div>
@@ -86,7 +86,7 @@ export default {
         async monitor(wss, ping) {
             const ws = new WebSocket(wss)
             let pingStart = 0
-            let calibration = {
+            const calibration = {
                 'pingFI': 9,
                 'pingDE': 0,
                 'pingRU': 0
@@ -111,9 +111,9 @@ export default {
 }
 </script>
 <style scoped>
-/* * {
+ /* * {
     border: #ff00d4 solid 1px;
-} */
+}  */
 
 .main {
     flex: 1 0 auto;
@@ -164,11 +164,15 @@ export default {
     font-size: 27px;
     border-radius: 8px;   
     border: 1px solid #ffffff;
-    padding: 10px;
+    margin: 5px;
+    padding: 5px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 100%;
+    display: flex;          /* Добавлено */
+    align-items: center;    /* Добавлено */
+    
 }
 .map {
     display: flex;
