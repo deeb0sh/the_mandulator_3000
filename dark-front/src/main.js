@@ -10,6 +10,7 @@ import profile from './components/profile.vue'
 import WG from './components/wg.vue'
 import clientList from './components/clientList.vue'
 import authAdmin from './components/authAdmin.vue'
+import karta from './components/karta.vue'
 import router from './router'
 
 
@@ -25,6 +26,7 @@ app.component('profile', profile)
 app.component('clientList', clientList)
 app.component('WG', WG)
 app.component('authAdmin', authAdmin)
+app.component('karta', karta)
 app.mount('#app')
 
 

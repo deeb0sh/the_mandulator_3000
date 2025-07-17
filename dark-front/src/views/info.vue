@@ -11,7 +11,7 @@
         </div>
         <div class="container">
             <div class="map">
-                <img src="../img/map.png" width="450">
+                <karta />
             </div>
             <div class="info">
                 <div class="ip">
@@ -54,9 +54,9 @@ export default {
     async mounted() {
         this.getIpv4()  
         this.getIpv6()
-        this.monitor('wss://fi.darksurf.ru:5554/', 'pingFI')
-        this.monitor('wss://de.darksurf.ru:5554/', 'pingDE')
-        this.monitor('wss://ru.darksurf.ru:5554/', 'pingRU')
+        // this.monitor('wss://fi.darksurf.ru:5554/', 'pingFI')
+        // this.monitor('wss://de.darksurf.ru:5554/', 'pingDE')
+        // this.monitor('wss://ru.darksurf.ru:5554/', 'pingRU')
     },
     methods: {
         async getIpv4() {
@@ -180,10 +180,6 @@ export default {
     align-items: center;
     width: 100%;
     margin: 0 auto;
-}
-.map img {
-    max-width: 100%;  /* Изображение не будет превышать ширину контейнера */
-    height: auto;     /* Сохраняет пропорции */
 }
 .info {
     background: #cacaca71;
