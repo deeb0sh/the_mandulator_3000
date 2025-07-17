@@ -54,9 +54,9 @@ export default {
     async mounted() {
         this.getIpv4()  
         this.getIpv6()
-        // this.monitor('wss://fi.darksurf.ru:5554/', 'pingFI')
-        // this.monitor('wss://de.darksurf.ru:5554/', 'pingDE')
-        // this.monitor('wss://ru.darksurf.ru:5554/', 'pingRU')
+        this.monitor('wss://fi.darksurf.ru:5554/', 'pingFI')
+        this.monitor('wss://de.darksurf.ru:5554/', 'pingDE')
+        this.monitor('wss://ru.darksurf.ru:5554/', 'pingRU')
     },
     methods: {
         async getIpv4() {
