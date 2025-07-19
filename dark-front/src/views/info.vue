@@ -40,9 +40,6 @@
     
 </template>
 <script>
-import Karta300 from '@/components/karta300.vue'
-
-
 export default {
     data(){
         return {
