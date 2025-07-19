@@ -4,12 +4,18 @@
         
         <div class="ru">
             <img src="../img/rus1.png" width="15">
+            <br>
+            <i>&nbsp;&nbsp;&nbsp;{{ pingRU }} ms </i>
         </div>
         <div class="de">
             <img src="../img/ger1.png" width="15">
+            <br>
+            <i>&nbsp;&nbsp;&nbsp;{{ pingDE }} ms </i>
         </div>
         <div class="fi">
             <img src="../img/fin1.png" width="15">
+            <br>
+            <i>&nbsp;&nbsp;&nbsp;{{ pingFI }} ms </i>
         </div>
         <canvas ref="signalCanvas" class="signal-lines"></canvas>
     </div>
@@ -17,7 +23,17 @@
 
 <script>
 export default {
-  mounted() {
+    data () {
+    return {
+      pingFI: null, 
+      pingDE: null,
+      pingRU: null
+    }
+  },
+  async mounted() {
+    this.monitor('wss://fi.darksurf.ru:5554/', 'pingFI')
+    this.monitor('wss://de.darksurf.ru:5554/', 'pingDE')
+    this.monitor('wss://ru.darksurf.ru:5554/', 'pingRU')
     this.setupSignalAnimation();
   },
   methods: {
@@ -114,7 +130,31 @@ export default {
       ctx.arc(mainPoint.x, mainPoint.y, config.dotSize, 0, Math.PI * 2);
       ctx.fillStyle = '#00f2f2';
       ctx.fill();
-    }
+    },
+    async monitor(wss, ping) {
+      const ws = new WebSocket(wss)
+      let pingStart = 0
+      const calibration = {
+        'pingFI': 10,
+        'pingDE': 2,
+        'pingRU': 1
+      }
+      ws.onopen = () => {
+        pingStart = performance.now()
+        ws.send('ping')
+      }
+      ws.onmessage = (response) => {
+        const clientReceiveTime = performance.now()
+        const sockPong = JSON.parse(response.data)
+                
+        const rtt = ((clientReceiveTime - pingStart) - calibration[ping] - sockPong.sTime  ).toFixed(0)
+        this[ping] = rtt 
+        setTimeout(() => { 
+          pingStart = performance.now()
+          ws.send('ping')                   
+        }, 2000)
+      }
+    },
   }
 }
 </script>
@@ -142,6 +182,9 @@ export default {
     z-index: 10;
     left: 202px;
     top: 117px;
+    color: #00f2f2;
+    font-family: HH;
+    font-size: 10px;
 }
 .ru img {
     animation: glow 2s infinite;
@@ -151,6 +194,9 @@ export default {
     z-index: 10;
     left: 93px;
     top: 154px;
+    color: #00f2f2;
+    font-family: HH;
+    font-size: 10px;
 }
 .de img {
     animation: glow 2s infinite;
@@ -160,6 +206,9 @@ export default {
     z-index: 10;
     left: 150px;
     top: 87px;
+    color: #00f2f2;
+    font-family: HH;
+    font-size: 10px;
 }
 .fi img {
     animation: glow 2s infinite;

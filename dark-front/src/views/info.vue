@@ -21,7 +21,7 @@
                 <div class="ip ip6">
                    <b> {{ userIpv6 }}</b>
                 </div>
-                <div class="ip">
+                <!-- <div class="ip">
                    <img src="../img/fin1.png" width="30"> <b>&nbsp;-&nbsp;{{ pingFI }} ms</b>
                 </div>
                 <div class="ip">
@@ -29,7 +29,7 @@
                 </div>
                 <div class="ip">
                    <img src="../img/rus1.png" width="30"> <b>&nbsp;-&nbsp;{{ pingRU }} ms</b>
-                </div>
+                </div> -->
             </div>
         </div>
         <div>
@@ -46,18 +46,18 @@ export default {
             isMobile: '',
             userIp: "Определение IPv4 ...",
             userIpv6: "Определение IPv6 ...",
-            pingFI: null, 
-            pingDE: null,
-            pingRU: null
+            // pingFI: null, 
+            // pingDE: null,
+            // pingRU: null
         }
     },
     async mounted() {
         this.chechScreen()
         this.getIpv4()  
         this.getIpv6()
-        this.monitor('wss://fi.darksurf.ru:5554/', 'pingFI')
-        this.monitor('wss://de.darksurf.ru:5554/', 'pingDE')
-        this.monitor('wss://ru.darksurf.ru:5554/', 'pingRU')
+        // this.monitor('wss://fi.darksurf.ru:5554/', 'pingFI')
+        // this.monitor('wss://de.darksurf.ru:5554/', 'pingDE')
+        // this.monitor('wss://ru.darksurf.ru:5554/', 'pingRU')
     },
     methods: { 
         chechScreen() {
@@ -87,30 +87,30 @@ export default {
                 this.userIpv6 = "IPv6 не поределён"
             }
         },
-        async monitor(wss, ping) {
-            const ws = new WebSocket(wss)
-            let pingStart = 0
-            const calibration = {
-                'pingFI': 9,
-                'pingDE': 0,
-                'pingRU': 0
-            }
-            ws.onopen = () => {
-                pingStart = performance.now()
-                ws.send('ping')
-            }
-            ws.onmessage = (response) => {
-                const clientReceiveTime = performance.now()
-                const sockPong = JSON.parse(response.data)
+        // async monitor(wss, ping) {
+        //     const ws = new WebSocket(wss)
+        //     let pingStart = 0
+        //     const calibration = {
+        //         'pingFI': 9,
+        //         'pingDE': 0,
+        //         'pingRU': 0
+        //     }
+        //     ws.onopen = () => {
+        //         pingStart = performance.now()
+        //         ws.send('ping')
+        //     }
+        //     ws.onmessage = (response) => {
+        //         const clientReceiveTime = performance.now()
+        //         const sockPong = JSON.parse(response.data)
                 
-                const rtt = ((clientReceiveTime - pingStart) - calibration[ping] - sockPong.sTime  ).toFixed(1)
-                this[ping] = rtt 
-                setTimeout(() => { 
-                    pingStart = performance.now()
-                    ws.send('ping')                   
-                    }, 1000)
-                }
-        },
+        //         const rtt = ((clientReceiveTime - pingStart) - calibration[ping] - sockPong.sTime  ).toFixed(1)
+        //         this[ping] = rtt 
+        //         setTimeout(() => { 
+        //             pingStart = performance.now()
+        //             ws.send('ping')                   
+        //             }, 1000)
+        //         }
+        // },
     }
 }
 </script>
