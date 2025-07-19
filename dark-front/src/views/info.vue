@@ -10,8 +10,9 @@
             </div>
         </div>
         <div class="container">
-            <div class="map">
-                <karta />
+            <div class="map" >
+                <karta300 v-if="isMobile" />
+                <karta450 v-else />
             </div>
             <div class="info">
                 <div class="ip">
@@ -39,11 +40,13 @@
     
 </template>
 <script>
+import Karta300 from '@/components/karta300.vue'
 
 
 export default {
     data(){
         return {
+            isMobile: '',
             userIp: "Определение IPv4 ...",
             userIpv6: "Определение IPv6 ...",
             pingFI: null, 
@@ -52,13 +55,17 @@ export default {
         }
     },
     async mounted() {
+        this.chechScreen()
         this.getIpv4()  
         this.getIpv6()
         this.monitor('wss://fi.darksurf.ru:5554/', 'pingFI')
         this.monitor('wss://de.darksurf.ru:5554/', 'pingDE')
         this.monitor('wss://ru.darksurf.ru:5554/', 'pingRU')
     },
-    methods: {
+    methods: { 
+        chechScreen() {
+            this.isMobile = innerWidth <= 470;
+        },
         async getIpv4() {
             try {
                 const response = await fetch("https://api.ipify.org?format=json");

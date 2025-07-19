@@ -171,16 +171,4 @@ export default {
     100% { filter: drop-shadow(0 0 5px #00f2f2); }
 }
 
-@media (max-width:470px ){
-    .karta {
-        width: 100%;
-    }
-    .karta img {
-        width: 100%;
-        height: auto;
-    }
-    .ru, .de, .fi {
-        transform: scale(0.8);
-    }
-}
 </style>
