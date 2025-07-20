@@ -5,17 +5,17 @@
         <div class="ru">
             <img src="../img/rus1.png" width="15">
             <br>
-            <i>&nbsp;&nbsp;&nbsp;{{ pingRU }} ms </i>
+            <i>&nbsp;&nbsp;&nbsp;{{ pingRU }}</i>
         </div>
         <div class="de">
             <img src="../img/ger1.png" width="15">
             <br>
-            <i>&nbsp;&nbsp;&nbsp;{{ pingDE }} ms </i>
+            <i>&nbsp;&nbsp;&nbsp;{{ pingDE }}</i>
         </div>
         <div class="fi">
             <img src="../img/fin1.png" width="15">
             <br>
-            <i>&nbsp;&nbsp;&nbsp;{{ pingFI }} ms </i>
+            <i>&nbsp;&nbsp;&nbsp;{{ pingFI }}</i>
         </div>
         <canvas ref="signalCanvas" class="signal-lines"></canvas>
     </div>
@@ -148,7 +148,7 @@ export default {
         const sockPong = JSON.parse(response.data)
                 
         const rtt = ((clientReceiveTime - pingStart) - calibration[ping] - sockPong.sTime  ).toFixed(0)
-        this[ping] = rtt 
+        this[ping] = rtt + ' ms'
         setTimeout(() => { 
           pingStart = performance.now()
           ws.send('ping')                   
@@ -182,8 +182,7 @@ export default {
     z-index: 10;
     left: 202px;
     top: 117px;
-    color: #00f2f2;
-    font-family: HH;
+    color: #808080;
     font-size: 10px;
 }
 .ru img {
@@ -194,8 +193,7 @@ export default {
     z-index: 10;
     left: 93px;
     top: 154px;
-    color: #00f2f2;
-    font-family: HH;
+    color: #808080;
     font-size: 10px;
 }
 .de img {
@@ -206,8 +204,7 @@ export default {
     z-index: 10;
     left: 150px;
     top: 87px;
-    color: #00f2f2;
-    font-family: HH;
+    color: #808080;
     font-size: 10px;
 }
 .fi img {
