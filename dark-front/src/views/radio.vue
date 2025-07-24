@@ -5,9 +5,9 @@
                 <RouterLink to="/"><img class="logo" src="../img/logozbs.png" width="80"></RouterLink>
                 <span class="header-text"><i> DarkSurf.ru </i></span>
             </div>
-            <div class="nav">
+            <!-- <div class="nav">
                 <RouterLink to="/"><a href="/"><img src="../img/exit2.png" ></a></RouterLink>
-            </div>
+            </div> -->
         </div>
         <div class="container">
             <RadioBlock v-bind:isAction="LastClick" StyleInfo="Minimal Deep Techno" Style="minimal" v-on:click="SetStream('minimal')"/>

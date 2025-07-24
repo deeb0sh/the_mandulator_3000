@@ -11,7 +11,7 @@
                 <div class="nav2">
                     <RouterLink to="/radio" @mouseover="OnMouseMSG('Радио Anima Amoris')"><img src="../img/logo_radio.png" width="70"></RouterLink>
                     <a href="#" @mouseover="OnMouseMSG('Мандулятор 3000')" @click="checkToken()"><img src="../img/logo_mand.png" width="70"></a>
-                    <RouterLink to="/info" @mouseover="OnMouseMSG('☭')"><img src="../img/logo_serp.png" width="70"></RouterLink>
+                    <RouterLink to="/info" @mouseover="OnMouseMSG('монитор')"><img src="../img/logo_serp.png" width="70"></RouterLink>
                 </div>
             </div>
             <div class="msg">{{ msg }}</div>

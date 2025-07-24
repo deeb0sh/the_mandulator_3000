@@ -6,7 +6,7 @@
                 <span class="header-text"><i> DarkSurf.ru </i></span>
             </div>
             <div class="nav">
-                <RouterLink to="/"><a href="/"><img src="../img/exit2.png" ></a></RouterLink>
+                <!-- <RouterLink to="/"><a href="/"><img src="../img/exit2.png" ></a></RouterLink> -->
             </div>
         </div>
         <div class="container">
