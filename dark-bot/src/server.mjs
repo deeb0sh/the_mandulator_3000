@@ -12,7 +12,7 @@ const BOT_NAME = '@dsurf_bot';
 const bot = new Bot(token);
 const fastify = Fastify({ logger: false });
 
-// bot.api.sendMessage(gid, 'Я готов к работе!');
+bot.api.sendMessage(gid, 'Я готов к работе!');
 
 async function query(data) {
   const response = await fetch('https://router.huggingface.co/v1/chat/completions', {
@@ -37,7 +37,7 @@ async function getAI(message) {
       messages: [
         {
           role: 'system',
-          content: 'Ты полезный ассистент, отвечай кратко и на русском.',
+          content: 'Ты полезный ассистент, отвечай кратко и на русском. Для кода используй Markdown-форматирование с тройными обратными кавычками.',
         },
         {
           role: 'user',
@@ -51,7 +51,10 @@ async function getAI(message) {
     });
 
     let content = response.choices?.[0]?.message?.content || 'Я не понял вопроса...';
+    // Удаление тегов <think>
     content = content.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+    // Удаление возможного экранирования обратных кавычек
+    content = content.replace(/\\`/g, '`');
     return content;
   } catch {
     return 'нехуя не понятно, но очень интересно';
@@ -65,7 +68,7 @@ bot.on('message:text', async (ctx) => {
 
   if (isPrivateChat) {
     const aiResponse = await getAI(userMessage);
-    await ctx.reply(aiResponse);
+    await ctx.reply(aiResponse, { parse_mode: 'MarkdownV2' });
     return;
   }
 
@@ -81,7 +84,7 @@ bot.on('message:text', async (ctx) => {
       if (!cleanMessage) return;
 
       const aiResponse = await getAI(cleanMessage);
-      await ctx.reply(aiResponse);
+      await ctx.reply(aiResponse, { parse_mode: 'MarkdownV2' });
     }
   }
 });
