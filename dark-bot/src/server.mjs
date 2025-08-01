@@ -12,6 +12,15 @@ const BOT_NAME = '@dsurf_bot';
 const bot = new Bot(token);
 const fastify = Fastify({ logger: false });
 
+// Минимальный обработчик ошибок
+bot.catch = () => {};
+
+// Экранирование специальных символов для MarkdownV2
+function escapeMarkdownV2(text) {
+  const specialChars = /[\\_*[\]()~`>#+\-=|{}.!]/g;
+  return text.replace(specialChars, '\\$&');
+}
+
 bot.api.sendMessage(gid, 'Я готов к работе!');
 
 async function query(data) {
@@ -51,9 +60,7 @@ async function getAI(message) {
     });
 
     let content = response.choices?.[0]?.message?.content || 'Я не понял вопроса...';
-    // Удаление тегов <think>
     content = content.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
-    // Удаление возможного экранирования обратных кавычек
     content = content.replace(/\\`/g, '`');
     return content;
   } catch {
@@ -68,7 +75,7 @@ bot.on('message:text', async (ctx) => {
 
   if (isPrivateChat) {
     const aiResponse = await getAI(userMessage);
-    await ctx.reply(aiResponse, { parse_mode: 'MarkdownV2' });
+    await ctx.reply(escapeMarkdownV2(aiResponse), { parse_mode: 'MarkdownV2' });
     return;
   }
 
@@ -84,7 +91,7 @@ bot.on('message:text', async (ctx) => {
       if (!cleanMessage) return;
 
       const aiResponse = await getAI(cleanMessage);
-      await ctx.reply(aiResponse, { parse_mode: 'MarkdownV2' });
+      await ctx.reply(escapeMarkdownV2(aiResponse), { parse_mode: 'MarkdownV2' });
     }
   }
 });
