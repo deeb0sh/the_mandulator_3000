@@ -67,7 +67,7 @@ model Client {
   privateKey String
   endPoint   String
   allowIps   String      @default("0.0.0.0/0")
-  dns        String      @default("45.142.122.244, 77.221.159.104")
+  dns        String      @default("8.8.8.8, 1.1.1.1")
   createdAt  DateTime    @default(now())
 
   serverId   Int         // тип должен быть Int, соответствующий типу id в Server
