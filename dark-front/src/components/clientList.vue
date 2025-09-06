@@ -4,7 +4,7 @@
             <img src="../img/rus1.png" width="25" class="pad" /> <b>Москва</b>
         </div>
         <div v-if="location==='DE'" class="head">
-            <img src="../img/ger1.png" width="25"  class="pad" /> <b>Франкфурт</b>
+            <img src="../img/hun1.png" width="25"  class="pad" /> <b>Будапешт</b>
         </div>
         <div v-if="location==='FI'" class="head">
             <img src="../img/fin1.png" width="25" class="pad" /> <b>Хельсинки</b> 

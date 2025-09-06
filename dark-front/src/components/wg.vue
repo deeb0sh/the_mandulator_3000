@@ -21,7 +21,7 @@
                 <div class="nav">
                     <img src="../img/rus1.png" width="30" :class="{ selected: location === 'RU' }" @click="setLocaltion('RU')" />
                     <img src="../img/fin1.png" width="30" :class="{ selected: location === 'FI' }" @click="setLocaltion('FI')" />
-                    <img src="../img/ger1.png" width="30" :class="{ selected: location === 'DE' }" @click="setLocaltion('DE')" />     
+                    <img src="../img/hun1.png" width="30" :class="{ selected: location === 'DE' }" @click="setLocaltion('DE')" />     
                     <button class="btn" type="submit">Создать</button>
                     <button class="btn" @click="closeWgAdd()">Отмена</button>
                 </div>
