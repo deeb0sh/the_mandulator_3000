@@ -8,7 +8,7 @@
             <i>&nbsp;&nbsp;&nbsp;{{ pingRU }}</i>
         </div>
         <div class="de">
-            <img src="../img/ger1.png" width="15">
+            <img src="../img/hun1.png" width="15">
             <br>
             <i>&nbsp;&nbsp;&nbsp;{{ pingDE }}</i>
         </div>
@@ -46,7 +46,7 @@ export default {
       const points = {
         ru: { x: 210, y: 126 },
         fi: { x: 158, y: 94 },
-        de: { x: 97, y: 163 }
+        de: { x: 145, y: 177 }
       };
 
       // Настройки анимации
@@ -191,8 +191,8 @@ export default {
 .de {
     position: absolute;
     z-index: 10;
-    left: 93px;
-    top: 154px;
+    left: 139px;
+    top: 169px;
     color: #808080;
     font-size: 10px;
 }
