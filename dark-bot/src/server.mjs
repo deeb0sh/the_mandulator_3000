@@ -4,9 +4,11 @@ import Fastify from 'fastify';
 
 config();
 
-const token = process.env.TELETOK;
-const gid = process.env.GID;
-const hf_token = process.env.HF_TOKEN;
+// const token = process.env.TELETOK;
+const token = '7851903292:AAExW7l_4nArT7T8QMc2sUy9xiDRmz8mKxU';
+// const gid = process.env.GID;
+const gid = '@AntiUf0';
+// const hf_token = process.env.HF_TOKEN;
 const BOT_NAME = '@dsurf_bot';
 
 const bot = new Bot(token);
