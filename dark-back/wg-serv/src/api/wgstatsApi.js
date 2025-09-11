@@ -25,7 +25,7 @@ export default async function wgstatsApi(fastify) {
   const antiFlood = new Set(); // глобальная для предотвращения флуда
   const flag = {
               "RU": "🇷🇺",
-              "DE": "🇩🇪",
+              "DE": "🇭🇺",
               "FI": "🇫🇮" 
             };
 
